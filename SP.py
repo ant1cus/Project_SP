@@ -1,6 +1,7 @@
 import json
 import pathlib
 import queue
+import re
 import sys
 
 from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
@@ -9,7 +10,7 @@ import Main
 import logging
 
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QDir
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox, QDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox, QLineEdit
 
 
 class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
@@ -26,8 +27,15 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.path_for_default = pathlib.Path.cwd()  # Путь для файла настроек
 
     def browse(self):  # Для кнопки открыть
-        directory = None
-        print(self.sender())
+        if 'dir' in self.sender().objectName():
+            directory = QFileDialog.getExistingDirectory(self, "Открыть папку", QDir.currentPath())
+        else:
+            directory = QFileDialog.getOpenFileName(self, "Открыть файл", QDir.currentPath())
+        name_line_edit = re.findall(r'\w+_open_(\w+)', self.sender().objectName().rpartition('_')[0])[0]
+        if directory and isinstance(directory, tuple):
+            print(self.centralwidget.findChildren(self.centralwidget, QLineEdit))
+        elif directory and isinstance(directory, str):
+            print(self.centralwidget.findChildren(self.centralwidget, QLineEdit))
 
     def pause_thread(self):
         if self.q.empty():
