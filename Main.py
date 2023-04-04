@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'MainWindow.ui'
+# Form implementation generated from reading ui file 'Main.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -43,7 +43,7 @@ class Button(QtWidgets.QLineEdit):
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
-        mainWindow.resize(792, 577)
+        mainWindow.resize(800, 600)
         font = QtGui.QFont()
         font.setPointSize(10)
         mainWindow.setFont(font)
@@ -63,13 +63,13 @@ class Ui_mainWindow(object):
         self.pushButton_open_material_sp_dir = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_open_material_sp_dir.setObjectName("pushButton_open_material_sp_dir")
         self.gridLayout.addWidget(self.pushButton_open_material_sp_dir, 0, 4, 1, 1)
-        self.checkBox_name_complect = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox_name_complect.setObjectName("checkBox_name_complect")
-        self.gridLayout.addWidget(self.checkBox_name_complect, 3, 0, 1, 1)
-        self.lineEdit_name_complect = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_name_complect.setEnabled(False)
-        self.lineEdit_name_complect.setObjectName("lineEdit_name_complect")
-        self.gridLayout.addWidget(self.lineEdit_name_complect, 3, 1, 1, 4)
+        self.checkBox_name_set = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox_name_set.setObjectName("checkBox_name_set")
+        self.gridLayout.addWidget(self.checkBox_name_set, 3, 0, 1, 1)
+        self.lineEdit_name_set = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_name_set.setEnabled(False)
+        self.lineEdit_name_set.setObjectName("lineEdit_name_set")
+        self.gridLayout.addWidget(self.lineEdit_name_set, 3, 1, 1, 4)
         self.label_material_sp = QtWidgets.QLabel(self.centralwidget)
         self.label_material_sp.setObjectName("label_material_sp")
         self.gridLayout.addWidget(self.label_material_sp, 0, 0, 1, 1)
@@ -88,7 +88,7 @@ class Ui_mainWindow(object):
         self.gridLayout.addWidget(self.pushButton_start, 4, 1, 1, 3)
         mainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(mainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 792, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 24))
         self.menubar.setObjectName("menubar")
         self.menu = QtWidgets.QMenu(self.menubar)
         self.menu.setObjectName("menu")
@@ -103,7 +103,7 @@ class Ui_mainWindow(object):
 
         self.retranslateUi(mainWindow)
         self.checkBox_name_gk.toggled['bool'].connect(self.lineEdit_name_gk.setEnabled) # type: ignore
-        self.checkBox_name_complect.toggled['bool'].connect(self.lineEdit_name_complect.setEnabled) # type: ignore
+        self.checkBox_name_set.toggled['bool'].connect(self.lineEdit_name_set.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
 
     def retranslateUi(self, mainWindow):
@@ -113,7 +113,7 @@ class Ui_mainWindow(object):
         self.label_load_asu.setText(_translate("mainWindow", "Файл выгрузки с АСУ"))
         self.checkBox_name_gk.setText(_translate("mainWindow", "Наименование ГК"))
         self.pushButton_open_material_sp_dir.setText(_translate("mainWindow", "Открыть"))
-        self.checkBox_name_complect.setText(_translate("mainWindow", "Наименование к-та"))
+        self.checkBox_name_set.setText(_translate("mainWindow", "Наименование к-та"))
         self.label_material_sp.setText(_translate("mainWindow", "Папка с материалами"))
         self.pushButton_start.setText(_translate("mainWindow", "Старт"))
         self.menu.setTitle(_translate("mainWindow", "Настройки"))
