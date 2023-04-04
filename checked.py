@@ -1,25 +1,8 @@
 import os
-import re
-import pathlib
-
-import psutil
-from openpyxl import load_workbook
 
 
-def check(n, e):
-    f = True
-    for el in e:
-        if n == el:
-            f = False
-            return f
-    return f
+def checked_sorting_file(le_path_material_sp, le_path_load_asu, le_path_finish_folder):
 
-
-def checked_sorting_file(le_path_material_sp, le_path_load_asu):
-
-    for proc in psutil.process_iter():
-        if proc.name() == 'WINWORD.EXE':
-            return ['УПС!', 'Закройте все файлы Word!']
     path_material_sp = le_path_material_sp.text().strip()
     if not path_material_sp:
         return ['УПС!', 'Путь к материалам СП пуст']
@@ -33,5 +16,11 @@ def checked_sorting_file(le_path_material_sp, le_path_load_asu):
     else:
         if path_load_asu.endswith('.xlsx') is False:
             return ['УПС!', 'Файл с выгрузкой из АСУ не формата ".xlsx"']
+    path_finish_folder = le_path_finish_folder.text().strip()
+    if not path_finish_folder:
+        return ['УПС!', 'Путь к материалам СП пуст']
+    if os.path.isfile(path_finish_folder):
+        return ['УПС!', 'Укажите папку с материалами СП (указан файл)']
 
-    return {'path_material_sp': path_material_sp, 'path_load_asu': path_load_asu}
+    return {'path_material_sp': path_material_sp, 'path_load_asu': path_load_asu,
+            'path_finish_folder': path_finish_folder}

@@ -16,8 +16,9 @@ class SortingFile(QThread):
         QThread.__init__(self)
         self.path_material_sp = incoming_data['path_material_sp']
         self.path_load_asu = incoming_data['path_load_asu']
-        self.group_file = incoming_data['name_gk']
-        self.no_freq_lim = incoming_data['name_set']
+        self.path_finish_folder = incoming_data['path_finish_folder']
+        self.name_gk = incoming_data['name_gk']
+        self.name_set = incoming_data['name_set']
         self.logging = incoming_data['logging']
         self.queue = incoming_data['queue']
         self.event = threading.Event()
@@ -30,7 +31,9 @@ class SortingFile(QThread):
             self.progress.emit(current_progress)
             percent = 1
             errors = []
+            name_finish_folder = self.name_gk if self.name_gk else 'Номер ГК'
             df = pd.read_excel(self.path_load_asu, sheet_name=0, header=None)
+            os.mkdir(self.path_finish_folder + '\\' + name_finish_folder)
             # if errors:
             #     self.logging.info("Выводим ошибки")
             #     self.queue.put({'errors': errors})

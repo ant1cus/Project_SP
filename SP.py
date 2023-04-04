@@ -26,6 +26,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                             format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
         self.pushButton_open_load_asu_file.clicked.connect((lambda: self.browse(self.lineEdit_path_load_asu)))
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_material_sp)))
+        self.pushButton_open_path_finish_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_finish_folder)))
         self.pushButton_start.clicked.connect(self.sorting_file)
         self.path_for_default = pathlib.Path.cwd()  # Путь для файла настроек
 
@@ -36,12 +37,14 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
             directory = QFileDialog.getOpenFileName(self, "Открыть файл", QDir.currentPath())
         # name_line_edit = re.findall(r'\w+_open_(\w+)', self.sender().objectName().rpartition('_')[0])[0]
         if directory and isinstance(directory, tuple):
-            line_edit.setText(directory[0])
+            if directory[0]:
+                line_edit.setText(directory[0])
         elif directory and isinstance(directory, str):
             line_edit.setText(directory)
 
     def sorting_file(self):
-        sending_data = checked_sorting_file(self.lineEdit_path_material_sp, self.lineEdit_path_load_asu)
+        sending_data = checked_sorting_file(self.lineEdit_path_material_sp, self.lineEdit_path_load_asu,
+                                            self.lineEdit_path_finish_folder)
         name_gk = self.lineEdit_name_gk.text().strip() if self.checkBox_name_gk.isChecked() else False
         name_set = self.lineEdit_name_set.text().strip() if self.checkBox_name_set.isChecked() else False
         if isinstance(sending_data, list):
