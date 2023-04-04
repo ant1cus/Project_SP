@@ -22,20 +22,20 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                             level=logging.DEBUG,
                             filemode="w",
                             format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
-        self.pushButton_open_load_asu_file.clicked.connect(self.browse)
-        self.pushButton_open_material_sp_dir.clicked.connect(self.browse)
+        self.pushButton_open_load_asu_file.clicked.connect((lambda: self.browse(self.lineEdit_path_load_asu)))
+        self.pushButton_open_material_sp_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_material_sp)))
         self.path_for_default = pathlib.Path.cwd()  # Путь для файла настроек
 
-    def browse(self):  # Для кнопки открыть
+    def browse(self, line_edit):  # Для кнопки открыть
         if 'dir' in self.sender().objectName():
             directory = QFileDialog.getExistingDirectory(self, "Открыть папку", QDir.currentPath())
         else:
             directory = QFileDialog.getOpenFileName(self, "Открыть файл", QDir.currentPath())
-        name_line_edit = re.findall(r'\w+_open_(\w+)', self.sender().objectName().rpartition('_')[0])[0]
+        # name_line_edit = re.findall(r'\w+_open_(\w+)', self.sender().objectName().rpartition('_')[0])[0]
         if directory and isinstance(directory, tuple):
-            print(self.centralwidget.findChildren(self.centralwidget, QLineEdit))
+            line_edit.setText(directory[0])
         elif directory and isinstance(directory, str):
-            print(self.centralwidget.findChildren(self.centralwidget, QLineEdit))
+            line_edit.setText(directory)
 
     def pause_thread(self):
         if self.q.empty():
