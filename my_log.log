@@ -1,7 +1,1 @@
-2023-04-04 23:37:37,676 - INFO - run: 29 - Начинаем парсить файлы
-2023-04-04 23:37:38,148 - ERROR - run: 48 - name 'path' is not defined
-2023-04-04 23:37:38,149 - ERROR - run: 49 - Traceback (most recent call last):
-  File "D:\Python\Project_SP\sorting.py", line 35, in run
-    os.mkdir(path)
-NameError: name 'path' is not defined
-
+2023-04-06 23:41:29,791 - INFO - run: 30 - Начинаем парсить файлы

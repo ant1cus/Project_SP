@@ -2,6 +2,7 @@ import os
 import threading
 import traceback
 import pandas as pd
+import math
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -32,8 +33,18 @@ class SortingFile(QThread):
             percent = 1
             errors = []
             name_finish_folder = self.name_gk if self.name_gk else 'Номер ГК'
-            df = pd.read_excel(self.path_load_asu, sheet_name=0, header=None)
-            os.mkdir(self.path_finish_folder + '\\' + name_finish_folder)
+            for file_load_asu in os.listdir(self.path_load_asu):
+                df = pd.read_excel(self.path_load_asu + '\\' + file_load_asu, sheet_name=0, header=None)
+                index_string = -40
+                for index, item in df.iloc[0].items():
+                    if math.isnan(item):
+                        df.iloc[0, index] = index_string
+                        index_string += 1
+                df.sort_values(0, axis=1, inplace=True)
+                df = df.drop(labels=[0, 1], axis=0)
+                print(df)
+                # print(df_values)
+            # os.mkdir(self.path_finish_folder + '\\' + name_finish_folder)
             # if errors:
             #     self.logging.info("Выводим ошибки")
             #     self.queue.put({'errors': errors})
@@ -43,7 +54,6 @@ class SortingFile(QThread):
             #     self.logging.info("Конец работы программы")
             #     self.status.emit('Готово')
             # os.chdir('C:\\')
-            print(df)
             return
         except BaseException as es:
             self.logging.error(es)

@@ -24,7 +24,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                             level=logging.DEBUG,
                             filemode="w",
                             format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
-        self.pushButton_open_load_asu_file.clicked.connect((lambda: self.browse(self.lineEdit_path_load_asu)))
+        self.pushButton_open_load_asu_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_load_asu)))
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_material_sp)))
         self.pushButton_open_path_finish_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_finish_folder)))
         self.pushButton_start.clicked.connect(self.sorting_file)

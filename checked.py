@@ -10,12 +10,16 @@ def checked_sorting_file(le_path_material_sp, le_path_load_asu, le_path_finish_f
         return ['УПС!', 'Укажите папку с материалами СП (указан файл)']
     path_load_asu = le_path_load_asu.text().strip()
     if not path_load_asu:
-        return ['УПС!', 'Путь к файлу выгрузки с АСУ пуст']
-    if os.path.isdir(path_load_asu):
-        return ['УПС!', 'Укажите файл с выгрузкой из АСУ (указана папка)']
+        return ['УПС!', 'Путь к папке с выгрузками из АСУ пуст']
+    if os.path.isfile(path_load_asu):
+        return ['УПС!', 'Укажите папку с выгрузками из АСУ (указан файл)']
     else:
-        if path_load_asu.endswith('.xlsx') is False:
-            return ['УПС!', 'Файл с выгрузкой из АСУ не формата ".xlsx"']
+        for element in os.listdir(path_load_asu):
+            error = []
+            if element.endswith('.xlsx') is False:
+                error.append(element)
+            if error:
+                return ['УПС!', 'Файл с выгрузкой из АСУ не формата ".xlsx"']
     path_finish_folder = le_path_finish_folder.text().strip()
     if not path_finish_folder:
         return ['УПС!', 'Путь к материалам СП пуст']
