@@ -29,6 +29,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_path_finish_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_finish_folder)))
         self.pushButton_start.clicked.connect(self.sorting_file)
         self.path_for_default = pathlib.Path.cwd()  # Путь для файла настроек
+        self.lineEdit_path_material_sp.setText('D:/Python/Project_SP/тесты/начало')
+        self.lineEdit_path_load_asu.setText('D:/Python/Project_SP/тесты/выгрузки')
+        self.lineEdit_path_finish_folder.setText('D:/Python/Project_SP/тесты/конец')
 
     def browse(self, line_edit):  # Для кнопки открыть
         if 'dir' in self.sender().objectName():
@@ -54,7 +57,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         sending_data['name_gk'], sending_data['name_set'] = name_gk, name_set
         sending_data['logging'], sending_data['queue'] = logging, self.queue
         self.thread = SortingFile(sending_data)
-        self.thread.status.connect(self.show_mess)
+        self.thread.status.connect(self.statusBar().showMessage)
         self.thread.messageChanged.connect(self.on_message_changed)
         self.thread.start()
 
@@ -62,9 +65,6 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         if self.queue.empty():
             self.statusBar().showMessage(self.statusBar().currentMessage() + ' (прерывание процесса, подождите...)')
             self.queue.put(True)
-
-    def show_mess(self, value):  # Вывод значения в статус бар
-        self.statusBar().showMessage(value)
 
     def on_message_changed(self, title, description):
         if title == 'УПС!':

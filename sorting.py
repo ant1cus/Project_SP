@@ -3,6 +3,7 @@ import threading
 import traceback
 import pandas as pd
 import math
+import pathlib
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -33,16 +34,26 @@ class SortingFile(QThread):
             percent = 1
             errors = []
             name_finish_folder = self.name_gk if self.name_gk else 'Номер ГК'
+            os.mkdir(pathlib.Path(self.path_finish_folder, name_finish_folder))
             for file_load_asu in os.listdir(self.path_load_asu):
                 df = pd.read_excel(self.path_load_asu + '\\' + file_load_asu, sheet_name=0, header=None)
-                index_string = -40
+                index_string = -100
                 for index, item in df.iloc[0].items():
                     if math.isnan(item):
                         df.iloc[0, index] = index_string
                         index_string += 1
+                number_device = df.shape[1] - (100 + index_string) + 1
                 df.sort_values(0, axis=1, inplace=True)
                 df = df.drop(labels=[0, 1], axis=0)
-                print(df)
+                name_set = df[2].to_numpy().tolist()
+                for row, serial_num in enumerate(df[3].to_numpy().tolist()):
+                    path_dir = pathlib.Path(self.path_finish_folder, name_finish_folder,
+                                            name_set[row], str(serial_num) + ' В')
+                    os.makedirs(path_dir)
+                    for device in range(1, number_device):
+                        os.makedirs(pathlib.Path(path_dir, str(device), 'photo'))
+                        os.makedirs(pathlib.Path(path_dir, str(device), 'rentgen'))
+                # print(df)
                 # print(df_values)
             # os.mkdir(self.path_finish_folder + '\\' + name_finish_folder)
             # if errors:
@@ -54,6 +65,7 @@ class SortingFile(QThread):
             #     self.logging.info("Конец работы программы")
             #     self.status.emit('Готово')
             # os.chdir('C:\\')
+            self.status.emit('Готово')
             return
         except BaseException as es:
             self.logging.error(es)
