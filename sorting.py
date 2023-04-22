@@ -4,8 +4,6 @@ import traceback
 import pandas as pd
 import math
 import pathlib
-import PySimpleGUI as sg
-import time
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -60,24 +58,28 @@ class SortingFile(QThread):
                     name_set = df[2].to_numpy().tolist()
                     self.logging.info('Создаём структуру для ' + file_load_asu)
                     for row, serial_num in enumerate(df[3].to_numpy().tolist()[1:], start=1):
+                        if self.pause_threading():
+                            return
                         path_dir = pathlib.Path(self.path_finish_folder, name_finish_folder,
                                                 name_set[row], str(serial_num) + ' В')
-                        try:
-                            os.makedirs(path_dir)
-                        except FileExistsError:
-                            self.logging.info('Такая папка уже есть ' + str(path_dir))
-                        # os.makedirs(path_dir)
+                        # try:
+                        #     os.makedirs(path_dir)
+                        # except FileExistsError:
+                        #     self.logging.info('Такая папка уже есть ' + str(path_dir))
+                        os.makedirs(path_dir, exist_ok=True)
                         for device in range(1, number_device):
-                            try:
-                                os.makedirs(pathlib.Path(path_dir, str(device), 'photo'))
-                            except FileExistsError:
-                                self.logging.info('Такая папка уже есть ' + str(pathlib.Path(path_dir,
-                                                                                             str(device), 'photo')))
-                            try:
-                                os.makedirs(pathlib.Path(path_dir, str(device), 'rentgen'))
-                            except FileExistsError:
-                                self.logging.info('Такая папка уже есть ' + str(pathlib.Path(path_dir,
-                                                                                             str(device), 'rentgen')))
+                            os.makedirs(pathlib.Path(path_dir, str(device), 'photo'), exist_ok=True)
+                            os.makedirs(pathlib.Path(path_dir, str(device), 'rentgen'), exist_ok=True)
+                            # try:
+                            #     os.makedirs(pathlib.Path(path_dir, str(device), 'photo'))
+                            # except FileExistsError:
+                            #     self.logging.info('Такая папка уже есть ' + str(pathlib.Path(path_dir,
+                            #                                                                  str(device), 'photo')))
+                            # try:
+                            #     os.makedirs(pathlib.Path(path_dir, str(device), 'rentgen'))
+                            # except FileExistsError:
+                            #     self.logging.info('Такая папка уже есть ' + str(pathlib.Path(path_dir,
+                            #                                                                  str(device), 'rentgen')))
                     df.columns = name_for_df
                     df.reset_index(drop=True, inplace=True)
                     size = df.shape
@@ -92,6 +94,8 @@ class SortingFile(QThread):
             self.logging.info('Бежим по файлам СП')
             self.status.emit('Начинаем сортировку указанных файлов СП')
             for name_device in os.listdir(self.path_material_sp):
+                if self.pause_threading():
+                    return
                 self.logging.info('Бежим по ' + str(name_device))
                 for sn_device in os.listdir(pathlib.Path(self.path_material_sp, name_device)):
                     self.logging.info('Бежим по ' + str(sn_device))
@@ -108,20 +112,41 @@ class SortingFile(QThread):
                                                             device.iloc[row, 2], device.iloc[row, 3] + ' В',
                                                             str(column), 'rentgen')
                                 if pathlib.Path(path_photo).is_dir() is False:
-                                    self.logging.info('Почему то такого пути для фото нет, создаём')
+                                    self.logging.info(str(path_photo) +
+                                                      ' - почему то такого пути для фото нет, создаём')
+                                    errors.append(str(path_photo) +
+                                                  ' - почему то такого пути для фото нет, создаём')
                                     path_photo.mkdir(parents=True)
                                 if pathlib.Path(path_rentgen).is_dir() is False:
-                                    self.logging.info('Почему то такого пути для рентгена нет, создаём')
+                                    self.logging.info(str(path_rentgen) +
+                                                      ' - почему то такого пути для рентгена нет, создаём')
+                                    errors.append(str(path_rentgen) +
+                                                  ' - почему то такого пути для рентгена нет, создаём')
                                     path_rentgen.mkdir(parents=True)
-                    for file in os.listdir(pathlib.Path(self.path_material_sp, name_device, str(sn_device))):
-                        if str(file).endswith('.tif') or str(file).endswith('.tiff') or str(file).endswith('.png'):
-                            pathlib.Path(self.path_material_sp, name_device,
-                                         str(sn_device), str(file)).rename(pathlib.Path(path_rentgen, str(file)))
-                        else:
-                            pathlib.Path(self.path_material_sp, name_device,
-                                         str(sn_device), str(file)).rename(pathlib.Path(path_photo, str(file)))
-                    sg.one_line_progress_meter('Перенос файлов', current_progress, 100, '')
+                    file_in_finish = [str(file) for file in os.listdir(pathlib.Path(self.path_material_sp,
+                                                                                    name_device, str(sn_device)))]
+                    self.logging.info('Копируемые файлы: ' + ', '.join(file_in_finish))
+                    exist_file = [str(file) for file in file_in_finish
+                                  if file in os.listdir(pathlib.Path(path_rentgen))
+                                  or file in os.listdir(pathlib.Path(path_photo))]
+                    replace = True
+                    if exist_file:
+                        self.logging.info('Файлы, присутствующие в папке ' + str(path_rentgen.parent)
+                                          + ': ' + ', '.join(exist_file))
+                        self.logging.info('Спрашиваем что делать')
+                        replace = self.pause_threading(exist_file, str(path_rentgen.parent))
+                    if replace:
+                        for file in os.listdir(pathlib.Path(self.path_material_sp, name_device, str(sn_device))):
+                            if file in exist_file and replace is False:
+                                continue
+                            if str(file).endswith('.tif') or str(file).endswith('.tiff') or str(file).endswith('.png'):
+                                pathlib.Path(self.path_material_sp, name_device,
+                                             str(sn_device), str(file)).rename(pathlib.Path(path_rentgen, str(file)))
+                            else:
+                                pathlib.Path(self.path_material_sp, name_device,
+                                             str(sn_device), str(file)).rename(pathlib.Path(path_photo, str(file)))
                     current_progress += percent
+                    self.progress.emit(int(current_progress))
                 # print(df)
                 # print(df_values)
             # os.mkdir(self.path_finish_folder + '\\' + name_finish_folder)
@@ -136,6 +161,7 @@ class SortingFile(QThread):
             # os.chdir('C:\\')
             self.logging.info('Готово')
             self.status.emit('Готово')
+            self.progress.emit(100)
             return
         except BaseException as error:
             self.logging.error(error)
@@ -145,3 +171,26 @@ class SortingFile(QThread):
             os.chdir('C:\\')
             return
 
+    def pause_threading(self, data=None, folder=None):
+        user_pause = False if self.queue.empty() else self.queue.get_nowait()
+        if data:
+            if len(data) == 1:
+                self.messageChanged.emit('Вопрос?', 'В папке "' + folder + '" уже есть файл '
+                                         + data[0] + ' Заменить файл?')
+            else:
+                self.messageChanged.emit('Вопрос?', 'В папке "' + folder + '" уже есть файлы ('
+                                         + str(len(data)) + ') с такими же именами.'
+                                                            ' Заменить файлы?')
+            self.event.wait()
+            self.event.clear()
+            return True if self.queue.get_nowait() else False
+        elif user_pause:
+            self.messageChanged.emit('Пауза', 'Проверка остановлена пользователем. Нажмите «Да» для продолжения'
+                                              ' или «Нет» для прерывания')
+            self.event.wait()
+            self.event.clear()
+            if self.queue.get_nowait():
+                self.status.emit('Прервано пользователем')
+                self.progress.emit(0)
+                return True
+        return False

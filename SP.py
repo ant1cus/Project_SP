@@ -8,7 +8,7 @@ import Main
 import logging
 
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QDir
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox, QWidget
 
 from sorting import SortingFile
 from checked import checked_sorting_file
@@ -28,6 +28,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_material_sp)))
         self.pushButton_open_path_finish_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_finish_folder)))
         self.pushButton_start.clicked.connect(self.sorting_file)
+        self.pushButton_pause.clicked.connect(self.pause_thread)
         self.path_for_default = pathlib.Path.cwd()  # Путь для файла настроек
         self.lineEdit_path_material_sp.setText('D:/Python/Project_SP/тесты/начало')
         self.lineEdit_path_load_asu.setText('D:/Python/Project_SP/тесты/выгрузки')
@@ -58,6 +59,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         sending_data['logging'], sending_data['queue'] = logging, self.queue
         self.thread = SortingFile(sending_data)
         self.thread.status.connect(self.statusBar().showMessage)
+        self.thread.progress.connect(self.progressBar.setValue)
         self.thread.messageChanged.connect(self.on_message_changed)
         self.thread.start()
 
@@ -72,6 +74,16 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         elif title == 'Внимание!':
             QMessageBox.warning(self, title, description)
         elif title == 'Вопрос?':
+            self.statusBar().clearMessage()
+            ans = QMessageBox.question(self, title, description,
+                                       QMessageBox.Yes | QMessageBox.No,
+                                       QMessageBox.Yes)
+            if ans == QMessageBox.Yes:
+                self.thread.queue.put(True)
+            else:
+                self.thread.queue.put(False)
+            self.thread.event.set()
+        elif title == 'Пауза':
             self.statusBar().clearMessage()
             ans = QMessageBox.question(self, title, description, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if ans == QMessageBox.No:
