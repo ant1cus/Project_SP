@@ -1,8 +1,10 @@
+import datetime
 import json
 import pathlib
 import queue
 import re
 import sys
+import os
 
 import Main
 import logging
@@ -20,9 +22,13 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.queue = queue.Queue(maxsize=1)
-        logging.basicConfig(filename="my_log.log",
+        self.path_for_default = pathlib.Path.cwd()
+        filename = str(datetime.date.today()) + '_logs.log'
+        os.makedirs(pathlib.Path('logs'), exist_ok=True)
+        filemode = 'a' if pathlib.Path('logs', filename).is_file() else 'w'
+        logging.basicConfig(filename=pathlib.Path('logs', filename),
                             level=logging.DEBUG,
-                            filemode="w",
+                            filemode=filemode,
                             format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
         self.pushButton_open_load_asu_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_load_asu)))
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_material_sp)))
@@ -57,6 +63,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         # Если всё прошло запускаем поток
         sending_data['name_gk'], sending_data['name_set'] = name_gk, name_set
         sending_data['logging'], sending_data['queue'] = logging, self.queue
+        sending_data['path_for_default'] = self.path_for_default
         self.thread = SortingFile(sending_data)
         self.thread.status.connect(self.statusBar().showMessage)
         self.thread.progress.connect(self.progressBar.setValue)
