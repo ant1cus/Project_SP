@@ -1,0 +1,6 @@
+﻿{
+    "widget_settings": {
+        "copy-checkBox_name_gk": false,
+        "copy-checkBox_name_set": true
+    }
+}

@@ -2,7 +2,6 @@ import datetime
 import json
 import pathlib
 import queue
-import re
 import sys
 import os
 
@@ -14,6 +13,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox,
 
 from sorting import SortingFile
 from checked import checked_sorting_file
+from Default import DefaultWindow
 
 
 class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
@@ -22,7 +22,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.queue = queue.Queue(maxsize=1)
-        self.path_for_default = pathlib.Path.cwd()
+        self.default_path = pathlib.Path.cwd()
         filename = str(datetime.date.today()) + '_logs.log'
         os.makedirs(pathlib.Path('logs'), exist_ok=True)
         filemode = 'a' if pathlib.Path('logs', filename).is_file() else 'w'
@@ -35,10 +35,25 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_path_finish_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_finish_folder)))
         self.pushButton_start.clicked.connect(self.sorting_file)
         self.pushButton_pause.clicked.connect(self.pause_thread)
-        self.path_for_default = pathlib.Path.cwd()  # Путь для файла настроек
-        self.lineEdit_path_material_sp.setText('D:/Python/Project_SP/тесты/начало')
-        self.lineEdit_path_load_asu.setText('D:/Python/Project_SP/тесты/выгрузки')
-        self.lineEdit_path_finish_folder.setText('D:/Python/Project_SP/тесты/конец')
+        self.action_default_window.triggered.connect(self.default_settings)
+        self.line = {'copy-lineEdit_path_material_sp': self.lineEdit_path_material_sp,
+                     'copy-lineEdit_path_load_asu': self.lineEdit_path_load_asu,
+                     'copy-lineEdit_path_finish_folder': self.lineEdit_path_finish_folder,
+                     'copy-checkBox_name_gk': self.checkBox_name_gk,
+                     'copy-lineEdit_name_gk': self.lineEdit_name_gk,
+                     'copy-checkBox_name_set': self.checkBox_name_set,
+                     'copy-lineEdit_name_set': self.lineEdit_name_set
+                     }
+        try:
+            with open(pathlib.Path(pathlib.Path.cwd(), 'Настройки.txt'), "r", encoding='utf-8-sig') as f:
+                dict_load = json.load(f)
+                self.data = dict_load['widget_settings']
+        except FileNotFoundError:
+            with open(pathlib.Path(pathlib.Path.cwd(), 'Настройки.txt'), "w", encoding='utf-8-sig') as f:
+                data_insert = {"widget_settings": {}}
+                json.dump(data_insert, f, ensure_ascii=False, sort_keys=True, indent=4)
+                self.data = {}
+        self.default_data(self.data)
 
     def browse(self, line_edit):  # Для кнопки открыть
         if 'dir' in self.sender().objectName():
@@ -63,7 +78,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         # Если всё прошло запускаем поток
         sending_data['name_gk'], sending_data['name_set'] = name_gk, name_set
         sending_data['logging'], sending_data['queue'] = logging, self.queue
-        sending_data['path_for_default'] = self.path_for_default
+        sending_data['default_path'] = self.default_path
         self.thread = SortingFile(sending_data)
         self.thread.status.connect(self.statusBar().showMessage)
         self.thread.progress.connect(self.progressBar.setValue)
@@ -98,6 +113,20 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
             else:
                 self.thread.queue.put(False)
             self.thread.event.set()
+
+    def default_settings(self):  # Запускаем окно с настройками по умолчанию.
+        self.close()
+        window_add = DefaultWindow(self, self.default_path)
+        window_add.show()
+
+    def default_data(self, incoming_data):
+        for element in self.line:
+            if element in incoming_data:
+                if 'checkBox' in element:
+                    self.line[element].setChecked(True) if incoming_data[element]\
+                        else self.line[element].setChecked(False)
+                else:
+                    self.line[element].setText(incoming_data[element])  # Помещаем значение
 
 
 if __name__ == '__main__':

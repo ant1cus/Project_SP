@@ -23,7 +23,7 @@ class SortingFile(QThread):
         self.name_set = incoming_data['name_set']
         self.logging = incoming_data['logging']
         self.queue = incoming_data['queue']
-        self.path_for_default = incoming_data['path_for_default']
+        self.default_path = incoming_data['default_path']
         self.event = threading.Event()
 
     def run(self):
@@ -208,7 +208,7 @@ class SortingFile(QThread):
             self.logging.info('\n******************************Конец работы******************************\n')
             self.status.emit('Готово')
             self.progress.emit(100)
-            os.chdir(self.path_for_default)
+            os.chdir(self.default_path)
             return
         except BaseException as error:
             self.logging.error(error)
@@ -216,7 +216,7 @@ class SortingFile(QThread):
             self.logging.info('\n******************************Конец работы******************************\n')
             self.progress.emit(0)
             self.status.emit('Ошибка!')
-            os.chdir(self.path_for_default)
+            os.chdir(self.default_path)
             return
 
     def pause_threading(self, data=None, folder=None):
