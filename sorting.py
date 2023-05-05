@@ -57,13 +57,13 @@ class SortingFile(QThread):
                     df.sort_values(0, axis=1, inplace=True)
                     name_for_df = df.iloc[1]
                     df = df.drop(labels=[1], axis=0)
-                    name_set = df[2].to_numpy().tolist()
+                    name_set = df[2].to_numpy().tolist() if self.name_set is False else self.name_set
                     self.logging.info('Создаём структуру для ' + file_load_asu)
                     for row, serial_num in enumerate(df[3].to_numpy().tolist()[1:], start=1):
                         if self.pause_threading():
                             return
                         path_dir = pathlib.Path(self.path_finish_folder, name_finish_folder,
-                                                name_set[row], str(serial_num) + ' В')
+                                                str(name_set[row]), str(serial_num) + ' В')
                         # try:
                         #     os.makedirs(path_dir)
                         # except FileExistsError:
@@ -109,16 +109,18 @@ class SortingFile(QThread):
                     for sn_device in os.listdir(pathlib.Path(self.path_material_sp, name_device)):
                         self.logging.info('Бежим по ' + str(sn_device))
                         self.status.emit('Сортируем устройства с sn ' + str(sn_device))
+                        path_photo = False
+                        path_rentgen = False
                         for device in list_df:
                             if name_device in device:
                                 if device[name_device].isin([sn_device]).any():
                                     row = device.index[device[name_device] == sn_device].tolist()[0]
                                     column = device.loc[0, name_device]
                                     path_photo = pathlib.Path(self.path_finish_folder, name_finish_folder,
-                                                              device.iloc[row, 2], device.iloc[row, 3] + ' В',
+                                                              str(device.iloc[row, 2]), str(device.iloc[row, 3]) + ' В',
                                                               str(column), 'photo')
                                     path_rentgen = pathlib.Path(self.path_finish_folder, name_finish_folder,
-                                                                device.iloc[row, 2], device.iloc[row, 3] + ' В',
+                                                                str(device.iloc[row, 2]), str(device.iloc[row, 3]) + ' В',
                                                                 str(column), 'rentgen')
                                     if pathlib.Path(path_photo).is_dir() is False:
                                         self.logging.info(str(path_photo) +
@@ -132,6 +134,10 @@ class SortingFile(QThread):
                                         errors.append(str(path_rentgen) +
                                                       ' - почему то такого пути для рентгена нет, создаём')
                                         path_rentgen.mkdir(parents=True)
+                        if path_photo is False or path_rentgen is False:
+                            errors.append('Серийник ' + str(sn_device) + ' не найден в выгрузке АСУ')
+                            self.logging.warning('Серийник ' + str(sn_device) + ' не найден в выгрузке АСУ')
+                            continue
                         file_in_finish = [str(file) for file in os.listdir(pathlib.Path(self.path_material_sp,
                                                                                         name_device, str(sn_device)))]
                         self.logging.info('Копируемые файлы: ' + ', '.join(file_in_finish))
@@ -203,10 +209,14 @@ class SortingFile(QThread):
                 info_spk_copy(pathlib.Path(self.path_material_sp, name_info), name_info)
             if pathlib.Path(self.path_material_sp, name_spk).is_dir():
                 info_spk_copy(pathlib.Path(self.path_material_sp, name_spk), name_spk)
-
+            if errors:
+                self.logging.info('Отправляем ошибки')
+                self.messageChanged('УПС!', '\n'.join(errors))
+                self.status.emit('Готово с ошибками')
+            else:
+                self.status.emit('Готово')
             self.logging.info('Готово')
             self.logging.info('\n******************************Конец работы******************************\n')
-            self.status.emit('Готово')
             self.progress.emit(100)
             os.chdir(self.default_path)
             return

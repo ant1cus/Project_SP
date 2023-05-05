@@ -1,8 +1,9 @@
 import os
 
 
-def checked_sorting_file(le_path_material_sp, le_path_load_asu, le_path_finish_folder):
+def checked_sorting_file(le_path_material_sp, le_path_load_asu, le_path_finish_folder, name_gk, name_set):
 
+    denied_simbol = '/\:*?<>|'
     path_material_sp = le_path_material_sp.text().strip()
     if not path_material_sp:
         return ['УПС!', 'Путь к материалам СП пуст']
@@ -25,6 +26,11 @@ def checked_sorting_file(le_path_material_sp, le_path_load_asu, le_path_finish_f
         return ['УПС!', 'Путь к материалам СП пуст']
     if os.path.isfile(path_finish_folder):
         return ['УПС!', 'Укажите папку с материалами СП (указан файл)']
+    for element in denied_simbol:
+        if element in name_gk:
+            return ['УПС!', 'Запрещённый символ в имени ГК: ' + element]
+        if element in name_set:
+            return ['УПС!', 'Запрещённый символ в наименовании комплекта: ' + element]
 
     return {'path_material_sp': path_material_sp, 'path_load_asu': path_load_asu,
-            'path_finish_folder': path_finish_folder}
+            'path_finish_folder': path_finish_folder, 'name_gk': name_gk, 'name_set': name_set}

@@ -68,15 +68,15 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
             line_edit.setText(directory)
 
     def sorting_file(self):
-        sending_data = checked_sorting_file(self.lineEdit_path_material_sp, self.lineEdit_path_load_asu,
-                                            self.lineEdit_path_finish_folder)
         name_gk = self.lineEdit_name_gk.text().strip() if self.checkBox_name_gk.isChecked() else False
         name_set = self.lineEdit_name_set.text().strip() if self.checkBox_name_set.isChecked() else False
+        sending_data = checked_sorting_file(self.lineEdit_path_material_sp, self.lineEdit_path_load_asu,
+                                            self.lineEdit_path_finish_folder, name_gk, name_set)
+
         if isinstance(sending_data, list):
             self.on_message_changed(sending_data[0], sending_data[1])
             return
         # Если всё прошло запускаем поток
-        sending_data['name_gk'], sending_data['name_set'] = name_gk, name_set
         sending_data['logging'], sending_data['queue'] = logging, self.queue
         sending_data['default_path'] = self.default_path
         self.thread = SortingFile(sending_data)
