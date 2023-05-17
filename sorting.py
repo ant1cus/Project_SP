@@ -216,14 +216,14 @@ class SortingFile(QThread):
             else:
                 self.status.emit('Готово')
             self.logging.info('Готово')
-            self.logging.info('\n******************************Конец работы******************************\n')
+            self.logging.info('\n*****************************Конец работы*****************************\n')
             self.progress.emit(100)
             os.chdir(self.default_path)
             return
         except BaseException as error:
             self.logging.error(error)
             self.logging.error(traceback.format_exc())
-            self.logging.info('\n******************************Конец работы******************************\n')
+            self.logging.info('\n*****************************Конец работы*****************************\n')
             self.progress.emit(0)
             self.status.emit('Ошибка!')
             os.chdir(self.default_path)
