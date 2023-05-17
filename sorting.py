@@ -211,7 +211,7 @@ class SortingFile(QThread):
                 info_spk_copy(pathlib.Path(self.path_material_sp, name_spk), name_spk)
             if errors:
                 self.logging.info('Отправляем ошибки')
-                self.messageChanged('УПС!', '\n'.join(errors))
+                self.messageChanged.emit('УПС!', '\n'.join(errors))
                 self.status.emit('Готово с ошибками')
             else:
                 self.status.emit('Готово')
