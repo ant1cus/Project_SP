@@ -97,7 +97,8 @@ class SortingFile(QThread):
             name_spk = 'СПК'
             self.logging.info('Бежим по файлам СП')
             self.status.emit('Начинаем сортировку указанных файлов СП')
-            for name_device in os.listdir(self.path_material_sp):
+            for name_device in [path for path in os.listdir(self.path_material_sp) if os.path.isdir(
+                    pathlib.Path(self.path_material_sp, path))]:
                 if self.pause_threading():
                     return
                 if name_device.lower() == 'инфо':
@@ -106,7 +107,8 @@ class SortingFile(QThread):
                     name_spk = name_device
                 else:
                     self.logging.info('Бежим по ' + str(name_device))
-                    for sn_device in os.listdir(pathlib.Path(self.path_material_sp, name_device)):
+                    for sn_device in [path for path in os.listdir(pathlib.Path(self.path_material_sp, name_device)) if
+                                      os.path.isdir(pathlib.Path(self.path_material_sp, name_device, path))]:
                         self.logging.info('Бежим по ' + str(sn_device))
                         self.status.emit('Сортируем устройства с sn ' + str(sn_device))
                         path_photo = False
@@ -189,7 +191,7 @@ class SortingFile(QThread):
                                                                              str(finish_set),
                                                                              sn_file,
                                                                              file_info_spk))
-                                                  + 'уже есть в папке.')
+                                                  + ' уже есть в папке.')
                                 self.logging.info('Спрашиваем что делать')
                                 replace_info_spk = self.pause_threading(file_info_spk,
                                                                         str(pathlib.Path(self.path_finish_folder,
