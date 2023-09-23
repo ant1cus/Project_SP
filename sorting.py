@@ -57,13 +57,18 @@ class SortingFile(QThread):
                     df.sort_values(0, axis=1, inplace=True)
                     name_for_df = df.iloc[1]
                     df = df.drop(labels=[1], axis=0)
-                    name_set = df[2].to_numpy().tolist() if self.name_set is False else self.name_set
+                    if self.name_set:
+                        df.fillna(value={2: self.name_set}, inplace=True)
+                    name_set = df[2].to_numpy().tolist()
+                    # name_set = df[2].to_numpy().tolist() if self.name_set is False else [self.name_set] * len(df)
                     self.logging.info('Создаём структуру для ' + file_load_asu)
                     for row, serial_num in enumerate(df[3].to_numpy().tolist()[1:], start=1):
                         if self.pause_threading():
                             return
                         path_dir = pathlib.Path(self.path_finish_folder, name_finish_folder,
                                                 str(name_set[row]), str(serial_num) + ' В')
+                        # if math.isnan(df.iloc[row, 2]):
+                        #     df.iloc[row, 2] = str(name_set[row])
                         # try:
                         #     os.makedirs(path_dir)
                         # except FileExistsError:

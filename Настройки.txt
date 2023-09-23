@@ -1,9 +1,11 @@
 ﻿{
     "widget_settings": {
-        "copy-checkBox_name_gk": false,
-        "copy-checkBox_name_set": false,
+        "copy-checkBox_name_gk": true,
+        "copy-checkBox_name_set": true,
+        "copy-lineEdit_name_gk": "аысвпрыаврпф3йу5кепивыкап",
+        "copy-lineEdit_name_set": "Орион-01",
         "copy-lineEdit_path_finish_folder": "D:/Python/Project_SP/тесты/конец",
-        "copy-lineEdit_path_load_asu": "D:/Python/Project_SP/тесты/выгрузки (правильная)",
+        "copy-lineEdit_path_load_asu": "D:/Python/Project_SP/тесты/выгрузки (нет названия)",
         "copy-lineEdit_path_material_sp": "D:/Python/Project_SP/тесты/начало"
     }
 }
