@@ -9,35 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import os
-
-
-class Button(QtWidgets.QLineEdit):
-
-	def __init__(self, parent):
-		super(Button, self).__init__(parent)
-
-		self.setAcceptDrops(True)
-
-	def dragEnterEvent(self, e):
-
-		if e.mimeData().hasUrls():
-			e.accept()
-		else:
-			super(Button, self).dragEnterEvent(e)
-
-	def dragMoveEvent(self, e):
-
-		super(Button, self).dragMoveEvent(e)
-
-	def dropEvent(self, e):
-
-		if e.mimeData().hasUrls():
-			for url in e.mimeData().urls():
-				self.setText(os.path.normcase(url.toLocalFile()))
-				e.accept()
-		else:
-			super(Button, self).dropEvent(e)
 
 
 class Ui_mainWindow(object):
@@ -54,7 +25,7 @@ class Ui_mainWindow(object):
         self.radioButton_load_manufacture = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton_load_manufacture.setObjectName("radioButton_load_manufacture")
         self.gridLayout.addWidget(self.radioButton_load_manufacture, 2, 0, 1, 1)
-        self.lineEdit_path_dir_finish = Button(self.centralwidget)
+        self.lineEdit_path_dir_finish = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_path_dir_finish.setObjectName("lineEdit_path_dir_finish")
         self.gridLayout.addWidget(self.lineEdit_path_dir_finish, 3, 1, 1, 2)
         self.pushButton_open_path_finish_dir = QtWidgets.QPushButton(self.centralwidget)
@@ -87,7 +58,7 @@ class Ui_mainWindow(object):
         self.pushButton_open_load_manufacture_file.setSizePolicy(sizePolicy)
         self.pushButton_open_load_manufacture_file.setObjectName("pushButton_open_load_manufacture_file")
         self.gridLayout.addWidget(self.pushButton_open_load_manufacture_file, 2, 3, 1, 1)
-        self.lineEdit_path_dir_load_asu = Button(self.centralwidget)
+        self.lineEdit_path_dir_load_asu = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_path_dir_load_asu.setEnabled(False)
         self.lineEdit_path_dir_load_asu.setObjectName("lineEdit_path_dir_load_asu")
         self.gridLayout.addWidget(self.lineEdit_path_dir_load_asu, 1, 1, 1, 2)
@@ -114,7 +85,7 @@ class Ui_mainWindow(object):
         self.label_finish_folder = QtWidgets.QLabel(self.centralwidget)
         self.label_finish_folder.setObjectName("label_finish_folder")
         self.gridLayout.addWidget(self.label_finish_folder, 3, 0, 1, 1)
-        self.lineEdit_path_file_manufacture = Button(self.centralwidget)
+        self.lineEdit_path_file_manufacture = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_path_file_manufacture.setEnabled(False)
         self.lineEdit_path_file_manufacture.setObjectName("lineEdit_path_file_manufacture")
         self.gridLayout.addWidget(self.lineEdit_path_file_manufacture, 2, 1, 1, 2)
@@ -122,7 +93,7 @@ class Ui_mainWindow(object):
         self.lineEdit_name_set.setEnabled(False)
         self.lineEdit_name_set.setObjectName("lineEdit_name_set")
         self.gridLayout.addWidget(self.lineEdit_name_set, 5, 1, 1, 3)
-        self.lineEdit_path_dir_material_sp = Button(self.centralwidget)
+        self.lineEdit_path_dir_material_sp = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_path_dir_material_sp.setObjectName("lineEdit_path_dir_material_sp")
         self.gridLayout.addWidget(self.lineEdit_path_dir_material_sp, 0, 1, 1, 2)
         self.pushButton_start = QtWidgets.QPushButton(self.centralwidget)

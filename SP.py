@@ -1,19 +1,16 @@
-import datetime
-import json
 import pathlib
 import queue
 import sys
-import os
 
 import Main
-import logging
 
-from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QDir
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox, QWidget
+from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
-from sorting import SortingFile
+from small_function import browse, default_settings, default_data, rewrite_settings, start_thread
 from checked import checked_sorting_file
-from Default import DefaultWindow
+from read_asu_file import read_asu
+from StartThread import StartThreading
 
 
 class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
@@ -21,112 +18,72 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
-        self.queue = queue.Queue(maxsize=1)
         self.default_path = pathlib.Path.cwd()
-        filename = str(datetime.date.today()) + '_logs.log'
-        os.makedirs(pathlib.Path('logs'), exist_ok=True)
-        filemode = 'a' if pathlib.Path('logs', filename).is_file() else 'w'
-        logging.basicConfig(filename=pathlib.Path('logs', filename),
-                            level=logging.DEBUG,
-                            filemode=filemode,
-                            format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
-        self.pushButton_open_load_asu_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_load_asu)))
-        self.pushButton_open_material_sp_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_material_sp)))
-        self.pushButton_open_path_finish_dir.clicked.connect((lambda: self.browse(self.lineEdit_path_finish_folder)))
+        # Словарь для создания отдельных модулей, если понадобится.
+        # Принцип создания: добавляем как ключ название соответствующей функции, а в качестве значения - имя модуля
+        # для логов, передачи в функции и т.п.
+        # Создаю ещё один словарь для описаний. Нужен для универсализации окна запуска потока. Ключ и значения - так же,
+        # как и в предыдущем
+        self.mode_description = {'copy': {'mode_name': 'copy', 'title': 'Сортировка файлов в папке',
+                                          'cancel': 'Поиск файлов в папке «name_dir» отменён пользователем',
+                                          'exception': 'Поиск файлов в папке «name_dir» не завершён из-за ошибки',
+                                          'success': 'Поиск файлов в папке «name_dir» успешно завершён',
+                                          'error': 'Поиск файлов в папке «name_dir» завершён с ошибками'
+                                          }}
+        self.pushButton_open_material_sp_dir.clicked.connect((lambda: browse(self, self.pushButton_open_material_sp_dir,
+                                                                             self.lineEdit_path_dir_material_sp,
+                                                                             self.default_path)))
+        self.pushButton_open_load_asu_dir.clicked.connect((lambda: browse(self, self.pushButton_open_load_asu_dir,
+                                                                          self.lineEdit_path_dir_load_asu,
+                                                                          self.default_path)))
+        self.pushButton_open_load_manufacture_file.clicked.connect(
+            (lambda: browse(self, self.pushButton_open_load_manufacture_file, self.lineEdit_path_file_manufacture,
+                            self.default_path)))
+        self.pushButton_open_path_finish_dir.clicked.connect((lambda: browse(self, self.pushButton_open_path_finish_dir,
+                                                                             self.lineEdit_path_dir_finish,
+                                                                             self.default_path)))
         self.pushButton_start.clicked.connect(self.sorting_file)
-        self.pushButton_pause.clicked.connect(self.pause_thread)
-        self.action_default_window.triggered.connect(self.default_settings)
-        self.line = {'copy-lineEdit_path_material_sp': self.lineEdit_path_material_sp,
-                     'copy-lineEdit_path_load_asu': self.lineEdit_path_load_asu,
-                     'copy-lineEdit_path_finish_folder': self.lineEdit_path_finish_folder,
-                     'copy-checkBox_name_gk': self.checkBox_name_gk,
-                     'copy-lineEdit_name_gk': self.lineEdit_name_gk,
-                     'copy-checkBox_name_set': self.checkBox_name_set,
-                     'copy-lineEdit_name_set': self.lineEdit_name_set
-                     }
-        try:
-            with open(pathlib.Path(pathlib.Path.cwd(), 'Настройки.txt'), "r", encoding='utf-8-sig') as f:
-                dict_load = json.load(f)
-                self.data = dict_load['widget_settings']
-        except FileNotFoundError:
-            with open(pathlib.Path(pathlib.Path.cwd(), 'Настройки.txt'), "w", encoding='utf-8-sig') as f:
-                data_insert = {"widget_settings": {}}
-                json.dump(data_insert, f, ensure_ascii=False, sort_keys=True, indent=4)
-                self.data = {}
-        self.default_data(self.data)
-
-    def browse(self, line_edit):  # Для кнопки открыть
-        if 'dir' in self.sender().objectName():
-            directory = QFileDialog.getExistingDirectory(self, "Открыть папку", QDir.currentPath())
-        else:
-            directory = QFileDialog.getOpenFileName(self, "Открыть файл", QDir.currentPath())
-        # name_line_edit = re.findall(r'\w+_open_(\w+)', self.sender().objectName().rpartition('_')[0])[0]
-        if directory and isinstance(directory, tuple):
-            if directory[0]:
-                line_edit.setText(directory[0])
-        elif directory and isinstance(directory, str):
-            line_edit.setText(directory)
+        self.lines = {'copy-lineEdit_path_dir_material_sp': ['Путь к папке с материалами',
+                                                             self.lineEdit_path_dir_material_sp],
+                      'copy-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
+                                                                   self.radioButton_load_manufacture]],
+                      'copy-lineEdit_path_dir_load_asu': ['Путь к выгрузке АСУ', self.lineEdit_path_dir_load_asu],
+                      'copy-lineEdit_path_file_manufacture': ['Путь к файлу выгрузки',
+                                                              self.lineEdit_path_file_manufacture],
+                      'copy-lineEdit_path_dir_finish': ['Путь к конечной папке', self.lineEdit_path_dir_finish],
+                      'copy-checkBox_name_gk': ['Включить ГК', self.checkBox_name_gk],
+                      'copy-lineEdit_name_gk': ['Наименование ГК', self.lineEdit_name_gk],
+                      'copy-checkBox_name_set': ['Включить комплект', self.checkBox_name_set],
+                      'copy-lineEdit_name_set': ['Наименование комплекта', self.lineEdit_name_set]
+                      }
+        self.action_default_window.triggered.connect((lambda: default_settings(self, self.default_path, self.lines)))
+        self.default_data = rewrite_settings(self.default_path)
+        self.data = self.default_data["widget_settings"]
+        default_data(self.data, self.lines)
+        # Для каждого потока свой лог. Потом сливаем в один и удаляем
+        self.logging_dict = {}
+        # Для сдвига окна при появлении
+        self.thread_dict = {self.mode_description[i]['mode_name']: {} for i in self.mode_description}
+        self.default_dict = {'mode_description': self.mode_description, 'logging_dict': self.logging_dict,
+                             'thread_dict': self.thread_dict, 'default_path': self.default_path,
+                             'all_doc': 0, 'now_doc': 0}
 
     def sorting_file(self):
+        queue_sorting_file = queue.Queue(maxsize=1)
+        mode_name = self.mode_description['copy']['mode_name']
+        name_dir = self.lineEdit_path_dir_material_sp.text().strip()
         name_gk = self.lineEdit_name_gk.text().strip() if self.checkBox_name_gk.isChecked() else False
         name_set = self.lineEdit_name_set.text().strip() if self.checkBox_name_set.isChecked() else False
-        sending_data = checked_sorting_file(self.lineEdit_path_material_sp, self.lineEdit_path_load_asu,
-                                            self.lineEdit_path_finish_folder, name_gk, name_set)
-
-        if isinstance(sending_data, list):
-            self.on_message_changed(sending_data[0], sending_data[1])
-            return
-        # Если всё прошло запускаем поток
-        sending_data['logging'], sending_data['queue'] = logging, self.queue
-        sending_data['default_path'] = self.default_path
-        self.thread = SortingFile(sending_data)
-        self.thread.status.connect(self.statusBar().showMessage)
-        self.thread.progress.connect(self.progressBar.setValue)
-        self.thread.messageChanged.connect(self.on_message_changed)
-        self.thread.start()
-
-    def pause_thread(self):
-        if self.queue.empty():
-            self.statusBar().showMessage(self.statusBar().currentMessage() + ' (прерывание процесса, подождите...)')
-            self.queue.put(True)
-
-    def on_message_changed(self, title, description):
-        if title == 'УПС!':
-            QMessageBox.critical(self, title, description)
-        elif title == 'Внимание!':
-            QMessageBox.warning(self, title, description)
-        elif title == 'Вопрос?':
-            self.statusBar().clearMessage()
-            ans = QMessageBox.question(self, title, description,
-                                       QMessageBox.Yes | QMessageBox.No,
-                                       QMessageBox.Yes)
-            if ans == QMessageBox.Yes:
-                self.thread.queue.put(True)
-            else:
-                self.thread.queue.put(False)
-            self.thread.event.set()
-        elif title == 'Пауза':
-            self.statusBar().clearMessage()
-            ans = QMessageBox.question(self, title, description, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if ans == QMessageBox.No:
-                self.thread.queue.put(True)
-            else:
-                self.thread.queue.put(False)
-            self.thread.event.set()
-
-    def default_settings(self):  # Запускаем окно с настройками по умолчанию.
-        self.close()
-        window_add = DefaultWindow(self, self.default_path)
-        window_add.show()
-
-    def default_data(self, incoming_data):
-        for element in self.line:
-            if element in incoming_data:
-                if 'checkBox' in element:
-                    self.line[element].setChecked(True) if incoming_data[element]\
-                        else self.line[element].setChecked(False)
-                else:
-                    self.line[element].setText(incoming_data[element])  # Помещаем значение
+        asu_man = True if self.radioButton_load_asu.isChecked() else False
+        data = {**self.default_dict,
+                'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir, 'start_function': read_asu,
+                'name_gk': name_gk, 'name_set': name_set, 'asu_man': asu_man,
+                'path_material_sp': self.lineEdit_path_dir_material_sp.text().strip(),
+                'path_load_asu': self.lineEdit_path_dir_load_asu.text().strip(),
+                'path_load_man': self.lineEdit_path_file_manufacture.text().strip(),
+                'path_finish_folder': self.lineEdit_path_dir_finish.text().strip()
+                }
+        start_thread(data, self.logging_dict, self.thread_dict, self, checked_sorting_file, StartThreading)
 
 
 if __name__ == '__main__':
