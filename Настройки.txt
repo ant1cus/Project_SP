@@ -1,14 +1,14 @@
 ﻿{
     "gui_settings": {},
     "widget_settings": {
-        "copy-checkBox_name_gk": false,
+        "copy-checkBox_name_gk": true,
         "copy-checkBox_name_set": true,
         "copy-lineEdit_name_gk": "аысвпрыаврпф3йу5кепивыкап",
         "copy-lineEdit_name_set": "Орион-01",
-        "copy-lineEdit_path_dir_finish": "D:/Python/Project_SP/тесты/конец",
+        "copy-lineEdit_path_dir_finish": "D:/python/Project_SP/тесты/Конец",
         "copy-lineEdit_path_dir_load_asu": "D:/Python/Project_SP/тесты/выгрузки (правильная)",
-        "copy-lineEdit_path_dir_material_sp": "d:\\python\\project_sp\\тесты\\начало крафтовой программы",
-        "copy-lineEdit_path_file_manufacture": "D:/Python/Project_SP/тесты/Тоха/тест для photocopy/info.csv",
+        "copy-lineEdit_path_dir_material_sp": "D:/python/Project_SP/тесты/Новая папка",
+        "copy-lineEdit_path_file_manufacture": "D:/python/Project_SP/тесты/info.csv",
         "copy-radioButton_group1": [
             false,
             true

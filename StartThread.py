@@ -78,7 +78,7 @@ class StartThreading(QThread):
         # self.event.wait()
         self.status_finish.emit(self.mode_name, self.incoming_data['logging_dict'], self.incoming_data['thread_dict'],
                                 str(self), self.incoming_data['log_all'], self.incoming_data['log_now'])
-        time.sleep(0.1)  # Не удалять, не успевает отработать emit status_finish. Может потом
+        time.sleep(0.5)  # Не удалять, не успевает отработать emit status_finish. Может потом
         os.chdir(self.default_path)
         self.window_check.close()
         return

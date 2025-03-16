@@ -11,6 +11,9 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
              progress_value, event, window_check, info_value) -> dict:
     logging = incoming_data['logging']
     try:
+        errors = []
+        list_df = []
+        percent = incoming_data['percent']
         if incoming_data['asu_man']:
             line_doing.emit("Считаем количество комплектов")
             name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
@@ -19,9 +22,6 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
             except FileExistsError:
                 logging.info(f"Такая папка уже есть {Path(incoming_data['path_finish_folder'], name_finish_folder)}")
             logging.info('Считываем файлы АСУ и создаем структуру каталога')
-            percent = incoming_data['percent']
-            errors = []
-            list_df = []
         else:
             name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
             try:
@@ -29,16 +29,16 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
             except BaseException as error:
                 logging.error(error)
                 logging.error(traceback.format_exc())
-                logging.info(f"Файл {incoming_data['path_load_man'].name} не обработан из-за непредвиденной ошибки")
+                logging.info(f"Файл {Path(incoming_data['path_load_man']).name} не обработан из-за непредвиденной ошибки")
                 return {'error': True, 'text': error, 'trace': traceback.format_exc()}
             # Отловить permission denied
-            logging.info('Считываем файл выгрузки ' + incoming_data['path_load_man'].name)
+            logging.info(f"Считываем файл выгрузки {Path(incoming_data['path_load_man']).name}")
             name_set = df.iloc[1, 1]
             number_device = sorted(set(df.iloc[0, 2:].values.tolist()))
             df = df.drop(labels=[0], axis=1)
             df = df.drop(labels=[1], axis=0)
-            logging.info(f"Создаём структуру для {incoming_data['path_load_man'].name}")
-            sn_device = df[0].to_numpy().tolist()[1:]
+            logging.info(f"Создаём структуру для {Path(incoming_data['path_load_man']).name}")
+            sn_device = df[1].to_numpy().tolist()[1:]
             for serial_num in sn_device:
                 # if window_check.stop_threading:
                 #     return {'error': False, 'text': 'cancel', 'trace': ''}
@@ -47,11 +47,12 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                 for device in number_device:
                     os.makedirs(Path(path_dir, str(device), 'photo'), exist_ok=True)
                     os.makedirs(Path(path_dir, str(device), 'rentgen'), exist_ok=True)
+            # df = df.drop(labels=[0], axis=1)
             for column in list(df):
-                number_column = df.iloc[0, column]
-                for sn in df[column].to_numpy().tolist()[1:]:
-                    # отсюда поиск по первой df серийника
-                    pass
+                sn_list = df[column].to_numpy().tolist()[1:]
+                # for sn in df[column].to_numpy().tolist()[1:]:
+                #     # отсюда поиск по первой df серийника
+                #     pass
         for file_load_asu in os.listdir(incoming_data['path_load_asu']):
             try:
                 logging.info('Считываем файл выгрузки ' + file_load_asu)
