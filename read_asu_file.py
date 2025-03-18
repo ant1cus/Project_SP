@@ -7,52 +7,83 @@ from pathlib import Path
 import pandas as pd
 
 
-def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc: int, line_doing, line_progress,
-             progress_value, event, window_check, info_value) -> dict:
+def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: int, all_doc: int, line_doing,
+                       line_progress, progress_value, event, window_check, info_value) -> dict:
     logging = incoming_data['logging']
     try:
         errors = []
         list_df = []
         percent = incoming_data['percent']
-        if incoming_data['asu_man']:
-            line_doing.emit("Считаем количество комплектов")
-            name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
-            try:
-                os.mkdir(Path(incoming_data['path_finish_folder'], name_finish_folder))
-            except FileExistsError:
-                logging.info(f"Такая папка уже есть {Path(incoming_data['path_finish_folder'], name_finish_folder)}")
-            logging.info('Считываем файлы АСУ и создаем структуру каталога')
-        else:
-            name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
-            try:
-                df = pd.read_csv(Path(incoming_data['path_load_man']), header=None, delimiter=';', encoding='ANSI')
-            except BaseException as error:
-                logging.error(error)
-                logging.error(traceback.format_exc())
-                logging.info(f"Файл {Path(incoming_data['path_load_man']).name} не обработан из-за непредвиденной ошибки")
-                return {'error': True, 'text': error, 'trace': traceback.format_exc()}
-            # Отловить permission denied
-            logging.info(f"Считываем файл выгрузки {Path(incoming_data['path_load_man']).name}")
-            name_set = df.iloc[1, 1]
-            number_device = sorted(set(df.iloc[0, 2:].values.tolist()))
-            df = df.drop(labels=[0], axis=1)
-            df = df.drop(labels=[1], axis=0)
-            logging.info(f"Создаём структуру для {Path(incoming_data['path_load_man']).name}")
-            sn_device = df[1].to_numpy().tolist()[1:]
-            for serial_num in sn_device:
-                # if window_check.stop_threading:
-                #     return {'error': False, 'text': 'cancel', 'trace': ''}
-                path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder, str(name_set), str(serial_num))
-                os.makedirs(path_dir, exist_ok=True)
-                for device in number_device:
-                    os.makedirs(Path(path_dir, str(device), 'photo'), exist_ok=True)
-                    os.makedirs(Path(path_dir, str(device), 'rentgen'), exist_ok=True)
-            # df = df.drop(labels=[0], axis=1)
-            for column in list(df):
-                sn_list = df[column].to_numpy().tolist()[1:]
-                # for sn in df[column].to_numpy().tolist()[1:]:
-                #     # отсюда поиск по первой df серийника
-                #     pass
+        # if incoming_data['asu_man']:
+        line_doing.emit("Считаем количество комплектов")
+        name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
+        try:
+            os.mkdir(Path(incoming_data['path_finish_folder'], name_finish_folder))
+        except FileExistsError:
+            logging.info(f"Такая папка уже есть {Path(incoming_data['path_finish_folder'], name_finish_folder)}")
+        # else:
+        #     name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
+        #     try:
+        #         df = pd.read_csv(Path(incoming_data['path_load_man']), header=None, delimiter=';', encoding='ANSI')
+        #     except BaseException as error:
+        #         logging.error(error)
+        #         logging.error(traceback.format_exc())
+        #         logging.info(f"Файл {Path(incoming_data['path_load_man']).name} не обработан из-за непредвиденной ошибки")
+        #         return {'error': True, 'text': error, 'trace': traceback.format_exc()}
+        #     # Отловить permission denied
+        #     logging.info(f"Считываем файл выгрузки {Path(incoming_data['path_load_man']).name}")
+        #     name_set = df.iloc[1, 1]
+        #     number_device = sorted(set(df.iloc[0, 2:].values.tolist()))
+        #     df = df.drop(labels=[0], axis=1)
+        #     df = df.drop(labels=[1], axis=0)
+        #     logging.info(f"Создаём структуру для {Path(incoming_data['path_load_man']).name}")
+        #     sn_device = df[1].to_numpy().tolist()[1:]
+        #     for serial_num in sn_device:
+        #         # if window_check.stop_threading:
+        #         #     return {'error': False, 'text': 'cancel', 'trace': ''}
+        #         path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder, str(name_set), str(serial_num))
+        #         os.makedirs(path_dir, exist_ok=True)
+        #         for device in number_device:
+        #             os.makedirs(Path(path_dir, str(device), 'photo'), exist_ok=True)
+        #             os.makedirs(Path(path_dir, str(device), 'rentgen'), exist_ok=True)
+        #     df = df.drop(labels=[1], axis=1)
+        #     logging.info(f"Копируем документы")
+        #     for column in list(df):
+        #         sn_list = df[column].to_numpy().tolist()[1:]
+        #         number_folder = df.loc[0, column]
+        #         logging.info(f"Копируем столбец {column}")
+        #         copy_number = 0
+        #         for device, sn in zip(sn_device, sn_list):
+        #             find_1_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn1'] == sn]
+        #             find_2_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn2'] == sn]
+        #             # Надо подумать что там с одинаковыми файлами
+        #             find_file = pd.concat([find_1_sn, find_2_sn], ignore_index=True)
+        #             # if len(find_1_sn) + len(find_2_sn) > 1:
+        #             #     find_file = pd.concat([find_1_sn, find_2_sn], ignore_index=True)
+        #             # else:
+        #             #     find_file = find_1_sn if len(find_1_sn) == 1 else find_2_sn
+        #             # find_file.reset_index(drop=True, inplace=True)
+        #             # if len(find_file) > 1:
+        #             #     # Надо занести в ошибки все оставшиеся файлы если есть
+        #             #     pass
+        #             for row in find_file.itertuples():
+        #                 folder = 'rentgen' if row.suffix in ['.tif', '.tiff', '.png', '.jpeg'] else 'photo'
+        #                 finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, name_set, device,
+        #                                    number_folder, folder, row.path.name)
+        #                 if finish_path.exists():
+        #                     errors.append(f"Файл {finish_path.name} уже существует, повторное копирование из {row.path} не произведено")
+        #                 else:
+        #                     row.path.replace(finish_path)
+        #                 copy_number += 1
+        #         logging.info(f"Скопировано {copy_number}")
+        #     # Отдельно копируем все файлы с инфо и спк
+        #     info_df = incoming_data['all_file'].loc[incoming_data['all_file']['info']]
+        #     for row in info_df.itertuples():
+        #         finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, name_set,
+        #                            row.sn1, row.path.name)
+        #         if finish_path.parent.exists():
+        #             row.path.replace(finish_path)
+        logging.info('Считываем файлы АСУ и создаем структуру каталога')
         for file_load_asu in os.listdir(incoming_data['path_load_asu']):
             try:
                 logging.info('Считываем файл выгрузки ' + file_load_asu)
@@ -118,7 +149,6 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                             if device[name_device].isin([sn_device]).any():
                                 row = device.index[device[name_device] == sn_device].tolist()[0]
                                 column = device.loc[0, name_device]
-                                # 3
                                 path_photo = Path(incoming_data['path_finish_folder'], name_finish_folder,
                                                   str(device.iloc[row, 2]), str(device.iloc[row, 3]) + ' В',
                                                   str(column), 'photo')
@@ -133,7 +163,6 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                                     logging.info(f"{path_xray} - почему то пути для рентгена нет, создаём")
                                     errors.append(f"{path_xray} - почему то пути для рентгена нет, создаём")
                                     path_xray.mkdir(parents=True)
-                                # /3
                     if path_photo is False or path_xray is False:
                         errors.append(f"Серийник {sn_device} не найден в выгрузке АСУ")
                         logging.warning(f"Серийник {sn_device} не найден в выгрузке АСУ")
@@ -145,7 +174,6 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                                   if file in os.listdir(Path(path_xray))
                                   or file in os.listdir(Path(path_photo))]
                     replace = True
-                    # 2
                     if exist_file:
                         logging.info(f"Файлы, присутствующие в папке {path_xray.parent}: {', '.join(exist_file)}")
                         logging.info('Спрашиваем что делать')
@@ -154,13 +182,11 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                         else:
                             text = f"В папке «{path_xray.parent}» уже есть файлы ({len(exist_file)})" \
                                    f" с такими же именами. Заменить файлы?"
-                        info_value.emit("Вопрос?", text)
+                        info_value.emit("Вопрос?", text, None)
                         event.clear()
                         event.wait()
                         replace = window_check.answer
-                    # /2
                     if replace:
-                        # 1
                         for file in os.listdir(Path(incoming_data['path_material_sp'], name_device, str(sn_device))):
                             now_doc += 1
                             if file in exist_file and replace is False:
@@ -173,7 +199,6 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                             else:
                                 Path(incoming_data['path_material_sp'], name_device,
                                      str(sn_device), str(file)).replace(Path(path_photo, str(file)))
-                        # /1
                             current_progress += percent
                             line_progress.emit(f'Выполнено {int(current_progress)} %')
                             progress_value.emit(int(current_progress))
@@ -210,7 +235,7 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
                                 text_info = f"Файл {file_info_spk} уже есть в папке {file_path}"
                                 logging.info(text_info)
                                 logging.info('Спрашиваем что делать')
-                                info_value.emit("Вопрос?", text_info + " Заменить файл?")
+                                info_value.emit("Вопрос?", text_info + " Заменить файл?", None)
                                 event.clear()
                                 event.wait()
                                 replace_info_spk = window_check.answer
@@ -226,10 +251,11 @@ def read_asu(incoming_data: dict, current_progress: float, now_doc: int, all_doc
             if Path(incoming_data['path_material_sp'], name_spk).is_dir():
                 info_spk_copy(Path(incoming_data['path_material_sp'], name_spk), name_spk, now_doc, current_progress)
                 # now_doc, current_progress = answer['now_doc'], answer['current_progress']
-            if errors:
-                logging.info('Отправляем ошибки')
-                return {'error': False, 'text': '\n'.join(errors), 'trace': ''}
-            else:
-                return {'error': False, 'text': '', 'trace': ''}
+            return {'error': False, 'text': errors if errors else '', 'trace': ''}
+            # if errors:
+            #     logging.info('Отправляем ошибки')
+            #     return {'error': False, 'text': '\n'.join(errors), 'trace': ''}
+            # else:
+            #     return {'error': False, 'text': '', 'trace': ''}
     except BaseException as error:
         return {'error': True, 'text': error, 'trace': traceback.format_exc()}

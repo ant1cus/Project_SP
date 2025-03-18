@@ -1,5 +1,7 @@
 import os
+import re
 from pathlib import Path
+import pandas as pd
 
 
 def checked_sorting_file(incoming: dict) -> dict:
@@ -8,15 +10,22 @@ def checked_sorting_file(incoming: dict) -> dict:
         return {'error': True, 'data': 'Путь к материалам СП пуст'}
     if os.path.isfile(incoming['path_material_sp']):
         return {'error': True, 'data': 'Укажите папку с материалами СП (указан файл)'}
+    copy_file = pd.DataFrame(columns=['path', 'sn1', 'sn2', 'suffix', 'info'])
     for file in Path(incoming['path_material_sp']).rglob("*.*"):
+        file_info = [file, False, False, file.suffix, False]
+        if re.findall(r'\w+_(\w+)\.\w+\b', file.name):
+            file_info[1] = re.findall(r'\w+_(\w+)\.\w+\b', file.name)[0]
+        if re.findall(r'\w+_(\w+)_\w+\.\w+\b', file.name):
+            file_info[2] = re.findall(r'\w+_(\w+)_\w+\.\w+\b', file.name)[0]
         if file.suffix.lower() in ['.tiff', '.tif', '.jpeg', 'png', '.jpg']:
-            incoming['all_doc'] += 1
-        elif file.parent.name.lower() == 'спк':
-            incoming['all_doc'] += 1
-        elif file.parent.name.lower() == 'инфо':
-            incoming['all_doc'] += 1
-    if incoming['all_doc'] == 0:
+            copy_file.loc[len(copy_file)] = file_info
+        elif file.parent.name.lower() == 'спк' or file.parent.name.lower() == 'инфо':
+            file_info[4] = True
+            copy_file.loc[len(copy_file)] = file_info
+    if len(copy_file) == 0:
         return {'error': True, 'data': 'Нет файлов для копирования и сортировки'}
+    incoming['all_file'] = copy_file
+    incoming['all_doc'] = len(copy_file)
     incoming['percent'] = 100 / incoming['all_doc']
     if incoming['asu_man']:
         if not incoming['path_load_asu']:

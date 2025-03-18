@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from small_function import browse, default_settings, default_data, rewrite_settings, start_thread
 from checked import checked_sorting_file
-from read_asu_file import read_asu
+from read_asu_file import copy_from_asu_file
+from read_manufacture_file import copy_from_manufacture
 from StartThread import StartThreading
 
 
@@ -75,8 +76,10 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         name_gk = self.lineEdit_name_gk.text().strip() if self.checkBox_name_gk.isChecked() else False
         name_set = self.lineEdit_name_set.text().strip() if self.checkBox_name_set.isChecked() else False
         asu_man = True if self.radioButton_load_asu.isChecked() else False
+        start_function = copy_from_asu_file if asu_man else copy_from_manufacture
         data = {**self.default_dict,
-                'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir, 'start_function': read_asu,
+                'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
+                'start_function': start_function,
                 'name_gk': name_gk, 'name_set': name_set, 'asu_man': asu_man,
                 'path_material_sp': self.lineEdit_path_dir_material_sp.text().strip(),
                 'path_load_asu': self.lineEdit_path_dir_load_asu.text().strip(),

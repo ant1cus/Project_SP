@@ -16,7 +16,7 @@ class StartThreading(QThread):
      об успешном или провальном выполнении программы. Ловим исключения."""
     status_finish = pyqtSignal(str, dict, dict, str, str, str)
     progress_value = pyqtSignal(int)
-    info_value = pyqtSignal(str, str)
+    info_value = pyqtSignal(str, str, str or None)
     status = pyqtSignal(str)
     line_progress = pyqtSignal(str)
     line_doing = pyqtSignal(str)
@@ -48,25 +48,25 @@ class StartThreading(QThread):
 
     def run(self):
         self.logging.info('Запустили run')
-        self.line_progress.emit(f'Выполнено {int(self.current_progress)} %')
+        self.line_progress.emit(f'Выполнено 0 %')
         self.progress_value.emit(0)
         answer = self.start_function(self.incoming_data, self.current_progress, self.now_doc, self.all_doc,
                                      self.line_doing, self.line_progress, self.progress_value, self.event,
                                      self.window_check, self.info_value)
         self.line_progress.emit(f'Выполнено 100 %')
-        self.progress_value.emit(int(100))
+        self.progress_value.emit(100)
         if answer['error']:
             self.logging.error(answer['text'])
             self.logging.error(answer['trace'])
-            self.info_value.emit('УПС!', 'Работа программы завершена из-за непредвиденной ошибки')
+            self.info_value.emit('УПС!', 'Работа программы завершена из-за непредвиденной ошибки', None)
             self.finish_thread(self.exception)
         else:
             if answer['text'] == 'cancel':
                 self.finish_thread(self.cancel)
             elif answer['text']:
                 self.logging.info('\n'.join(answer['text']))
-                err = '\n' + '\n'.join(answer['text'])
-                self.info_value.emit('УПС!', f"Ошибки при работе программы: {err}")
+                # err = '\n' + '\n'.join(answer['text'])
+                self.info_value.emit('Внимание!', '\n'.join(answer['text']), self.error)
                 self.finish_thread(self.error)
             else:
                 self.finish_thread(self.success)
@@ -74,8 +74,6 @@ class StartThreading(QThread):
     def finish_thread(self, text: str) -> None:
         self.logging.info(text)
         self.status.emit(text)
-        # self.event.clear()
-        # self.event.wait()
         self.status_finish.emit(self.mode_name, self.incoming_data['logging_dict'], self.incoming_data['thread_dict'],
                                 str(self), self.incoming_data['log_all'], self.incoming_data['log_now'])
         time.sleep(0.5)  # Не удалять, не успевает отработать emit status_finish. Может потом

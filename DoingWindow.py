@@ -2,7 +2,7 @@ import pathlib
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog, QWidget, QDesktopWidget, QMessageBox
-from PyQt5.QtCore import QEvent, QSize
+from PyQt5.QtCore import QEvent, QSize, Qt
 from doing_window import Ui_Dialog
 
 
@@ -56,12 +56,18 @@ class ProcessWindow(QDialog, Ui_Dialog):
         if self.event.is_set() is False:
             self.event.set()
 
-    def info_message(self, title, description):
+    def info_message(self, title: str, description: str, info_text: str = None):
         if title == 'УПС!':
             QMessageBox.critical(self, title, description)
             self.event.set()
         elif title == 'Внимание!':
-            QMessageBox.warning(self, title, description)
+            ans = QMessageBox()
+            ans.setWindowTitle(title)
+            ans.setIcon(2)
+            ans.setText(f'{info_text}, для просмотра нажмите «Показать подробности...»')
+            ans.setTextInteractionFlags(Qt.NoTextInteraction)
+            ans.setDetailedText(description)
+            ans.exec()
             self.event.set()
         elif title == 'Вопрос?':
             ans = QMessageBox.question(self, title, description, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
