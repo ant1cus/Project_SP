@@ -56,7 +56,8 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
                                        number_folder, folder, row.path.name)
                     if finish_path.exists():
                         errors.append(
-                            f"Файл {finish_path.name} уже существует, повторное копирование из {row.path} не произведено")
+                            f"Файл {finish_path.name} уже существует, повторное копирование"
+                            f" из {row.path} не произведено")
                     else:
                         row.path.replace(finish_path)
                     copy_number += 1

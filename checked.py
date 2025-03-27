@@ -5,11 +5,13 @@ import pandas as pd
 
 
 def checked_sorting_file(incoming: dict) -> dict:
-    denied_symbol = '/\:*?<>|'
+    denied_symbol = '/\\:*?<>|'
     if not incoming['path_material_sp']:
         return {'error': True, 'data': 'Путь к материалам СП пуст'}
     if os.path.isfile(incoming['path_material_sp']):
         return {'error': True, 'data': 'Укажите папку с материалами СП (указан файл)'}
+    if os.path.isdir(incoming['path_material_sp']) is False:
+        return {'error': True, 'data': 'Указанная папка с материалами СП удалена или переименована'}
     copy_file = pd.DataFrame(columns=['path', 'sn1', 'sn2', 'suffix', 'info'])
     for file in Path(incoming['path_material_sp']).rglob("*.*"):
         file_info = [file, False, False, file.suffix, False]
@@ -34,11 +36,15 @@ def checked_sorting_file(incoming: dict) -> dict:
             return {'error': True, 'data': 'Укажите папку с выгрузками из АСУ (указан файл)'}
         else:
             for element in os.listdir(incoming['path_load_asu']):
-                error = []
+                errors = []
                 if element.endswith('.xlsx') is False:
-                    error.append(element)
-                if error:
-                    return {'error': True, 'data': 'Файл с выгрузкой из АСУ не формата ".xlsx"'}
+                    errors.append(f"Неверный формат файла {element} (должен быть «.xlsx»)")
+                    try:
+                        pd.read_excel(Path(incoming['path_load_asu'], element), sheet_name=0, header=None)
+                    except PermissionError:
+                        errors.append(f"Невозможно получить доступ к файлу {element}")
+                if errors:
+                    return {'error': True, 'data': '\n'.join(errors)}
     else:
         if not incoming['path_load_man']:
             return {'error': True, 'data': 'Путь к файлу выгрузки пуст'}
@@ -48,9 +54,11 @@ def checked_sorting_file(incoming: dict) -> dict:
         else:
             return {'error': True, 'data': 'Указанный файл с выгрузкой удалён или переименован'}
     if not incoming['path_finish_folder']:
-        return {'error': True, 'data': 'Путь к материалам СП пуст'}
+        return {'error': True, 'data': 'Путь к конечной папке пуст'}
     if os.path.isfile(incoming['path_finish_folder']):
-        return {'error': True, 'data': 'Укажите папку с материалами СП (указан файл)'}
+        return {'error': True, 'data': 'Укажите директорию для копирования (указан файл)'}
+    if os.path.isdir(incoming['path_finish_folder']) is False:
+        return {'error': True, 'data': 'Указанная конечная папка удалена или переименована'}
     for element in denied_symbol:
         if incoming['name_gk'] and element in incoming['name_gk']:
             return {'error': True, 'data': 'Запрещённый символ в имени ГК: ' + element}

@@ -65,7 +65,6 @@ class StartThreading(QThread):
                 self.finish_thread(self.cancel)
             elif answer['text']:
                 self.logging.info('\n'.join(answer['text']))
-                # err = '\n' + '\n'.join(answer['text'])
                 self.info_value.emit('Внимание!', '\n'.join(answer['text']), self.error)
                 self.finish_thread(self.error)
             else:
