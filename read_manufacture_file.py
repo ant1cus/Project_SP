@@ -1,4 +1,5 @@
 import os
+import shutil
 import traceback
 from pathlib import Path
 
@@ -59,7 +60,8 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
                             f"Файл {finish_path.name} уже существует, повторное копирование"
                             f" из {row.path} не произведено")
                     else:
-                        row.path.replace(finish_path)
+                        shutil.copy2(row.path, finish_path)
+                        # row.path.replace(finish_path)
                     copy_number += 1
                     now_doc += 1
                     current_progress += incoming_data['percent']
@@ -68,12 +70,14 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
             logging.info(f"Скопировано {copy_number}")
         # Отдельно копируем все файлы с инфо и спк
         info_df = incoming_data['all_file'].loc[incoming_data['all_file']['info']]
+        logging.info(f"Копируем файлы СПК и ИНФО если возможно")
         for row in info_df.itertuples():
-            logging.info(f"Копируем файлы СПК и ИНФО")
             finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, name_set,
                                row.sn1, row.path.name)
             if finish_path.parent.exists():
-                row.path.replace(finish_path)
+                logging.info(f"Копируем {row.path}")
+                shutil.copy2(row.path, finish_path)
+                # row.path.replace(finish_path)
         # text = '\n'.join(errors) if errors else ''
         return {'error': False, 'text': errors if errors else '', 'trace': ''}
     except BaseException as error:
