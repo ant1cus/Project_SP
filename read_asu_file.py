@@ -1,5 +1,6 @@
 import math
 import os
+import shutil
 import time
 import traceback
 from pathlib import Path
@@ -128,12 +129,16 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                 continue
                             if str(file).endswith('.tif') or str(file).endswith('.tiff') \
                                     or str(file).endswith('.png') or str(file).endswith('.jpeg'):
-                                Path(incoming_data['path_material_sp'], name_device,
-                                     str(sn_device), str(file)).replace(
-                                    Path(path_xray, str(file)))
+                                shutil.copy2(Path(incoming_data['path_material_sp'], name_device, str(sn_device), str(file)),
+                                             Path(path_xray, str(file)))
+                                # Path(incoming_data['path_material_sp'], name_device,
+                                #      str(sn_device), str(file)).replace(
+                                #     Path(path_xray, str(file)))
                             else:
-                                Path(incoming_data['path_material_sp'], name_device,
-                                     str(sn_device), str(file)).replace(Path(path_photo, str(file)))
+                                shutil.copy2(Path(incoming_data['path_material_sp'], name_device, str(sn_device), str(file)),
+                                             Path(path_photo, str(file)))
+                                # Path(incoming_data['path_material_sp'], name_device,
+                                #      str(sn_device), str(file)).replace(Path(path_photo, str(file)))
                             current_progress += percent
                             line_progress.emit(f'Выполнено {int(current_progress)} %')
                             progress_value.emit(int(current_progress))
@@ -175,10 +180,12 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                 event.wait()
                                 replace_info_spk = window_check.answer
                             if replace_info_spk:
-                                Path(incoming_data['path_material_sp'], name_info_spk,
-                                     str(file_info_spk)).replace(Path(incoming_data['path_finish_folder'],
-                                                                      name_finish_folder, str(finish_set),
-                                                                      sn_file, file_info_spk))
+                                shutil.copy2(Path(incoming_data['path_material_sp'], name_info_spk, str(file_info_spk)),
+                                             Path(incoming_data['path_finish_folder'], name_finish_folder, str(finish_set), sn_file, file_info_spk))
+                                # Path(incoming_data['path_material_sp'], name_info_spk,
+                                #      str(file_info_spk)).replace(Path(incoming_data['path_finish_folder'],
+                                #                                       name_finish_folder, str(finish_set),
+                                #                                       sn_file, file_info_spk))
                 return {"now_doc": now_doc_, "current_progress": cur_prog}
             if Path(incoming_data['path_material_sp'], name_info).is_dir():
                 answer = info_spk_copy(Path(incoming_data['path_material_sp'],
