@@ -69,12 +69,12 @@ def checked_sorting_file(incoming: dict) -> dict:
 
 
 def checked_form_file(incoming: dict) -> dict:
-    if not incoming['path_unloading_file']:
-        return {'error': True, 'data': 'Путь к проверяемому файлу выгрузки пуст'}
-    if os.path.isfile(incoming['path_unloading_file']):
-        if incoming['path_unloading_file'].endswith('.xlsx') is False:
-            return {'error': True, 'data': 'Файл с выгрузкой не формата ".xlsx"'}
+    if not incoming['unformat_file']:
+        return {'error': True, 'data': 'Путь к неподготовленному файлу выгрузки пуст'}
+    if os.path.isfile(incoming['unformat_file']):
+        if incoming['unformat_file'].endswith('.xlsx') is False:
+            return {'error': True, 'data': 'Файл с неподготовленной выгрузкой не формата ".xlsx"'}
     else:
-        return {'error': True, 'data': 'Указанный файл с выгрузкой удалён или переименован'}
+        return {'error': True, 'data': 'Указанный файл с неподготовленной выгрузкой удалён или переименован'}
     incoming['name_dir'] = pathlib.Path(incoming['name_dir']).parent
     return {'error': False, 'data': incoming}

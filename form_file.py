@@ -10,15 +10,16 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
               progress_value, event, window_check, info_value) -> dict:
     logging = incoming_data['logging']
     try:
-        errors = []
-        save_file_name = f"{Path(incoming_data['path_unloading_file']).stem}" \
-                         f"_sort.{Path(incoming_data['path_unloading_file']).suffix}"
+        save_file_name = f"{Path(incoming_data['unformat_file']).stem}" \
+                         f"_sort.{Path(incoming_data['unformat_file']).suffix}"
         # Получаем ширину столбцов
-        wb = load_workbook(incoming_data['path_unloading_file'])
+        logging.info('Читаем файл')
+        line_doing.emit(f"Читаем файл {Path(incoming_data['unformat_file']).name}")
+        wb = load_workbook(incoming_data['unformat_file'])
         ws = wb.active
         column_sheet = [ws.column_dimensions[get_column_letter(col[0].column)].width for col in ws.iter_cols()]
         row_height = ws.row_dimensions[1].height
-        df = pd.read_excel(incoming_data['path_unloading_file'], header=None)
+        df = pd.read_excel(incoming_data['unformat_file'], header=None)
         nan_col = df.columns[df.isna().all()].tolist()
         rows, cols = np.where(df.isna())
         errors = [f"Пропущено значение в ячейке {row + 1}{get_column_letter(col + 1)}"
@@ -29,15 +30,15 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
                 if not set(df[column]).isdisjoint(df[col]):
                     errors[index] = f"{errors[index]} (замена из колонки {get_column_letter(col + 1)})"
                     break
+        current_progress += 25
+        line_progress.emit(f'Выполнено {int(current_progress)} %')
+        progress_value.emit(int(current_progress))
+        line_doing.emit(f"Ищем уникальные колонки")
         column_name = df.iloc[0]
         df = df.iloc[1:]
-        # df.dropna(axis=1, how='all', inplace=True)
-        # df.fillna(False, inplace=True)
         column_list = [df[column].to_numpy().tolist() for column in df.columns]
         uniq_column = {}
         columns = []
-        # Заменить все NaN на False. Проверять столбец - если есть False -
-        # выводить на проверку. Заполнять только с индексами, где всё заполнено
         for index, column in enumerate(column_list):
             str_list = [str(col) for col in column]
             if len(set(str_list)) == 1:
@@ -47,9 +48,13 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
                 columns.append(string_col)
                 uniq_column[index] = [column_name[index], *column]
         df = pd.DataFrame(uniq_column)
+        current_progress += 50
+        line_progress.emit(f'Выполнено {int(current_progress)} %')
+        progress_value.emit(int(current_progress))
+        line_doing.emit(f"Заполняем новый файл {save_file_name}")
         df.dropna(axis=1, inplace=True)
         column_width = max([column_sheet[index] for index in list(uniq_column.keys())])
-        writer = pd.ExcelWriter(Path(Path(incoming_data['path_unloading_file']).parent, save_file_name))
+        writer = pd.ExcelWriter(Path(Path(incoming_data['unformat_file']).parent, save_file_name))
         df.to_excel(writer, sheet_name='sort', index=False, header=False, na_rep='NaN')
         for column in df:
             col_idx = df.columns.get_loc(column)
@@ -60,6 +65,9 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
         format_row = workbook.add_format({'text_wrap': True})
         worksheet.set_row(0, None, format_row)
         writer.close()
+        current_progress += 25
+        line_progress.emit(f'Выполнено {int(current_progress)} %')
+        progress_value.emit(int(current_progress))
         return {'error': False, 'text': errors if errors else '', 'trace': ''}
     except BaseException as error:
         return {'error': True, 'text': error, 'trace': traceback.format_exc()}

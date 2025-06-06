@@ -39,6 +39,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                           'error': 'Формирование файла в папке «name_dir» завершено с ошибками'
                                           }
                                  }
+        self.pushButton_open_unformat_file.clicked.connect((lambda: browse(self, self.pushButton_open_unformat_file,
+                                                                           self.lineEdit_path_file_unformat_file,
+                                                                           self.default_path)))
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: browse(self, self.pushButton_open_material_sp_dir,
                                                                              self.lineEdit_path_dir_material_sp,
                                                                              self.default_path)))
@@ -56,20 +59,19 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                                                              self.default_path)))
         self.pushButton_start.clicked.connect(self.sorting_file)
         self.pushButton_form_file.clicked.connect(self.form_file)
-        self.lines = {'copy-lineEdit_path_dir_material_sp': ['Путь к папке с материалами',
-                                                             self.lineEdit_path_dir_material_sp],
-                      'copy-lineEdit_path_file_unloading': ['Путь к выгрузке с производства',
-                                                            self.lineEdit_path_file_unloading],
-                      'copy-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
-                                                                   self.radioButton_load_manufacture]],
-                      'copy-lineEdit_path_dir_load_asu': ['Путь к выгрузке АСУ', self.lineEdit_path_dir_load_asu],
-                      'copy-lineEdit_path_file_manufacture': ['Путь к файлу выгрузки',
-                                                              self.lineEdit_path_file_manufacture],
-                      'copy-lineEdit_path_dir_finish': ['Путь к конечной папке', self.lineEdit_path_dir_finish],
-                      'copy-checkBox_name_gk': ['Включить ГК', self.checkBox_name_gk],
-                      'copy-lineEdit_name_gk': ['Наименование ГК', self.lineEdit_name_gk],
-                      'copy-checkBox_name_set': ['Включить комплект', self.checkBox_name_set],
-                      'copy-lineEdit_name_set': ['Наименование комплекта', self.lineEdit_name_set]
+        self.lines = {
+            'copy-lineEdit_path_file_unformat_file': ['Путь к неподготовленному файлу',
+                                                      self.lineEdit_path_file_unformat_file],
+            'copy-lineEdit_path_dir_material_sp': ['Путь к папке с материалами', self.lineEdit_path_dir_material_sp],
+            'copy-lineEdit_path_file_unloading': ['Путь к выгрузке с производства', self.lineEdit_path_file_unloading],
+            'copy-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu, self.radioButton_load_manufacture]],
+            'copy-lineEdit_path_dir_load_asu': ['Путь к выгрузке АСУ', self.lineEdit_path_dir_load_asu],
+            'copy-lineEdit_path_file_manufacture': ['Путь к файлу выгрузки', self.lineEdit_path_file_manufacture],
+            'copy-lineEdit_path_dir_finish': ['Путь к конечной папке', self.lineEdit_path_dir_finish],
+            'copy-checkBox_name_gk': ['Включить ГК', self.checkBox_name_gk],
+            'copy-lineEdit_name_gk': ['Наименование ГК', self.lineEdit_name_gk],
+            'copy-checkBox_name_set': ['Включить комплект', self.checkBox_name_set],
+            'copy-lineEdit_name_set': ['Наименование комплекта', self.lineEdit_name_set]
                       }
         self.action_default_window.triggered.connect((lambda: default_settings(self, self.default_path, self.lines)))
         self.default_data = rewrite_settings(self.default_path)
@@ -86,12 +88,12 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
     def form_file(self):
         queue_sorting_file = queue.Queue(maxsize=1)
         mode_name = self.mode_description['form']['mode_name']
-        name_dir = self.lineEdit_path_file_unloading.text().strip()
+        name_dir = self.lineEdit_path_file_unformat_file.text().strip()
         start_function = form_file
         data = {**self.default_dict,
                 'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
                 'start_function': start_function,
-                'path_unloading_file': self.lineEdit_path_file_unloading.text().strip(),
+                'unformat_file': self.lineEdit_path_file_unformat_file.text().strip(),
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, checked_form_file, StartThreading)
 
