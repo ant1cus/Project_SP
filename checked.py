@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 from pathlib import Path
 import pandas as pd
@@ -64,4 +65,16 @@ def checked_sorting_file(incoming: dict) -> dict:
             return {'error': True, 'data': 'Запрещённый символ в имени ГК: ' + element}
         if incoming['name_set'] and element in incoming['name_set']:
             return {'error': True, 'data': 'Запрещённый символ в наименовании комплекта: ' + element}
+    return {'error': False, 'data': incoming}
+
+
+def checked_form_file(incoming: dict) -> dict:
+    if not incoming['path_unloading_file']:
+        return {'error': True, 'data': 'Путь к проверяемому файлу выгрузки пуст'}
+    if os.path.isfile(incoming['path_unloading_file']):
+        if incoming['path_unloading_file'].endswith('.xlsx') is False:
+            return {'error': True, 'data': 'Файл с выгрузкой не формата ".xlsx"'}
+    else:
+        return {'error': True, 'data': 'Указанный файл с выгрузкой удалён или переименован'}
+    incoming['name_dir'] = pathlib.Path(incoming['name_dir']).parent
     return {'error': False, 'data': incoming}

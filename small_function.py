@@ -128,14 +128,13 @@ def start_thread(incoming: dict, logging_dict: dict, thread_dict: dict, self, ch
         # Если всё прошло запускаем поток
         logging_dict[file_name[0]].info('Заполняем недостающие значения')
         sending_data['name_dir'] = Path(sending_data['name_dir']).name
-        sending_data['title'] = f"{sending_data['mode_description'][mode_name]['title']} «{sending_data['name_dir']}»"
 
         def replace_name_dir(key_val):
             for val in key_val:
                 sending_data[val] = re.sub('name_dir', sending_data['name_dir'],
                                            sending_data['mode_description'][mode_name][val])
 
-        replace_name_dir(['cancel', 'exception', 'success', 'error'])
+        replace_name_dir(['title', 'cancel', 'exception', 'success', 'error'])
         sending_data['logging'], sending_data['move'] = logging_dict[file_name[0]], len(thread_dict[mode_name])
         sending_data['log_all'], sending_data['log_now'] = file_name[1], file_name[0]
         logging_dict[file_name[0]].info('Запуск на выполнение')

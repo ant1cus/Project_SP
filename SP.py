@@ -1,16 +1,16 @@
 import pathlib
 import queue
 import sys
-
 import Main
 
 from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from small_function import browse, default_settings, default_data, rewrite_settings, start_thread
-from checked import checked_sorting_file
+from checked import checked_sorting_file, checked_form_file
 from read_asu_file import copy_from_asu_file
 from read_manufacture_file import copy_from_manufacture
+from form_file import form_file
 from StartThread import StartThreading
 
 
@@ -25,15 +25,26 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         # для логов, передачи в функции и т.п.
         # Создаю ещё один словарь для описаний. Нужен для универсализации окна запуска потока. Ключ и значения - так же,
         # как и в предыдущем
-        self.mode_description = {'copy': {'mode_name': 'copy', 'title': 'Сортировка файлов в папке',
+        self.mode_description = {'copy': {'mode_name': 'copy', 'title': 'Сортировка файлов в папке «name_dir»',
                                           'cancel': 'Поиск файлов в папке «name_dir» отменён пользователем',
                                           'exception': 'Поиск файлов в папке «name_dir» не завершён из-за ошибки',
                                           'success': 'Поиск файлов в папке «name_dir» успешно завершён',
                                           'error': 'Поиск файлов в папке «name_dir» завершён с ошибками'
-                                          }}
+                                          },
+                                 'form': {'mode_name': 'form', 'title': 'Формирование файла в папке «name_dir»',
+                                          'cancel': 'Формирование файла в папке «name_dir» отменено пользователем',
+                                          'exception': 'Формирование файла в папке «name_dir» не завершено'
+                                                       ' из-за ошибки',
+                                          'success': 'Формирование файла в папке «name_dir» успешно завершено',
+                                          'error': 'Формирование файла в папке «name_dir» завершено с ошибками'
+                                          }
+                                 }
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: browse(self, self.pushButton_open_material_sp_dir,
                                                                              self.lineEdit_path_dir_material_sp,
                                                                              self.default_path)))
+        self.pushButton_open_unloading_file.clicked.connect((lambda: browse(self, self.pushButton_open_unloading_file,
+                                                                            self.lineEdit_path_file_unloading,
+                                                                            self.default_path)))
         self.pushButton_open_load_asu_dir.clicked.connect((lambda: browse(self, self.pushButton_open_load_asu_dir,
                                                                           self.lineEdit_path_dir_load_asu,
                                                                           self.default_path)))
@@ -44,8 +55,11 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                                                              self.lineEdit_path_dir_finish,
                                                                              self.default_path)))
         self.pushButton_start.clicked.connect(self.sorting_file)
+        self.pushButton_form_file.clicked.connect(self.form_file)
         self.lines = {'copy-lineEdit_path_dir_material_sp': ['Путь к папке с материалами',
                                                              self.lineEdit_path_dir_material_sp],
+                      'copy-lineEdit_path_file_unloading': ['Путь к выгрузке с производства',
+                                                            self.lineEdit_path_file_unloading],
                       'copy-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
                                                                    self.radioButton_load_manufacture]],
                       'copy-lineEdit_path_dir_load_asu': ['Путь к выгрузке АСУ', self.lineEdit_path_dir_load_asu],
@@ -68,6 +82,18 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.default_dict = {'mode_description': self.mode_description, 'logging_dict': self.logging_dict,
                              'thread_dict': self.thread_dict, 'default_path': self.default_path,
                              'all_doc': 0, 'now_doc': 0}
+
+    def form_file(self):
+        queue_sorting_file = queue.Queue(maxsize=1)
+        mode_name = self.mode_description['form']['mode_name']
+        name_dir = self.lineEdit_path_file_unloading.text().strip()
+        start_function = form_file
+        data = {**self.default_dict,
+                'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
+                'start_function': start_function,
+                'path_unloading_file': self.lineEdit_path_file_unloading.text().strip(),
+                }
+        start_thread(data, self.logging_dict, self.thread_dict, self, checked_form_file, StartThreading)
 
     def sorting_file(self):
         queue_sorting_file = queue.Queue(maxsize=1)

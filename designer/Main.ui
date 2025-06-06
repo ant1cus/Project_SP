@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>607</width>
-    <height>263</height>
+    <width>692</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="font">
@@ -20,58 +20,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0">
-     <widget class="QRadioButton" name="radioButton_load_manufacture">
-      <property name="text">
-       <string>Файл выгрузки</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_dir_finish"/>
-    </item>
-    <item row="3" column="3">
-     <widget class="QPushButton" name="pushButton_open_path_finish_dir">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_material_sp">
-      <property name="text">
-       <string>Папка с материалами</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QCheckBox" name="checkBox_name_gk">
-      <property name="text">
-       <string>Наименование ГК</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1" colspan="3">
-     <widget class="QLineEdit" name="lineEdit_name_gk">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QCheckBox" name="checkBox_name_set">
-      <property name="text">
-       <string>Наименование к-та</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="3">
+    <item row="4" column="3">
      <widget class="QPushButton" name="pushButton_open_load_manufacture_file">
       <property name="enabled">
        <bool>false</bool>
@@ -87,14 +36,120 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1" colspan="2">
+    <item row="5" column="1" colspan="2">
+     <widget class="QLineEdit" name="lineEdit_path_dir_finish"/>
+    </item>
+    <item row="7" column="1" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_name_set">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" colspan="2">
+     <widget class="QLineEdit" name="lineEdit_path_file_manufacture">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="4">
+     <widget class="QPushButton" name="pushButton_form_file">
+      <property name="text">
+       <string>Сформировать выгрузку из файла</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="lineEdit_path_file_unloading"/>
+    </item>
+    <item row="1" column="3">
+     <widget class="QPushButton" name="pushButton_open_unloading_file">
+      <property name="text">
+       <string>Открыть</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QCheckBox" name="checkBox_name_gk">
+      <property name="text">
+       <string>Наименование ГК</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_name_gk">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QCheckBox" name="checkBox_name_set">
+      <property name="text">
+       <string>Наименование к-та</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" colspan="4">
+     <widget class="QPushButton" name="pushButton_start">
+      <property name="text">
+       <string>Старт</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1" colspan="2">
      <widget class="QLineEdit" name="lineEdit_path_dir_load_asu">
       <property name="enabled">
        <bool>false</bool>
       </property>
      </widget>
     </item>
-    <item row="1" column="3">
+    <item row="3" column="0">
+     <widget class="QRadioButton" name="radioButton_load_asu">
+      <property name="text">
+       <string>Папка с выгрузками АСУ</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QRadioButton" name="radioButton_load_manufacture">
+      <property name="text">
+       <string>Файл выгрузки</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_material_sp">
+      <property name="text">
+       <string>Папка с материалами</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_finish_folder">
+      <property name="text">
+       <string>Конечная папка</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QLineEdit" name="lineEdit_path_dir_material_sp"/>
+    </item>
+    <item row="5" column="3">
+     <widget class="QPushButton" name="pushButton_open_path_finish_dir">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Открыть</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
      <widget class="QPushButton" name="pushButton_open_load_asu_dir">
       <property name="enabled">
        <bool>false</bool>
@@ -124,40 +179,9 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QRadioButton" name="radioButton_load_asu">
+     <widget class="QLabel" name="label_unloading_file">
       <property name="text">
-       <string>Папка с выгрузками АСУ</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_finish_folder">
-      <property name="text">
-       <string>Конечная папка</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_file_manufacture">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1" colspan="3">
-     <widget class="QLineEdit" name="lineEdit_name_set">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_dir_material_sp"/>
-    </item>
-    <item row="6" column="0" colspan="4">
-     <widget class="QPushButton" name="pushButton_start">
-      <property name="text">
-       <string>Старт</string>
+       <string>Файл производства</string>
       </property>
      </widget>
     </item>
@@ -168,7 +192,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>607</width>
+     <width>692</width>
      <height>23</height>
     </rect>
    </property>
