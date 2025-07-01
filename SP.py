@@ -42,15 +42,16 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_unformat_file.clicked.connect((lambda: browse(self, self.pushButton_open_unformat_file,
                                                                            self.lineEdit_path_file_unformat_file,
                                                                            self.default_path)))
+        self.pushButton_open_check_material_dir.clicked.connect((lambda: browse(self,
+                                                                                self.pushButton_open_check_material_dir,
+                                                                                self.lineEdit_path_dir_check_material,
+                                                                                self.default_path)))
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: browse(self, self.pushButton_open_material_sp_dir,
                                                                              self.lineEdit_path_dir_material_sp,
                                                                              self.default_path)))
-        self.pushButton_open_unloading_file.clicked.connect((lambda: browse(self, self.pushButton_open_unloading_file,
-                                                                            self.lineEdit_path_file_unloading,
-                                                                            self.default_path)))
-        self.pushButton_open_load_asu_dir.clicked.connect((lambda: browse(self, self.pushButton_open_load_asu_dir,
-                                                                          self.lineEdit_path_dir_load_asu,
-                                                                          self.default_path)))
+        self.pushButton_open_load_asu_file.clicked.connect((lambda: browse(self, self.pushButton_open_load_asu_file,
+                                                                           self.lineEdit_path_load_asu_file,
+                                                                           self.default_path)))
         self.pushButton_open_load_manufacture_file.clicked.connect(
             (lambda: browse(self, self.pushButton_open_load_manufacture_file, self.lineEdit_path_file_manufacture,
                             self.default_path)))
@@ -62,11 +63,12 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.lines = {
             'copy-lineEdit_path_file_unformat_file': ['Путь к неподготовленному файлу',
                                                       self.lineEdit_path_file_unformat_file],
+            'copy-lineEdit_path_dir_check_material': ['Путь к материалам для проверки',
+                                                      self.lineEdit_path_dir_check_material],
             'copy-lineEdit_path_dir_material_sp': ['Путь к папке с материалами', self.lineEdit_path_dir_material_sp],
-            'copy-lineEdit_path_file_unloading': ['Путь к выгрузке с производства', self.lineEdit_path_file_unloading],
             'copy-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu, self.radioButton_load_manufacture]],
-            'copy-lineEdit_path_dir_load_asu': ['Путь к выгрузке АСУ', self.lineEdit_path_dir_load_asu],
-            'copy-lineEdit_path_file_manufacture': ['Путь к файлу выгрузки', self.lineEdit_path_file_manufacture],
+            'copy-lineEdit_path_load_asu_file': ['Файл выгрузки «.xlsx»', self.lineEdit_path_load_asu_file],
+            'copy-lineEdit_path_file_manufacture': ['Файл выгрузки «.csv»', self.lineEdit_path_file_manufacture],
             'copy-lineEdit_path_dir_finish': ['Путь к конечной папке', self.lineEdit_path_dir_finish],
             'copy-checkBox_name_gk': ['Включить ГК', self.checkBox_name_gk],
             'copy-lineEdit_name_gk': ['Наименование ГК', self.lineEdit_name_gk],
@@ -94,6 +96,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
                 'start_function': start_function,
                 'unformat_file': self.lineEdit_path_file_unformat_file.text().strip(),
+                'path_check_material': self.lineEdit_path_dir_check_material.text().strip(),
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, checked_form_file, StartThreading)
 
@@ -110,7 +113,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'start_function': start_function,
                 'name_gk': name_gk, 'name_set': name_set, 'asu_man': asu_man,
                 'path_material_sp': self.lineEdit_path_dir_material_sp.text().strip(),
-                'path_load_asu': self.lineEdit_path_dir_load_asu.text().strip(),
+                'path_load_asu': self.lineEdit_path_load_asu_file.text().strip(),
                 'path_load_man': self.lineEdit_path_file_manufacture.text().strip(),
                 'path_finish_folder': self.lineEdit_path_dir_finish.text().strip()
                 }

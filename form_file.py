@@ -11,7 +11,7 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
     logging = incoming_data['logging']
     try:
         save_file_name = f"{Path(incoming_data['unformat_file']).stem}" \
-                         f"_sort.{Path(incoming_data['unformat_file']).suffix}"
+                         f"_sort{Path(incoming_data['unformat_file']).suffix}"
         # Получаем ширину столбцов
         logging.info('Читаем файл')
         line_doing.emit(f"Читаем файл {Path(incoming_data['unformat_file']).name}")

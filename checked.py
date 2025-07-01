@@ -32,28 +32,18 @@ def checked_sorting_file(incoming: dict) -> dict:
     incoming['percent'] = 100 / incoming['all_doc']
     if incoming['asu_man']:
         if not incoming['path_load_asu']:
-            return {'error': True, 'data': 'Путь к папке с выгрузками из АСУ пуст'}
-        if os.path.isfile(incoming['path_load_asu']):
-            return {'error': True, 'data': 'Укажите папку с выгрузками из АСУ (указан файл)'}
-        else:
-            for element in os.listdir(incoming['path_load_asu']):
-                errors = []
-                if element.endswith('.xlsx') is False:
-                    errors.append(f"Неверный формат файла {element} (должен быть «.xlsx»)")
-                    try:
-                        pd.read_excel(Path(incoming['path_load_asu'], element), sheet_name=0, header=None)
-                    except PermissionError:
-                        errors.append(f"Невозможно получить доступ к файлу {element}")
-                if errors:
-                    return {'error': True, 'data': '\n'.join(errors)}
+            return {'error': True, 'data': 'Путь к файлу выгрузки «.xlsx» пуст'}
+        if os.path.isdir(incoming['path_load_asu']):
+            return {'error': True, 'data': 'Файл выгрузки «.xlsx» удалён или переименован'}
+        if incoming['path_load_asu'].endswith('.xlsx') is False:
+            return {'error': True, 'data': 'Файл выгрузки «.xlsx» не формата ".xlsx"'}
     else:
         if not incoming['path_load_man']:
-            return {'error': True, 'data': 'Путь к файлу выгрузки пуст'}
-        if os.path.isfile(incoming['path_load_man']):
-            if incoming['path_load_man'].endswith('.csv') is False:
-                return {'error': True, 'data': 'Файл с выгрузкой не формата ".csv"'}
-        else:
-            return {'error': True, 'data': 'Указанный файл с выгрузкой удалён или переименован'}
+            return {'error': True, 'data': 'Путь к файлу выгрузки «.csv» пуст'}
+        if os.path.isdir(incoming['path_load_man']):
+            return {'error': True, 'data': 'Указанный файл выгрузки «.csv» удалён или переименован'}
+        if incoming['path_load_man'].endswith('.csv') is False:
+            return {'error': True, 'data': 'Файл выгрузки «.csv» не формата «.csv»'}
     if not incoming['path_finish_folder']:
         return {'error': True, 'data': 'Путь к конечной папке пуст'}
     if os.path.isfile(incoming['path_finish_folder']):
@@ -76,5 +66,9 @@ def checked_form_file(incoming: dict) -> dict:
             return {'error': True, 'data': 'Файл с неподготовленной выгрузкой не формата ".xlsx"'}
     else:
         return {'error': True, 'data': 'Указанный файл с неподготовленной выгрузкой удалён или переименован'}
+    if not incoming['path_check_material']:
+        return {'error': True, 'data': 'Путь к проверяемым материалам пуст'}
+    if os.path.isdir(incoming['path_check_material']) is False:
+        return {'error': True, 'data': 'Указанный путь к проверяемым материалам удалён или переименован'}
     incoming['name_dir'] = pathlib.Path(incoming['name_dir']).parent
     return {'error': False, 'data': incoming}
