@@ -1,15 +1,14 @@
 import math
 import os
 import re
-import shutil
-import time
 import traceback
 from pathlib import Path
 
 from openpyxl import load_workbook
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.styles import PatternFill
-
+from sp_asu_files import create_sp_sorting_file
+from manufacture_asu_files import create_manufacture_asu_file
 import pandas as pd
 
 
@@ -17,8 +16,10 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                        line_progress, progress_value, event, window_check, info_value) -> dict:
     logging = incoming_data['logging']
     try:
-        errors = []
-        list_df = []
+        # Определяем фотки в папках или отдельно
+        # Для СП
+        folder_dict = {'all': 0, 'folder': 0}
+        folder = [p.name for p in Path(incoming_data['path_material_sp']).rglob('*') if p.is_dir()]
         percent = incoming_data['percent']
         name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
         try:
@@ -26,50 +27,87 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
         except FileExistsError:
             logging.info(f"Такая папка уже есть {Path(incoming_data['path_finish_folder'], name_finish_folder)}")
         logging.info('Считываем файлы АСУ и создаем структуру каталога')
-        # Тут размножить цифры вверху и посмотреть
-        columns_name = ['name', 'snapshot', 'sn', 'start_path', 'parent_path']
-        documents = pd.DataFrame(columns=columns_name)
-        errors = []
-        line_doing.emit(f"Считываем снимки")
-        for file in Path(incoming_data['path_material_sp']).rglob('*.*'):
-            name_file = file.stem
-            documents = pd.concat([
-                documents,
-                pd.DataFrame({'name': [file.name], 'start_path': [file],
-                              'parent_path': [file.parent],
-                              'snapshot': [name_file.partition('_')[2].partition('_')[0]],
-                              'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0]],
-                              })], ignore_index=True)
+        # Для ООД
         try:
             logging.info(f"Считываем файл выгрузки {Path(incoming_data['path_load_asu']).name}")
             df = pd.read_excel(Path(incoming_data['path_load_asu']), sheet_name=0, header=None)
             index_string = -100
             number_snapshot = {}
             index_snapshot = []
+            folder_number = []
             for index, item in df.iloc[0].items():
-                if re.findall(r'\d+-\d+', str(item)):
-                    number_snapshot[int(str(item).partition('-')[0])] = int(str(item).partition('-')[2])
-                    df.iloc[0, index] = int(str(item).partition('-')[0])
+                if re.findall(r'\d+', str(item)):
+                    if re.findall(r'\d+-\d+', str(item)):
+                        number_snapshot[index] = int(str(item).partition('-')[2])
+                        df.iloc[0, index] = int(str(item).partition('-')[0])
+                    else:
+                        number_snapshot[index] = 0
+                        df.iloc[0, index] = int(item)
+                    folder_number.append(df.iloc[0, index])
                     index_snapshot.append(index)
                     continue
                 if re.findall(r'[A-zА-я]+', str(item)) or math.isnan(item):
                     df.iloc[0, index] = index_string
                     index_string += 1
-            number_device = df.shape[1] - (100 + index_string) + 1
             df.sort_values(0, axis=1, inplace=True)
-            name_for_df = df.iloc[1]
             df = df.drop(labels=[1], axis=0)
             if incoming_data['name_set']:
                 df.fillna(value={2: incoming_data['name_set']}, inplace=True)
+            columns_name = ['name', 'snapshot', 'sn', 'start_path', 'parent_path', 'parent_name', 'sn_set',
+                             'folder_number', 'name_set', 'copy_files', 'rename_file']
+            documents = pd.DataFrame(columns=columns_name)
+            errors = []
+            line_doing.emit(f"Считываем снимки")
+            for file in Path(incoming_data['path_material_sp']).rglob('*.*'):
+                name_file = file.stem
+                copy_file = True if 'info' in name_file.lower() or 'spk' in name_file.lower() else False
+                sn_set = 0
+                name_set = ''
+                rename_file = ''
+                if copy_file:
+                    sn_info_file = file.name.partition('_')[2].partition('.')[0]
+                    index_info_file = df.loc[df[3] == sn_info_file].index.to_list()
+                    if len(index_info_file) == 0:
+                        for i in range(4, df.shape[1]):
+                            index_info_file = df.loc[df[i] == sn_info_file].index.to_list()
+                            if len(index_info_file) > 0:
+                                rename_file = df.loc[index_info_file[0], 3]
+                                break
+                    sn_set = 0 if len(index_info_file) == 0 else df.loc[index_info_file[0], 3]
+                    name_set = '' if len(index_info_file) == 0 else df.loc[index_info_file[0], 2]
+                documents = pd.concat([
+                    documents,
+                    pd.DataFrame({'name': [file.name], 'start_path': [file],
+                                'parent_path': [file.parent], 'parent_name': [file.parent.name],
+                                'snapshot': [name_file.partition('_')[2].partition('_')[0]],
+                                'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0]],
+                                'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
+                                'copy_files': [copy_file], 'rename_file': [rename_file],
+                                })], ignore_index=True)
             name_set = df[2].to_numpy().tolist()
             logging.info(f"Проверяем на соответствие количества снимков")
             line_doing.emit("Проверяем на соответствие количества снимков")
             snapshot_df = df[index_snapshot]
             color_cell = {}
+            color_column = {}
+            index_for_snapshot = list(snapshot_df.index)
             for column in index_snapshot:
-                number_snap = int(number_snapshot[snapshot_df.loc[0, column]])
+                number_snap = int(number_snapshot[column])
+                if number_snap == 0:
+                    errors.append(f"Количество снимков в столбце {get_column_letter(column + 1)} не указано")
+                    color_column[column + 1] = '00FF00'
                 for index, value in enumerate(snapshot_df[column].to_numpy().tolist()[1:]):
+                    if value in folder:
+                        folder_dict['folder'] += 1
+                    folder_dict['all'] += 1
                     index_doc = documents.loc[documents['sn'] == value].index
+                    if len(index_doc) == 0:
+                        index_doc = documents.loc[documents['parent_name'] == value].index
+                    documents.loc[index_doc, 'sn_set'] = df.loc[index_for_snapshot[index + 1], 3]
+                    documents.loc[index_doc, 'folder_number'] = snapshot_df.loc[0, column]
+                    documents.loc[index_doc, 'name_set'] = df.loc[index_for_snapshot[index + 1], 2]
+                    if number_snap == 0:
+                        continue
                     if len(index_doc) == 0:
                         errors.append(f"Количество снимков для sn {value} равно 0")
                         color_cell[f"{get_column_letter(column + 1)}{index + 3}"] = 'FF0000'
@@ -81,163 +119,52 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                         color_cell[f"{get_column_letter(column + 1)}{index + 3}"] = 'FFFF00'
                     else:
                         continue
-            if color_cell:
+            if len(color_column) == df.shape[1] - 4:
+                errors = []
+            else:
                 wb = load_workbook(str(Path(incoming_data['path_load_asu'])))
                 ws = wb.active
                 for cell in color_cell:
                     ws[cell].fill = PatternFill(start_color=color_cell[cell], end_color=color_cell[cell],
                                                 fill_type='solid')
                 wb.save(str(Path(incoming_data['path_load_asu'])))
-            logging.info(f"Создаём структуру для {Path(incoming_data['path_load_asu']).name}")
-            line_doing.emit(f"Создаём структуру для {Path(incoming_data['path_load_asu']).name}")
-            for row, serial_num in enumerate(df[3].to_numpy().tolist()[1:], start=1):
-                # event.wait()
-                if window_check.stop_threading:
-                    return {'error': False, 'text': 'cancel', 'trace': ''}
-                path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                str(name_set[row]), str(serial_num) + ' В')
-                os.makedirs(path_dir, exist_ok=True)
-                for device in range(1, number_device):
-                    os.makedirs(Path(path_dir, str(device), 'photo'), exist_ok=True)
-                    os.makedirs(Path(path_dir, str(device), 'rentgen'), exist_ok=True)
-            df.columns = name_for_df
-            df.reset_index(drop=True, inplace=True)
-            list_df.append(df)
-            logging.info(f"Файл {Path(incoming_data['path_load_asu']).name} обработан")
+                for column in color_column:
+                    for row in range(1, ws.max_row + 1):
+                        ws.cell(row=row, column=column).fill = PatternFill(start_color=color_column[column],
+                                                                           end_color=color_column[column],
+                                                                           fill_type='solid')
+                wb.save(str(Path(incoming_data['path_load_asu'])))
+            if errors:
+                info_value.emit('Вопрос?', '\n'.join(errors), 'Найдены несоответствия, для продолжения нажмите «Да»')
+                event.clear()
+                event.wait()
+            if window_check.answer is False:
+                return {'status': 'cancel', 'text': '', 'trace': ''}
+            errors = []
         except BaseException as error:
-            return {'error': True, 'text': error, 'trace': traceback.format_exc()}
-
-        name_info = ''
-        name_spk = ''
+            return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}
         logging.info('Бежим по файлам СП')
-        name_device_list = [path for path in os.listdir(incoming_data['path_material_sp'])
-                            if os.path.isdir(Path(incoming_data['path_material_sp'], path))]
-        for name_device in name_device_list:
-            # time.sleep(1)
-            if window_check.stop_threading:
-                return {'error': False, 'text': 'cancel', 'trace': ''}
-            if name_device.lower() == 'инфо':
-                name_info = name_device
-                continue
-            elif name_device.lower() == 'спк':
-                name_spk = name_device
-                continue
-            logging.info('Бежим по ' + str(name_device))
-            sn_device_list = [path for path in os.listdir(Path(incoming_data['path_material_sp'], name_device))
-                              if os.path.isdir(Path(incoming_data['path_material_sp'], name_device, path))]
-            for sn_device in sn_device_list:
-                logging.info('Бежим по ' + str(sn_device))
-                line_doing.emit(f'Сортируем устройства с sn {str(sn_device)} ({now_doc} из {all_doc})')
-                path_photo = False
-                path_xray = False
-                for device in list_df:
-                    if name_device in device:
-                        if device[name_device].isin([sn_device]).any():
-                            row = device.index[device[name_device] == sn_device].tolist()[0]
-                            column = device.loc[0, name_device]
-                            path_photo = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                              str(device.iloc[row, 2]), str(device.iloc[row, 3]) + ' В',
-                                              str(column), 'photo')
-                            path_xray = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                             str(device.iloc[row, 2]), str(device.iloc[row, 3]) + ' В',
-                                             str(column), 'rentgen')
-                            if Path(path_photo).is_dir() is False:
-                                logging.info(f"{path_photo} - почему то пути для фото нет, создаём")
-                                path_photo.mkdir(parents=True)
-                            if Path(path_xray).is_dir() is False:
-                                logging.info(f"{path_xray} - почему то пути для рентгена нет, создаём")
-                                path_xray.mkdir(parents=True)
-                if path_photo is False or path_xray is False:
-                    errors.append(f"Серийник {sn_device} не найден в выгрузке АСУ")
-                    logging.warning(f"Серийник {sn_device} не найден в выгрузке АСУ")
-                    continue
-                file_in_finish = [str(file) for file in os.listdir(Path(incoming_data['path_material_sp'],
-                                                                        name_device, str(sn_device)))]
-                logging.info('Копируемые файлы: ' + ', '.join(file_in_finish))
-                exist_file = [str(file) for file in file_in_finish
-                              if file in os.listdir(Path(path_xray))
-                              or file in os.listdir(Path(path_photo))]
-                replace = True
-                if exist_file:
-                    logging.info(f"Файлы, присутствующие в папке {path_xray.parent}: {', '.join(exist_file)}")
-                    logging.info('Спрашиваем что делать')
-                    if len(exist_file) == 1:
-                        text = f"В папке «{path_xray.parent}» уже есть файл {exist_file[0]}. Заменить файл?"
-                    else:
-                        text = f"В папке «{path_xray.parent}» уже есть файлы ({len(exist_file)})" \
-                               f" с такими же именами. Заменить файлы?"
-                    info_value.emit("Вопрос?", text, None)
-                    event.clear()
-                    event.wait()
-                    replace = window_check.answer
-                if replace:
-                    for file in os.listdir(Path(incoming_data['path_material_sp'], name_device, str(sn_device))):
-                        now_doc += 1
-                        if file in exist_file and replace is False:
-                            continue
-                        if str(file).endswith('.tif') or str(file).endswith('.tiff') \
-                                or str(file).endswith('.png') or str(file).endswith('.jpeg'):
-                            shutil.copy2(Path(incoming_data['path_material_sp'], name_device,
-                                              str(sn_device), str(file)),
-                                         Path(path_xray, str(file)))
-                            # Path(incoming_data['path_material_sp'], name_device,
-                            #      str(sn_device), str(file)).replace(
-                            #     Path(path_xray, str(file)))
-                        else:
-                            shutil.copy2(Path(incoming_data['path_material_sp'], name_device,
-                                              str(sn_device), str(file)),
-                                         Path(path_photo, str(file)))
-                        current_progress += percent
-                        line_progress.emit(f'Выполнено {int(current_progress)} %')
-                        progress_value.emit(int(current_progress))
-                    logging.info('Файл заменён')
-                else:
-                    current_progress += percent*len(exist_file)
-                    line_progress.emit(f'Выполнено {int(current_progress)} %')
-                    progress_value.emit(int(current_progress))
 
-            def info_spk_copy(path_info_spk: Path, name_info_spk: str, now_doc_: int, cur_prog: float) -> dict:
-                for file_info_spk in os.listdir(path_info_spk):
-                    time.sleep(1)
-                    now_doc_ += 1
-                    line_doing.emit(f'Сортируем устройства с sn {sn_device} ({now_doc_} из {all_doc})')
-                    cur_prog += percent
-                    line_progress.emit(f'Выполнено {int(cur_prog)} %')
-                    progress_value.emit(int(cur_prog))
-                    sn_file = str(file_info_spk).partition('_')[2].rpartition('.')[0]
-                    sn_file = sn_file + ' В'
-                    for finish_set in os.listdir(Path(incoming_data['path_finish_folder'], name_finish_folder)):
-                        replace_info_spk = True
-                        if sn_file in os.listdir(Path(incoming_data['path_finish_folder'],
-                                                      name_finish_folder, str(finish_set))):
-                            logging.info('Перемещаем\n' + str(Path(incoming_data['path_material_sp'],
-                                                                   file_info_spk,
-                                                                   str(file_info_spk)))
-                                         + '\nв\n' +
-                                         str(Path(incoming_data['path_finish_folder'],
-                                                  name_finish_folder, str(finish_set), sn_file, file_info_spk)))
-                            if Path(incoming_data['path_finish_folder'], name_finish_folder, str(finish_set),
-                                    sn_file, file_info_spk).is_file():
-                                file_path = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                                 str(finish_set), sn_file, file_info_spk)
-                                text_info = f"Файл {file_info_spk} уже есть в папке {file_path}"
-                                logging.info(text_info)
-                                logging.info('Спрашиваем что делать')
-                                info_value.emit("Вопрос?", text_info + " Заменить файл?", None)
-                                event.clear()
-                                event.wait()
-                                replace_info_spk = window_check.answer
-                            if replace_info_spk:
-                                shutil.copy2(Path(incoming_data['path_material_sp'], name_info_spk, str(file_info_spk)),
-                                             Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                                  str(finish_set), sn_file, file_info_spk))
-                return {"now_doc": now_doc_, "current_progress": cur_prog}
-            if Path(incoming_data['path_material_sp'], name_info).is_dir():
-                answer = info_spk_copy(Path(incoming_data['path_material_sp'],
-                                            name_info), name_info, now_doc, current_progress)
-                now_doc, current_progress = answer['now_doc'], answer['current_progress']
-            if Path(incoming_data['path_material_sp'], name_spk).is_dir():
-                info_spk_copy(Path(incoming_data['path_material_sp'], name_spk), name_spk, now_doc, current_progress)
-        return {'error': False, 'text': errors if errors else '', 'trace': ''}
+        if folder_dict['folder']/folder_dict['all'] > 0.5:
+            answer = create_sp_sorting_file(incoming_data, name_finish_folder, documents,
+                                            now_doc, all_doc, current_progress, percent, logging, event, window_check,
+                                            line_doing, line_progress, progress_value, info_value)
+            if answer['status'] == 'error':
+                return {'status': 'error', 'text': answer['text'], 'trace': answer['trace']}
+            if answer['status'] == 'cancel':
+               return {'status': 'cancel', 'text': '', 'trace': ''}
+            if answer['status'] == 'warning':
+                return {'status': 'warning', 'text': answer['text'], 'trace': ''}
+        else:
+            answer = create_manufacture_asu_file(incoming_data, documents, name_finish_folder, now_doc, all_doc,
+                                                 current_progress, percent, logging, event, window_check, line_doing,
+                                                 line_progress, progress_value, info_value)
+            if answer['status'] == 'error':
+                return {'status': 'error', 'text': answer['text'], 'trace': answer['trace']}
+            if answer['status'] == 'cancel':
+                return {'status': 'cancel', 'text': '', 'trace': ''}
+            if answer['status'] == 'warning':
+                return {'status': 'warning', 'text': answer['text'], 'trace': ''}
+        return {'status': 'success', 'text': errors if errors else '', 'trace': ''}
     except BaseException as error:
-        return {'error': True, 'text': error, 'trace': traceback.format_exc()}
+        return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}

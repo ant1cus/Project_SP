@@ -55,20 +55,23 @@ class StartThreading(QThread):
                                      self.window_check, self.info_value)
         self.line_progress.emit(f'Выполнено 100 %')
         self.progress_value.emit(100)
-        if answer['error']:
+        if answer['status'] == 'error':
             self.logging.error(answer['text'])
             self.logging.error(answer['trace'])
             self.info_value.emit('УПС!', 'Работа программы завершена из-за непредвиденной ошибки', None)
             self.finish_thread(self.exception)
+        elif answer['status'] == 'cancel':
+            self.finish_thread(self.cancel)
+        elif answer['status'] == 'warning':
+            self.logging.info('\n'.join(answer['text']))
+            self.info_value.emit('Внимание!', '\n'.join(answer['text']), self.error)
+            self.finish_thread(self.error)
+        elif answer['status'] == 'success':
+            self.finish_thread(self.success)
         else:
-            if answer['text'] == 'cancel':
-                self.finish_thread(self.cancel)
-            elif answer['text']:
-                self.logging.info('\n'.join(answer['text']))
-                self.info_value.emit('Внимание!', '\n'.join(answer['text']), self.error)
-                self.finish_thread(self.error)
-            else:
-                self.finish_thread(self.success)
+            self.logging.error('Отсутствует статус завершения потока')
+            self.info_value.emit('УПС!', 'Работа программы завершена из-за непредвиденной ошибки', None)
+            self.finish_thread(self.exception)
 
     def finish_thread(self, text: str) -> None:
         self.logging.info(text)

@@ -68,6 +68,6 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
         current_progress += 25
         line_progress.emit(f'Выполнено {int(current_progress)} %')
         progress_value.emit(int(current_progress))
-        return {'error': False, 'text': errors if errors else '', 'trace': ''}
-    except BaseException as error:
-        return {'error': True, 'text': error, 'trace': traceback.format_exc()}
+        return {'status': 'warning' if errors else 'success', 'text': errors, 'trace': ''}
+    except BaseException as ex:
+        return {'status': 'error', 'text': ex, 'trace': traceback.format_exc()}

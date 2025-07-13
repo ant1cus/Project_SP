@@ -2,3 +2,6 @@
 /logs/
 /.idea/
 Настройки.txt
+/venv/
+/__pycache__/
+/.vscode/

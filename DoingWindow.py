@@ -23,7 +23,7 @@ class ProcessWindow(QDialog, Ui_Dialog):
         self.setWindowTitle(title)
         self.event = event
         self.stop_threading = False
-        self.answer = False
+        self.answer = True
         qr = self.frameGeometry().center()
         cp = QDesktopWidget().availableGeometry().center()
         self.move(cp.x() - qr.x() + 50*move, cp.y() - qr.y() + 50*move)
@@ -70,8 +70,20 @@ class ProcessWindow(QDialog, Ui_Dialog):
             ans.exec()
             self.event.set()
         elif title == 'Вопрос?':
-            ans = QMessageBox.question(self, title, description, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if ans == QMessageBox.No:
+            if info_text:
+                ans = QMessageBox()
+                ans.setWindowTitle(title)
+                ans.setIcon(QMessageBox.Question)
+                ans.setText(f'{info_text}, для просмотра нажмите «Показать подробности...»')
+                ans.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                ans.setDefaultButton(QMessageBox.Yes)
+                ans.setTextInteractionFlags(Qt.NoTextInteraction)
+                ans.setDetailedText(description)
+                return_value = ans.exec()
+            else:
+                return_value = QMessageBox.question(self, title, description, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            # ans = QMessageBox.question(self, title, description, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if return_value == QMessageBox.No:
                 self.answer = False
                 self.event.set()
             else:

@@ -24,7 +24,7 @@ from Default import DefaultWindow
 #         json.dump(dict_load, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
-def rewrite_settings(path: Path, data: dict or False = False) -> dict:
+def rewrite_settings(path: Path, data = False) -> dict:
     """Создаёт файл настроек при первом запуске или если его удалили в процессе, открывает или перезаписывает его"""
     try:
         if data:
@@ -176,6 +176,21 @@ def finished_thread(method, logging_dict: dict, thread_dict: dict, thread: str =
         thread_dict[method].pop(thread, None)
     return
 
+
+def replace_object(path: Path, logging, info_value, event, window_check) -> bool:
+    if path.suffix:
+        exist_file = True if path.is_file() else False
+    else:
+        exist_file = True if path.is_dir() else False
+    replace = True
+    if exist_file:
+        logging.info(f"{path} существует, спрашиваем что делать")
+        text = f"{path} существует, заменить?"
+        info_value.emit("Вопрос?", text, None)
+        event.clear()
+        event.wait()
+        replace = window_check.answer
+    return replace
 
 def on_message_changed(self, title, description) -> None:
     """Функция для вывода сообщения. По заголовку определяет нужный формат и выводит описание."""
