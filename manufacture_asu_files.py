@@ -20,11 +20,15 @@ def create_manufacture_asu_file(incoming_data: dict, documents: pd.DataFrame, na
             line_progress.emit(f'Выполнено {int(current_progress)} %')
             progress_value.emit(int(current_progress))
             index_file = documents.loc[documents['start_path'] == file].index.tolist()[0]
+            if documents.loc[index_file, 'sn_set'] == 0:
+                errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
+                logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
+                continue
             if documents.loc[index_file, 'copy_files']:
-                if documents.loc[index_file, 'sn_set'] == 0:
-                    errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                    logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                    continue
+                # if documents.loc[index_file, 'sn_set'] == 0:
+                #     errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
+                #     logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
+                #     continue
                 parent_path = Path(incoming_data['path_finish_folder'], name_finish_folder,
                                    str(documents.loc[index_file, 'name_set']), str(documents.loc[index_file, 'sn_set']))
                 if Path(parent_path).exists() is False:

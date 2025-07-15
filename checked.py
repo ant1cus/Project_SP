@@ -1,7 +1,7 @@
 import os
-import pathlib
 import re
 from pathlib import Path
+from openpyxl import load_workbook
 import pandas as pd
 
 
@@ -37,6 +37,11 @@ def checked_sorting_file(incoming: dict) -> dict:
             return {'error': True, 'data': 'Файл выгрузки «.xlsx» удалён или переименован'}
         if incoming['path_load_asu'].endswith('.xlsx') is False:
             return {'error': True, 'data': 'Файл выгрузки «.xlsx» не формата ".xlsx"'}
+        wb = load_workbook(str(Path(incoming['path_load_asu'])))
+        try:
+            wb.save(str(Path(incoming['path_load_asu'])))
+        except PermissionError:
+            return {'error': True, 'data': f"Закройте файл выгрузки {Path(incoming['path_load_asu']).name}"}
     else:
         if not incoming['path_load_man']:
             return {'error': True, 'data': 'Путь к файлу выгрузки «.csv» пуст'}
@@ -70,5 +75,5 @@ def checked_form_file(incoming: dict) -> dict:
         return {'error': True, 'data': 'Путь к проверяемым материалам пуст'}
     if os.path.isdir(incoming['path_check_material']) is False:
         return {'error': True, 'data': 'Указанный путь к проверяемым материалам удалён или переименован'}
-    incoming['name_dir'] = pathlib.Path(incoming['name_dir']).parent
+    incoming['name_dir'] = Path(incoming['name_dir']).parent
     return {'error': False, 'data': incoming}

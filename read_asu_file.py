@@ -100,7 +100,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     if value in folder:
                         folder_dict['folder'] += 1
                     folder_dict['all'] += 1
-                    index_doc = documents.loc[documents['sn'] == value].index
+                    index_doc = documents.loc[documents['sn'] == str(value)].index
                     if len(index_doc) == 0:
                         index_doc = documents.loc[documents['parent_name'] == value].index
                     documents.loc[index_doc, 'sn_set'] = df.loc[index_for_snapshot[index + 1], 3]
