@@ -33,19 +33,22 @@ def create_sp_sorting_file(incoming_data: dict, name_finish_folder: str, documen
                     logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
                     continue
                 parent_path = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                   str(documents.loc[index_file, 'name_set']), str(documents.loc[index_file, 'sn_set']) + ' В')
+                                   str(documents.loc[index_file, 'name_set']),
+                                   str(documents.loc[index_file, 'sn_set']) + ' В')
                 if Path(parent_path).exists() is False:
                     os.makedirs(parent_path)
-                finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, str(documents.loc[index_file, 'name_set']),
-                                  str(documents.loc[index_file, 'sn_set']) + ' В', file.name)
+                finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder,
+                                   str(documents.loc[index_file, 'name_set']),
+                                   str(documents.loc[index_file, 'sn_set']) + ' В', file.name)
                 replace = replace_object(finish_path, logging, info_value, event, window_check)
                 if replace:
                     shutil.copy2(file, finish_path)
                     logging.info(f"Файл {finish_path} создан")
                     if documents.loc[index_file, 'rename_file']:
                         new_name = re.sub(file.name.partition('_')[2].partition('.')[0],
-                                            documents.loc[index_file, 'rename_file'],
-                                            str(file.name))
+                                          documents.loc[index_file, 'rename_file'],
+                                          str(file.name))
+                        new_name = re.sub('SPK', 'СПК', new_name)
                         rename_file = Path(finish_path.parent, new_name)
                         if rename_file.exists():
                             os.remove(rename_file)
@@ -64,7 +67,7 @@ def create_sp_sorting_file(incoming_data: dict, name_finish_folder: str, documen
                 os.makedirs(path_x_ray)
             if Path(path_photo).exists() is False:
                 os.makedirs(path_photo)
-            type_path = path_photo if suffix in ['.tif', '.tiff', '.jpeg', '.png'] else path_x_ray
+            type_path = path_x_ray if suffix in ['.tif', '.tiff', '.jpeg', '.png'] else path_photo
             finish_path = Path(type_path, file.name)
             replace = replace_object(finish_path, logging, info_value, event, window_check)
             if replace:

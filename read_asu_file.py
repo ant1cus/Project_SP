@@ -54,7 +54,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
             if incoming_data['name_set']:
                 df.fillna(value={2: incoming_data['name_set']}, inplace=True)
             columns_name = ['name', 'snapshot', 'sn', 'start_path', 'parent_path', 'parent_name', 'sn_set',
-                             'folder_number', 'name_set', 'copy_files', 'rename_file']
+                            'folder_number', 'name_set', 'copy_files', 'rename_file']
             documents = pd.DataFrame(columns=columns_name)
             errors = []
             line_doing.emit(f"Считываем снимки")
@@ -66,13 +66,25 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                 rename_file = ''
                 if copy_file:
                     sn_info_file = file.name.partition('_')[2].partition('.')[0]
-                    index_info_file = df.loc[df[3] == sn_info_file].index.to_list()
-                    if len(index_info_file) == 0:
-                        for i in range(4, df.shape[1]):
-                            index_info_file = df.loc[df[i] == sn_info_file].index.to_list()
+                    double_zero_sn = '00' + sn_info_file
+                    index_info_file = []
+                    for i in range(3, df.shape[1]):
+                        exit = False
+                        for j in [sn_info_file, double_zero_sn]:
+                            index_info_file = df.loc[df[i] == j].index.to_list()
                             if len(index_info_file) > 0:
                                 rename_file = df.loc[index_info_file[0], 3]
+                                exit = True
                                 break
+                        if exit:
+                            break
+                    # index_info_file = df.loc[df[3] == sn_info_file].index.to_list()
+                    # if len(index_info_file) == 0:
+                    #     for i in range(4, df.shape[1]):
+                    #         index_info_file = df.loc[df[i] == sn_info_file].index.to_list()
+                    #         if len(index_info_file) > 0:
+                    #             rename_file = df.loc[index_info_file[0], 3]
+                    #             break
                     sn_set = 0 if len(index_info_file) == 0 else df.loc[index_info_file[0], 3]
                     name_set = '' if len(index_info_file) == 0 else df.loc[index_info_file[0], 2]
                 documents = pd.concat([
@@ -84,7 +96,6 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                 'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
                                 'copy_files': [copy_file], 'rename_file': [rename_file],
                                 })], ignore_index=True)
-            name_set = df[2].to_numpy().tolist()
             logging.info(f"Проверяем на соответствие количества снимков")
             line_doing.emit("Проверяем на соответствие количества снимков")
             snapshot_df = df[index_snapshot]
@@ -144,8 +155,8 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
         except BaseException as error:
             return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}
         logging.info('Бежим по файлам СП')
-
-        if folder_dict['folder']/folder_dict['all'] > 0.5:
+        copy_file = len(documents.loc[documents['copy_files'] == True].index.to_list())
+        if folder_dict['folder']/folder_dict['all'] > 0.5 or copy_file == documents.shape[0]:
             answer = create_sp_sorting_file(incoming_data, name_finish_folder, documents,
                                             now_doc, all_doc, current_progress, percent, logging, event, window_check,
                                             line_doing, line_progress, progress_value, info_value)
