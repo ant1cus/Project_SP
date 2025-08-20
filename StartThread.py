@@ -1,10 +1,27 @@
 import os
+import re
 import threading
 import time
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from DoingWindow import ProcessWindow
+
+def set_interval(interval):
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            stopped = threading.Event()
+
+            def loop():  # executed in another thread
+                while not stopped.wait(interval):  # until stopped
+                    function(*args, **kwargs)
+
+            t = threading.Thread(target=loop)
+            t.daemon = True  # stop if the program exits
+            t.start()
+            return stopped
+        return wrapper
+    return decorator
 
 
 class CancelException(Exception):
@@ -45,6 +62,18 @@ class StartThreading(QThread):
         self.line_doing.connect(self.window_check.lineEdit_doing.setText)
         self.info_value.connect(self.window_check.info_message)
         self.window_check.show()
+        # self.app_text = ''
+        # self.previous_text = ''
+        self.timer_line_progress()
+
+    @set_interval(3)
+    def timer_line_progress(self):
+        text = self.window_check.lineEdit_progress.text()
+        if text == self.window_check.previous_text:
+            dot_len = len(re.findall(r'•', self.window_check.lineEdit_progress.text()))
+            text = text + '•' if dot_len <= 5 else re.sub(r'•', '', text)
+            self.line_progress.emit(text)
+
 
     def run(self):
         self.logging.info('Запустили run')

@@ -1,5 +1,8 @@
 import os
 import pathlib
+
+from PyQt5.QtCore import QObject
+
 import default_window
 
 from PyQt5.QtGui import QFont
@@ -30,7 +33,7 @@ class Button(QLineEdit):
 
 
 class DefaultWindow(QDialog, default_window.Ui_Dialog):  # Настройки по умолчанию
-    def __init__(self, parent, path, lines, default_data, browse, rewrite_settings):
+    def __init__(self, parent, path, lines, grid_frame, default_data, browse, rewrite_settings):
         super().__init__()
         self.setupUi(self)
         self.path_for_default = path
@@ -39,8 +42,6 @@ class DefaultWindow(QDialog, default_window.Ui_Dialog):  # Настройки п
         self.default_data = default_data
         self.browse = browse
         # Сюда добавляем все возможные группы и разметки модулей. Надо подумать как извлечь универсально
-        self.name_box = [self.groupBox_copy_file]
-        self.name_grid = [self.gridLayout_copy_file]
         self.rewrite_settings = rewrite_settings
         default = self.rewrite_settings(self.path_for_default)
         self.widget_settings = default['widget_settings']
@@ -60,20 +61,17 @@ class DefaultWindow(QDialog, default_window.Ui_Dialog):  # Настройки п
         self.button_clear = {}  # Для кнопки «очистить»
         self.button_open = {}  # Для кнопки «открыть»
         for i, el in enumerate(self.lines):  # Заполняем
-            frame = False
-            grid = False
-            # Сюда добавляем все возможные имена модулей
-            for j, n in enumerate(['copy']):
+            frame = grid = False
+            for n in grid_frame:
                 if n in el.partition('-')[0]:
-                    frame = self.name_box[j]
-                    grid = self.name_grid[j]
-                    break
+                    frame = self.findChild(QObject, grid_frame[n]['frame'])
+                    grid = self.findChild(QObject, grid_frame[n]['grid'])
             self.line[i] = QLabel(frame)  # Помещаем в фрейм
             self.line[i].setText(self.lines[el][0])  # Название элемента
             self.line[i].setFont(QFont("Times", 12, QFont.Light))  # Шрифт, размер
             self.line[i].setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)  # Размеры виджета
             self.line[i].setDisabled(True)  # Делаем неактивным, чтобы нельзя было просто так редактировать
-            self.gridLayout_copy_file.addWidget(self.line[i], i, 0)  # Добавляем виджет
+            grid.addWidget(self.line[i], i, 0)  # Добавляем виджет
             if 'checkBox' in el or 'groupBox' in el:
                 self.combo[i] = QComboBox(frame)  # Помещаем в фрейм
                 self.combo[i].addItems(['Включён', 'Выключен'])

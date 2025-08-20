@@ -18,7 +18,6 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
     try:
         # Определяем фотки в папках или отдельно
         # Для СП
-        folder_dict = {'all': 0, 'folder': 0}
         folder = [p.name for p in Path(incoming_data['path_material_sp']).rglob('*') if p.is_dir()]
         percent = incoming_data['percent']
         name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
@@ -69,14 +68,14 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     double_zero_sn = '00' + sn_info_file
                     index_info_file = []
                     for i in range(3, df.shape[1]):
-                        exit = False
+                        exit_ = False
                         for j in [sn_info_file, double_zero_sn]:
                             index_info_file = df.loc[df[i] == j].index.to_list()
                             if len(index_info_file) > 0:
                                 rename_file = df.loc[index_info_file[0], 3]
-                                exit = True
+                                exit_ = True
                                 break
-                        if exit:
+                        if exit_:
                             break
                     # index_info_file = df.loc[df[3] == sn_info_file].index.to_list()
                     # if len(index_info_file) == 0:
@@ -108,9 +107,6 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     errors.append(f"Количество снимков в столбце {get_column_letter(column + 1)} не указано")
                     color_column[column + 1] = '00FF00'
                 for index, value in enumerate(snapshot_df[column].to_numpy().tolist()[1:]):
-                    if value in folder:
-                        folder_dict['folder'] += 1
-                    folder_dict['all'] += 1
                     index_doc = documents.loc[documents['sn'] == str(value)].index
                     if len(index_doc) == 0:
                         index_doc = documents.loc[documents['parent_name'] == value].index
@@ -154,28 +150,16 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
             errors = []
         except BaseException as error:
             return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}
-        logging.info('Бежим по файлам СП')
-        copy_file = len(documents.loc[documents['copy_files'] == True].index.to_list())
-        if folder_dict['folder']/folder_dict['all'] > 0.5 or copy_file == documents.shape[0]:
-            answer = create_sp_sorting_file(incoming_data, name_finish_folder, documents,
-                                            now_doc, all_doc, current_progress, percent, logging, event, window_check,
-                                            line_doing, line_progress, progress_value, info_value)
-            if answer['status'] == 'error':
-                return {'status': 'error', 'text': answer['text'], 'trace': answer['trace']}
-            if answer['status'] == 'cancel':
-               return {'status': 'cancel', 'text': '', 'trace': ''}
-            if answer['status'] == 'warning':
-                return {'status': 'warning', 'text': answer['text'], 'trace': ''}
-        else:
-            answer = create_manufacture_asu_file(incoming_data, documents, name_finish_folder, now_doc, all_doc,
-                                                 current_progress, percent, logging, event, window_check, line_doing,
-                                                 line_progress, progress_value, info_value)
-            if answer['status'] == 'error':
-                return {'status': 'error', 'text': answer['text'], 'trace': answer['trace']}
-            if answer['status'] == 'cancel':
-                return {'status': 'cancel', 'text': '', 'trace': ''}
-            if answer['status'] == 'warning':
-                return {'status': 'warning', 'text': answer['text'], 'trace': ''}
-        return {'status': 'success', 'text': errors if errors else '', 'trace': ''}
+        logging.info(f"Бежим по файлам, функция - {incoming_data['function']}")
+        answer = incoming_data['function'](incoming_data, name_finish_folder, documents,
+                                           now_doc, all_doc, current_progress, percent, logging, event, window_check,
+                                           line_doing, line_progress, progress_value, info_value)
+        if answer['status'] == 'error':
+            return {'status': 'error', 'text': answer['text'], 'trace': answer['trace']}
+        if answer['status'] == 'cancel':
+            return {'status': 'cancel', 'text': '', 'trace': ''}
+        if answer['status'] == 'warning':
+            return {'status': 'warning', 'text': answer['text'], 'trace': ''}
+        return {'status': 'warning' if errors else 'success', 'text': errors, 'trace': ''}
     except BaseException as error:
         return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}

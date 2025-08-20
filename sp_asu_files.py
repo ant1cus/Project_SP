@@ -50,9 +50,9 @@ def create_sp_sorting_file(incoming_data: dict, name_finish_folder: str, documen
                                           str(file.name))
                         new_name = re.sub('SPK', 'СПК', new_name)
                         rename_file = Path(finish_path.parent, new_name)
-                        if rename_file.exists():
-                            os.remove(rename_file)
-                        finish_path.rename(rename_file)
+                        # if rename_file.exists():
+                        #     os.remove(rename_file)
+                        finish_path.replace(rename_file)
                 continue
             if len(documents.loc[index_file, 'name_set']) == 0:
                 continue

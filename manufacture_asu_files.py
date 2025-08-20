@@ -6,7 +6,7 @@ import pandas as pd
 from small_function import replace_object
 
 
-def create_manufacture_asu_file(incoming_data: dict, documents: pd.DataFrame, name_finish_folder: str,
+def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, documents: pd.DataFrame,
                                 now_doc, all_doc,
                                 current_progress, percent, logging, event, window_check, line_doing,
                                 line_progress, progress_value, info_value) -> dict:
@@ -19,10 +19,14 @@ def create_manufacture_asu_file(incoming_data: dict, documents: pd.DataFrame, na
             current_progress += percent
             line_progress.emit(f'Выполнено {int(current_progress)} %')
             progress_value.emit(int(current_progress))
-            index_file = documents.loc[documents['start_path'] == file].index.tolist()[0]
+            index_file = documents.loc[documents['start_path'] == file].index.tolist()
+            if len(index_file):
+                index_file = index_file[0]
+            else:
+                continue
             if documents.loc[index_file, 'sn_set'] == 0:
-                errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
+                # errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
+                # logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
                 continue
             if documents.loc[index_file, 'copy_files']:
                 # if documents.loc[index_file, 'sn_set'] == 0:
@@ -31,7 +35,7 @@ def create_manufacture_asu_file(incoming_data: dict, documents: pd.DataFrame, na
                 #     continue
                 parent_path = Path(incoming_data['path_finish_folder'], name_finish_folder,
                                    str(documents.loc[index_file, 'name_set']), str(documents.loc[index_file, 'sn_set']))
-                if Path(parent_path).exists() is False:
+                if not Path(parent_path).exists():
                     os.makedirs(parent_path)
                 finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, str(documents.loc[index_file, 'name_set']),
                                   str(documents.loc[index_file, 'sn_set']), file.name)

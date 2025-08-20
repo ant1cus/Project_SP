@@ -20,13 +20,18 @@ class ProcessWindow(QDialog, Ui_Dialog):
         self.pushButton_cancel.installEventFilter(self)
         self.pushButton_stop_play.clicked.connect(self.start_stop)
         self.pushButton_cancel.clicked.connect(self.cancel_thread)
+        self.lineEdit_progress.textChanged.connect(self.on_text_changed)
         self.setWindowTitle(title)
         self.event = event
         self.stop_threading = False
         self.answer = True
+        self.previous_text = ''
         qr = self.frameGeometry().center()
         cp = QDesktopWidget().availableGeometry().center()
         self.move(cp.x() - qr.x() + 50*move, cp.y() - qr.y() + 50*move)
+
+    def on_text_changed(self, text):
+        self.previous_text = text
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Enter:

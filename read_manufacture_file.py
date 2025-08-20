@@ -19,7 +19,7 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
             logging.error(error)
             logging.error(traceback.format_exc())
             logging.info(f"Файл {Path(incoming_data['path_load_man']).name} не обработан из-за непредвиденной ошибки")
-            return {'error': True, 'text': error, 'trace': traceback.format_exc()}
+            return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}
         # Отловить permission denied
         logging.info(f"Считываем файл выгрузки {Path(incoming_data['path_load_man']).name}")
         name_set = df.iloc[1, 1]
@@ -31,7 +31,7 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
         sn_device = df[1].to_numpy().tolist()[1:]
         for serial_num in sn_device:
             if window_check.stop_threading:
-                return {'error': False, 'text': 'cancel', 'trace': ''}
+                return {'status': 'cancel', 'trace': '', 'text': ''}
             path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder, str(name_set), str(serial_num))
             os.makedirs(path_dir, exist_ok=True)
             for device in number_device:
@@ -46,7 +46,7 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
             copy_number = 0
             for device, sn in zip(sn_device, sn_list):
                 if window_check.stop_threading:
-                    return {'error': False, 'text': 'cancel', 'trace': ''}
+                    return {'status': 'cancel', 'trace': '', 'text': ''}
                 find_1_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn1'] == sn]
                 find_2_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn2'] == sn]
                 find_file = pd.concat([find_1_sn, find_2_sn], ignore_index=True)
@@ -79,6 +79,6 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
                 shutil.copy2(row.path, finish_path)
                 # row.path.replace(finish_path)
         # text = '\n'.join(errors) if errors else ''
-        return {'error': False, 'text': errors if errors else '', 'trace': ''}
+        return {'status': 'warning' if errors else 'success', 'text': errors, 'trace': ''}
     except BaseException as error:
-        return {'error': True, 'text': error, 'trace': traceback.format_exc()}
+        return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}

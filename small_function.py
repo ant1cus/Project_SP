@@ -24,10 +24,15 @@ from Default import DefaultWindow
 #         json.dump(dict_load, f, ensure_ascii=False, sort_keys=True, indent=4)
 
 
-def rewrite_settings(path: Path, data = False) -> dict:
+def rewrite_settings(path: Path, data = False, name: str = '') -> dict:
     """Создаёт файл настроек при первом запуске или если его удалили в процессе, открывает или перезаписывает его"""
     try:
         if data:
+            if name:
+                with open(Path(path, 'Настройки.txt'), "r", encoding='utf-8-sig') as f:
+                    answer = json.load(f)
+                answer['gui_settings'][name] = data
+                data = answer
             with open(Path(path, 'Настройки.txt'), 'w', encoding='utf-8-sig') as f:  # Пишем в файл
                 json.dump(data, f, ensure_ascii=False, sort_keys=True, indent=4)
                 answer = data
@@ -36,13 +41,14 @@ def rewrite_settings(path: Path, data = False) -> dict:
                 answer = json.load(f)
     except FileNotFoundError:
         with open(Path(path, 'Настройки.txt'), "w", encoding='utf-8-sig') as f:
-            data_insert = data if data else {"widget_settings": {}, 'gui_settings': {}}
+            data_insert = data if data else {"widget_settings": {},
+                                             'gui_settings': {'tab_order': {}, 'tab_visible': {}}}
             json.dump(data_insert, f, ensure_ascii=False, sort_keys=True, indent=4)
             answer = data_insert
     if 'widget_settings' not in answer:
         answer['widget_settings'] = {}
     if 'gui_settings' not in answer:
-        answer['gui_settings'] = {}
+        answer['gui_settings'] = {'tab_order': {}, 'tab_visible': {}}
     return answer
 
 
@@ -82,11 +88,11 @@ def browse(self, sender, line_edit, path) -> None:
     return
 
 
-def default_settings(self, default_path: Path, lines: dict) -> None:
+def default_settings(self, default_path: Path, lines: dict, grid_frame: dict) -> None:
     """Закрывает главное окно и выводит окно с настройками по умолчанию"""
     self.close()
     # Дополнительно передаем функцию для перезаписи дефолтных значений
-    window_add = DefaultWindow(self, default_path, lines, default_data, browse, rewrite_settings)
+    window_add = DefaultWindow(self, default_path, lines, grid_frame, default_data, browse, rewrite_settings)
     window_add.show()
     return
 

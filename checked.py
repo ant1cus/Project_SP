@@ -1,6 +1,8 @@
 import os
 import re
 from pathlib import Path
+
+import psutil
 from openpyxl import load_workbook
 import pandas as pd
 
@@ -11,7 +13,7 @@ def checked_sorting_file(incoming: dict) -> dict:
         return {'error': True, 'data': 'Путь к материалам СП пуст'}
     if os.path.isfile(incoming['path_material_sp']):
         return {'error': True, 'data': 'Укажите папку с материалами СП (указан файл)'}
-    if os.path.isdir(incoming['path_material_sp']) is False:
+    if not os.path.isdir(incoming['path_material_sp']):
         return {'error': True, 'data': 'Указанная папка с материалами СП удалена или переименована'}
     copy_file = pd.DataFrame(columns=['path', 'sn1', 'sn2', 'suffix', 'info'])
     for file in Path(incoming['path_material_sp']).rglob("*.*"):
@@ -53,7 +55,7 @@ def checked_sorting_file(incoming: dict) -> dict:
         return {'error': True, 'data': 'Путь к конечной папке пуст'}
     if os.path.isfile(incoming['path_finish_folder']):
         return {'error': True, 'data': 'Укажите директорию для копирования (указан файл)'}
-    if os.path.isdir(incoming['path_finish_folder']) is False:
+    if not os.path.isdir(incoming['path_finish_folder']):
         return {'error': True, 'data': 'Указанная конечная папка удалена или переименована'}
     for element in denied_symbol:
         if incoming['name_gk'] and element in incoming['name_gk']:
@@ -73,7 +75,29 @@ def checked_form_file(incoming: dict) -> dict:
         return {'error': True, 'data': 'Указанный файл с неподготовленной выгрузкой удалён или переименован'}
     if not incoming['path_check_material']:
         return {'error': True, 'data': 'Путь к проверяемым материалам пуст'}
-    if os.path.isdir(incoming['path_check_material']) is False:
+    if not os.path.isdir(incoming['path_check_material']):
         return {'error': True, 'data': 'Указанный путь к проверяемым материалам удалён или переименован'}
     incoming['name_dir'] = Path(incoming['name_dir']).parent
+    return {'error': False, 'data': incoming}
+
+
+def check_unloading_file(incoming: dict) -> dict:
+    for proc in psutil.process_iter():
+        if proc.name() == 'WINWORD.EXE':
+            return {'error': True, 'data': 'Закройте все файлы Word!'}
+    if not incoming['start_path']:
+        return {'error': True, 'data': 'Путь к исходным выгрузкам пуст'}
+    if not os.path.isdir(incoming['start_path']):
+        return {'error': True, 'data': 'Путь к исходным выгрузкам удалён или переименован'}
+    if not len(os.listdir(incoming['start_path'])):
+        return {'error': True, 'data': 'В указанном пути к исходным выгрузкам нет документов для преобразования'}
+    if not incoming['finish_path']:
+        return {'error': True, 'data': 'Путь к конечной папке пуст'}
+    if not os.path.isdir(incoming['finish_path']):
+        return {'error': True, 'data': 'Путь к конечной папке удалён или переименован'}
+    if len(os.listdir(incoming['finish_path'])) > 0:
+        return {'error': True, 'data': 'Конечная папка не пуста, очистите директорию'}
+    for file in Path(incoming['start_path']).rglob('*.*'):
+        if file.suffix in ['.doc', '.docx'] and '~' not in file.name:
+            incoming['all_doc'] += 1
     return {'error': False, 'data': incoming}

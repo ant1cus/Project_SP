@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>692</width>
-    <height>391</height>
+    <width>695</width>
+    <height>313</height>
    </rect>
   </property>
   <property name="font">
@@ -20,193 +20,272 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="9" column="3">
-     <widget class="QPushButton" name="pushButton_open_path_finish_dir">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="3">
-     <widget class="QPushButton" name="pushButton_open_material_sp_dir">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_dir_check_material">
-      <property name="text">
-       <string>Папка с материалами</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="4">
-     <widget class="QPushButton" name="pushButton_form_file">
-      <property name="text">
-       <string>Сформировать выгрузку из файла</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="4">
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QRadioButton" name="radioButton_load_asu">
-      <property name="text">
-       <string>Файл выгрузки «.xlsx»</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
-     <widget class="QLabel" name="label_unformat_file">
-      <property name="text">
-       <string>Неподготовленный файл</string>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-     </widget>
-    </item>
-    <item row="9" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_dir_finish"/>
-    </item>
-    <item row="9" column="0">
-     <widget class="QLabel" name="label_finish_folder">
-      <property name="text">
-       <string>Конечная папка</string>
+      <property name="tabsClosable">
+       <bool>true</bool>
       </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_material_sp">
-      <property name="text">
-       <string>Папка с материалами</string>
+      <property name="movable">
+       <bool>true</bool>
       </property>
-     </widget>
-    </item>
-    <item row="8" column="3">
-     <widget class="QPushButton" name="pushButton_open_load_manufacture_file">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="1" colspan="3">
-     <widget class="QLineEdit" name="lineEdit_name_set">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="pushButton_open_unformat_file">
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_file_manufacture">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEdit_path_dir_check_material"/>
-    </item>
-    <item row="1" column="3">
-     <widget class="QPushButton" name="pushButton_open_check_material_dir">
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_load_asu_file">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="3">
-     <widget class="QPushButton" name="pushButton_open_load_asu_file">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Открыть</string>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="0">
-     <widget class="QCheckBox" name="checkBox_name_gk">
-      <property name="text">
-       <string>Наименование ГК</string>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="0" colspan="4">
-     <widget class="QPushButton" name="pushButton_start">
-      <property name="text">
-       <string>Старт</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEdit_path_file_unformat_file"/>
-    </item>
-    <item row="11" column="0">
-     <widget class="QCheckBox" name="checkBox_name_set">
-      <property name="text">
-       <string>Наименование к-та</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_path_dir_material_sp"/>
-    </item>
-    <item row="10" column="1" colspan="3">
-     <widget class="QLineEdit" name="lineEdit_name_gk">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QRadioButton" name="radioButton_load_manufacture">
-      <property name="text">
-       <string>Файл выгрузки «.csv»</string>
-      </property>
+      <widget class="QWidget" name="form">
+       <attribute name="title">
+        <string>Формирование выгрузки</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="2" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_form_file">
+          <property name="text">
+           <string>Сформировать выгрузку из файла</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_open_check_material_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_unformat_file">
+          <property name="text">
+           <string>Неподготовленный файл</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_file_unformat_file"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_dir_check_material"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_unformat_file">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_dir_check_material">
+          <property name="text">
+           <string>Папка с материалами</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="sorting">
+       <attribute name="title">
+        <string>Сортировка файлов</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="2" column="2">
+         <widget class="QPushButton" name="pushButton_open_load_manufacture_file">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_dir_finish"/>
+        </item>
+        <item row="4" column="1" colspan="2">
+         <widget class="QLineEdit" name="lineEdit_name_gk">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_material_sp_dir">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="checkBox_name_set">
+          <property name="text">
+           <string>Наименование к-та</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QRadioButton" name="radioButton_load_manufacture">
+          <property name="text">
+           <string>Файл выгрузки «.csv»</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_open_load_asu_file">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="radioButton_load_asu">
+          <property name="text">
+           <string>Файл выгрузки «.xlsx»</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_load_asu_file">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_material_sp">
+          <property name="text">
+           <string>Папка с материалами</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="2">
+         <widget class="QLineEdit" name="lineEdit_name_set">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QPushButton" name="pushButton_open_path_finish_dir">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_file_manufacture">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_dir_material_sp"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_finish_folder">
+          <property name="text">
+           <string>Конечная папка</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="checkBox_name_gk">
+          <property name="text">
+           <string>Наименование ГК</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0" colspan="3">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pushButton_sorting_file_SP">
+            <property name="text">
+             <string>Преобразовать файлы СП</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_sorting_file_manufacture">
+            <property name="text">
+             <string>Преобразовать файлы с производства</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="change">
+       <attribute name="title">
+        <string>Изменение выгрузки</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_unloading_file">
+          <property name="text">
+           <string>Исходные выгрузки</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_start_unloading_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_change_unloading_file">
+          <property name="text">
+           <string>Изменить файл выгрузки</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_dir_start_unloading_files"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_path_dir_finish_unloading_files">
+          <property name="text">
+           <string>Конечная папка</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_dir_finish_unloading_files"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_open_finish_unloading_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -216,22 +295,64 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>692</width>
+     <width>695</width>
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menu_settings">
     <property name="title">
      <string>Настройки</string>
     </property>
     <addaction name="action_default_window"/>
    </widget>
-   <addaction name="menu"/>
+   <widget class="QMenu" name="menu_application">
+    <property name="title">
+     <string>Доступные приложения</string>
+    </property>
+    <addaction name="action_form_file"/>
+    <addaction name="action_sorting_file"/>
+    <addaction name="action_change_unloading"/>
+   </widget>
+   <addaction name="menu_settings"/>
+   <addaction name="menu_application"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_default_window">
    <property name="text">
     <string>Настройки по умолчанию</string>
+   </property>
+  </action>
+  <action name="action_form_file">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Формирование выгрузки</string>
+   </property>
+  </action>
+  <action name="action_sorting_file">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сортировка файлов</string>
+   </property>
+  </action>
+  <action name="action_change_unloading">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Изменение выгрузки</string>
    </property>
   </action>
  </widget>
@@ -244,12 +365,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>290</y>
+     <x>96</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
-     <x>490</x>
-     <y>290</y>
+     <x>426</x>
+     <y>196</y>
     </hint>
    </hints>
   </connection>
@@ -260,12 +381,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>380</y>
+     <x>96</x>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
-     <x>490</x>
-     <y>380</y>
+     <x>426</x>
+     <y>224</y>
     </hint>
    </hints>
   </connection>
@@ -276,28 +397,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>73</y>
+     <x>96</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
-     <x>407</x>
-     <y>73</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_load_manufacture</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>lineEdit_path_file_manufacture</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>92</x>
-     <y>103</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>407</x>
-     <y>103</y>
+     <x>385</x>
+     <y>107</y>
     </hint>
    </hints>
   </connection>
@@ -308,12 +413,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>73</y>
+     <x>96</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
-     <x>715</x>
-     <y>73</y>
+     <x>635</x>
+     <y>107</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_load_manufacture</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit_path_file_manufacture</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>96</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>385</x>
+     <y>137</y>
     </hint>
    </hints>
   </connection>
@@ -324,12 +445,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>103</y>
+     <x>96</x>
+     <y>137</y>
     </hint>
     <hint type="destinationlabel">
-     <x>715</x>
-     <y>103</y>
+     <x>635</x>
+     <y>137</y>
     </hint>
    </hints>
   </connection>
