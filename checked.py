@@ -98,6 +98,6 @@ def check_unloading_file(incoming: dict) -> dict:
     if len(os.listdir(incoming['finish_path'])) > 0:
         return {'error': True, 'data': 'Конечная папка не пуста, очистите директорию'}
     for file in Path(incoming['start_path']).rglob('*.*'):
-        if file.suffix in ['.doc', '.docx'] and '~' not in file.name:
+        if file.suffix == '.docx' and '~' not in file.name:
             incoming['all_doc'] += 1
     return {'error': False, 'data': incoming}

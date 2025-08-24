@@ -5,7 +5,7 @@ import pandas as pd
 import pythoncom
 from docx import Document
 from pathlib import Path
-from doc2docx import convert
+# from doc2docx import convert
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
@@ -32,15 +32,18 @@ def change_unloading_file(incoming_data: dict, current_progress, now_doc: int, a
             start_file = file
             finish_file = Path(incoming_data['finish_path'], file.stem + '.docx')
             if file.suffix == '.doc':
-                try:
-                    pythoncom.CoInitializeEx(0)
-                    convert(str(start_file), str(finish_file))
-                    start_file = finish_file
-                    logging.info(f"Преобразовали файл {file.name}")
-                except BaseException as exception:
-                    errors.append(f"Ошибка при конвертации файла {file.name}")
-                    logging.warning(f"Ошибка при конвертации файла {file.name} - {exception}")
-                    continue
+                errors.append(f"Файл {file.name} старого формата (.doc)")
+                logging.warning(f"Файл {file.name} старого формата (.doc)")
+                continue
+                # try:
+                #     pythoncom.CoInitializeEx(0)
+                #     convert(str(start_file), str(finish_file))
+                #     start_file = finish_file
+                #     logging.info(f"Преобразовали файл {file.name}")
+                # except BaseException as exception:
+                #     errors.append(f"Ошибка при конвертации файла {file.name}")
+                #     logging.warning(f"Ошибка при конвертации файла {file.name} - {exception}")
+                #     continue
             document = Document(str(start_file))
             table = document.tables[0]
             number_columns = len(table.columns)
