@@ -151,7 +151,6 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 break
         rewrite_settings(self.default_path, self.tab_order, 'tab_order')
 
-
     def tab_click(self, index):
         try:
             self.start_name = self.tab_order[str(index)]
@@ -196,8 +195,6 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         name_gk = self.lineEdit_name_gk.text().strip() if self.checkBox_name_gk.isChecked() else False
         name_set = self.lineEdit_name_set.text().strip() if self.checkBox_name_set.isChecked() else False
         func = create_sp_sorting_file if self.sender().text() == 'Преобразовать файлы СП' else create_manufacture_asu_file
-        # сюда определить какая кнопка нажата и в зависимости от неё запускать тот или иной сценарий внутри
-        # удалить подсчёт файлов в функции
         asu_man = True if self.radioButton_load_asu.isChecked() else False
         start_function = copy_from_asu_file if asu_man else copy_from_manufacture
         data = {**self.default_dict,

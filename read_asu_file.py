@@ -18,7 +18,6 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
     try:
         # Определяем фотки в папках или отдельно
         # Для СП
-        folder = [p.name for p in Path(incoming_data['path_material_sp']).rglob('*') if p.is_dir()]
         percent = incoming_data['percent']
         name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
         try:
@@ -77,24 +76,17 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                 break
                         if exit_:
                             break
-                    # index_info_file = df.loc[df[3] == sn_info_file].index.to_list()
-                    # if len(index_info_file) == 0:
-                    #     for i in range(4, df.shape[1]):
-                    #         index_info_file = df.loc[df[i] == sn_info_file].index.to_list()
-                    #         if len(index_info_file) > 0:
-                    #             rename_file = df.loc[index_info_file[0], 3]
-                    #             break
                     sn_set = 0 if len(index_info_file) == 0 else df.loc[index_info_file[0], 3]
                     name_set = '' if len(index_info_file) == 0 else df.loc[index_info_file[0], 2]
                 documents = pd.concat([
                     documents,
                     pd.DataFrame({'name': [file.name], 'start_path': [file],
-                                'parent_path': [file.parent], 'parent_name': [file.parent.name],
-                                'snapshot': [name_file.partition('_')[2].partition('_')[0]],
-                                'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0]],
-                                'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
-                                'copy_files': [copy_file], 'rename_file': [rename_file],
-                                })], ignore_index=True)
+                                  'parent_path': [file.parent], 'parent_name': [file.parent.name],
+                                  'snapshot': [name_file.partition('_')[2].partition('_')[0]],
+                                  'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0]],
+                                  'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
+                                  'copy_files': [copy_file], 'rename_file': [rename_file],
+                                  })], ignore_index=True)
             logging.info(f"Проверяем на соответствие количества снимков")
             line_doing.emit("Проверяем на соответствие количества снимков")
             snapshot_df = df[index_snapshot]

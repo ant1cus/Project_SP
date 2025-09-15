@@ -12,47 +12,36 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
                                 line_progress, progress_value, info_value) -> dict:
     try:
         errors = []
-        for file in Path(incoming_data['path_material_sp']).rglob('*.*'):
+        df = documents.loc[documents['sn_set'] != 0]
+        all_doc = df.shape[0]
+        percent = 100/all_doc
+        for row in df.itertuples():
             if window_check.stop_threading:
                 return {'status': 'cancel', 'trace': '', 'text': ''}
             now_doc += 1
             current_progress += percent
             line_progress.emit(f'Выполнено {int(current_progress)} %')
             progress_value.emit(int(current_progress))
-            index_file = documents.loc[documents['start_path'] == file].index.tolist()
-            if len(index_file):
-                index_file = index_file[0]
-            else:
-                continue
-            if documents.loc[index_file, 'sn_set'] == 0:
-                # errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                # logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                continue
-            if documents.loc[index_file, 'copy_files']:
-                # if documents.loc[index_file, 'sn_set'] == 0:
-                #     errors.append(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                #     logging.warning(f"Для файла {file.name} серийник не найден в выгрузке АСУ")
-                #     continue
+            if row.copy_files:
                 parent_path = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                                   str(documents.loc[index_file, 'name_set']), str(documents.loc[index_file, 'sn_set']))
+                                   str(row.name_set), str(row.sn_set))
                 if not Path(parent_path).exists():
                     os.makedirs(parent_path)
-                finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, str(documents.loc[index_file, 'name_set']),
-                                  str(documents.loc[index_file, 'sn_set']), file.name)
+                finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, str(row.name_set),
+                                  str(row.sn_set), row.name)
                 replace = replace_object(finish_path, logging, info_value, event, window_check)
                 if replace:
-                    shutil.copy2(file, finish_path)
+                    shutil.copy2(row.start_path, finish_path)
                     logging.info(f"Файл {finish_path} создан")
                 continue
-            line_doing.emit(f'Копируем файл {str(file.name)} ({now_doc} из {all_doc})')  
+            line_doing.emit(f'Копируем файл {str(row.name)} ({now_doc} из {all_doc})')
             path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                            str(documents.loc[index_file, 'name_set']), str(documents.loc[index_file, 'sn_set']),
-                            str(int(documents.loc[index_file, 'folder_number'])))
+                            str(row.name_set), str(row.sn_set), str(int(row.folder_number)))
             os.makedirs(path_dir, exist_ok=True)
-            copy_file = Path(path_dir, file.name)
+            copy_file = Path(path_dir, row.name)
             replace = replace_object(copy_file, logging, info_value, event, window_check)
             if replace:
-                shutil.copy2(file, copy_file)
+                shutil.copy2(row.start_path, copy_file)
                 logging.info(f"Файл {copy_file} создан")
         return {'status': 'warning' if errors else 'success', 'text': errors, 'trace': ''}
     except BaseException as ex:
