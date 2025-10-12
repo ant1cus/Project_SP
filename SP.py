@@ -46,9 +46,12 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                             }
                                  }
         self.widget_name = {
-            'sorting': {'grid': 'gridLayout_sorting', 'frame': 'groupBox_sorting', 'action': 'action_sorting_file', 'tab': 'sorting'},
-            'form': {'grid': 'gridLayout_form', 'frame': 'groupBox_form', 'action': 'action_form_file', 'tab': 'form'},
-            'change': {'grid': 'gridLayout_change', 'frame': 'groupBox_change', 'action': 'action_change_unloading', 'tab': 'change'},
+            'sorting': {'grid': 'gridLayout_sorting', 'frame': 'groupBox_sorting',
+                        'action': 'action_sorting_file', 'tab': 'sorting'},
+            'form': {'grid': 'gridLayout_form', 'frame': 'groupBox_form',
+                     'action': 'action_form_file', 'tab': 'form'},
+            'change': {'grid': 'gridLayout_change', 'frame': 'groupBox_change',
+                       'action': 'action_change_unloading', 'tab': 'change'},
                            }
         self.pushButton_open_unformat_file.clicked.connect((lambda: browse(self, self.pushButton_open_unformat_file,
                                                                            self.lineEdit_path_file_unformat_file,

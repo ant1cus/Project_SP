@@ -15,9 +15,9 @@ def checked_sorting_file(incoming: dict) -> dict:
         return {'error': True, 'data': 'Укажите папку с материалами СП (указан файл)'}
     if not os.path.isdir(incoming['path_material_sp']):
         return {'error': True, 'data': 'Указанная папка с материалами СП удалена или переименована'}
-    copy_file = pd.DataFrame(columns=['path', 'sn1', 'sn2', 'suffix', 'info'])
+    copy_file = pd.DataFrame(columns=['path', 'sn1', 'sn2', 'suffix', 'info', 'rename_file', 'new_name'])
     for file in Path(incoming['path_material_sp']).rglob("*.*"):
-        file_info = [file, False, False, file.suffix, False]
+        file_info = [file, '', '', file.suffix, False, False, False]
         if re.findall(r'\w+_(\w+)\.\w+\b', file.name):
             file_info[1] = re.findall(r'\w+_(\w+)\.\w+\b', file.name)[0]
         if re.findall(r'\w+_(\w+)_\w+\.\w+\b', file.name):
@@ -26,6 +26,7 @@ def checked_sorting_file(incoming: dict) -> dict:
             copy_file.loc[len(copy_file)] = file_info
         elif file.parent.name.lower() == 'спк' or file.parent.name.lower() == 'инфо':
             file_info[4] = True
+            file_info[5] = file.stem.partition('_')[2]
             copy_file.loc[len(copy_file)] = file_info
     if len(copy_file) == 0:
         return {'error': True, 'data': 'Нет файлов для копирования и сортировки'}

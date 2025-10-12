@@ -38,6 +38,64 @@ class Button(QtWidgets.QLineEdit):
 				e.accept()
 		else:
 			super(Button, self).dropEvent(e)
+import os
+import os
+
+
+class Button(QtWidgets.QLineEdit):
+
+	def __init__(self, parent):
+		super(Button, self).__init__(parent)
+
+		self.setAcceptDrops(True)
+
+	def dragEnterEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			e.accept()
+		else:
+			super(Button, self).dragEnterEvent(e)
+
+	def dragMoveEvent(self, e):
+
+		super(Button, self).dragMoveEvent(e)
+
+	def dropEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			for url in e.mimeData().urls():
+				self.setText(os.path.normcase(url.toLocalFile()))
+				e.accept()
+		else:
+			super(Button, self).dropEvent(e)
+
+
+class Button(QtWidgets.QLineEdit):
+
+	def __init__(self, parent):
+		super(Button, self).__init__(parent)
+
+		self.setAcceptDrops(True)
+
+	def dragEnterEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			e.accept()
+		else:
+			super(Button, self).dragEnterEvent(e)
+
+	def dragMoveEvent(self, e):
+
+		super(Button, self).dragMoveEvent(e)
+
+	def dropEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			for url in e.mimeData().urls():
+				self.setText(os.path.normcase(url.toLocalFile()))
+				e.accept()
+		else:
+			super(Button, self).dropEvent(e)
 
 
 class Ui_mainWindow(object):
