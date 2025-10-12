@@ -14,6 +14,11 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                        line_progress, progress_value, event, window_check, info_value) -> dict:
     logging = incoming_data['logging']
     try:
+<<<<<<< HEAD
+=======
+        # Определяем фотки в папках или отдельно
+        # Для СП
+>>>>>>> 889607e650f796f644ca68eb38c1f6047f7297be
         percent = incoming_data['percent']
         name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
         try:

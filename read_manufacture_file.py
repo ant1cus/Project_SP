@@ -21,7 +21,6 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
             logging.error(traceback.format_exc())
             logging.info(f"Файл {Path(incoming_data['path_load_man']).name} не обработан из-за непредвиденной ошибки")
             return {'status': 'error', 'text': error, 'trace': traceback.format_exc()}
-        # Отловить permission denied
         logging.info(f"Считываем файл выгрузки {Path(incoming_data['path_load_man']).name}")
         name_set = df.iloc[1, 1]
         number_device = sorted(set(df.iloc[0, 2:].values.tolist()))
