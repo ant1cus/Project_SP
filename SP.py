@@ -103,7 +103,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
             'change-lineEdit_path_dir_start_unloading_files': ['Исходные файлы выгрузки',
                                                                self.lineEdit_path_dir_start_unloading_files],
             'change-lineEdit_path_dir_finish_unloading_files': ['Конечная папка',
-                                                               self.lineEdit_path_dir_finish_unloading_files]
+                                                                self.lineEdit_path_dir_finish_unloading_files]
                       }
         self.action_default_window.triggered.connect((lambda: default_settings(self, self.default_path, self.lines,
                                                                                self.widget_name)))

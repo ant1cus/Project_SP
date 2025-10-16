@@ -40,7 +40,7 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
                 continue
             line_doing.emit(f'Копируем файл {str(row.name)} ({now_doc} из {all_doc})')
             path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                            str(row.name_set), str(row.sn_set), str(int(row.folder_number)))
+                            str(row.name_set), str(int(row.folder_number)))
             os.makedirs(path_dir, exist_ok=True)
             copy_file = Path(path_dir, row.name)
             replace = replace_object(copy_file, logging, info_value, event, window_check)
