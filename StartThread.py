@@ -74,7 +74,6 @@ class StartThreading(QThread):
             text = text + '•' if dot_len <= 5 else re.sub(r'•', '', text)
             self.line_progress.emit(text)
 
-
     def run(self):
         self.logging.info('Запустили run')
         self.line_progress.emit(f'Выполнено 0 %')

@@ -54,6 +54,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
             documents = pd.DataFrame(columns=columns_name)
             errors = []
             line_doing.emit(f"Считываем снимки")
+            rename_col = 3 if incoming_data['executor'] == 'sp' else 2
             for file in Path(incoming_data['path_material_sp']).rglob('*.*'):
                 name_file = file.stem
                 copy_file = True if 'info' in name_file.lower() or 'spk' in name_file.lower() else False
@@ -64,12 +65,12 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     sn_info_file = file.name.partition('_')[2].partition('.')[0]
                     double_zero_sn = '00' + sn_info_file
                     index_info_file = []
-                    for i in range(3, df.shape[1]):
+                    for i in range(2, df.shape[1]):
                         exit_ = False
                         for j in [sn_info_file, double_zero_sn]:
                             index_info_file = df.loc[df[i] == j].index.to_list()
                             if len(index_info_file) > 0:
-                                rename_file = df.loc[index_info_file[0], 3]
+                                rename_file = df.loc[index_info_file[0], rename_col]
                                 exit_ = True
                                 break
                         if exit_:
@@ -83,7 +84,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                   'snapshot': [name_file.partition('_')[2].partition('_')[0]],
                                   'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0]],
                                   'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
-                                  'copy_files': [copy_file], 'rename_file': [rename_file],
+                                  'copy_files': [copy_file], 'rename_file': [rename_file]
                                   })], ignore_index=True)
             logging.info(f"Проверяем на соответствие количества снимков")
             line_doing.emit("Проверяем на соответствие количества снимков")

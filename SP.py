@@ -205,6 +205,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'start_function': start_function,
                 'name_gk': name_gk, 'name_set': name_set, 'asu_man': asu_man,
                 'function': func,
+                'executor': 'sp' if self.sender().text() == 'Преобразовать файлы СП' else 'ood',
                 'path_material_sp': self.lineEdit_path_dir_material_sp.text().strip(),
                 'path_load_asu': self.lineEdit_path_load_asu_file.text().strip(),
                 'path_load_man': self.lineEdit_path_file_manufacture.text().strip(),
