@@ -67,8 +67,9 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     index_info_file = []
                     for i in range(2, df.shape[1]):
                         exit_ = False
+                        df[i] = df[i].str.lower()
                         for j in [sn_info_file, double_zero_sn]:
-                            index_info_file = df.loc[df[i] == j].index.to_list()
+                            index_info_file = df.loc[df[i] == j.lower()].index.to_list()
                             if len(index_info_file) > 0:
                                 rename_file = df.loc[index_info_file[0], rename_col]
                                 exit_ = True
@@ -82,7 +83,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     pd.DataFrame({'name': [file.name], 'start_path': [file],
                                   'parent_path': [file.parent], 'parent_name': [file.parent.name],
                                   'snapshot': [name_file.partition('_')[2].partition('_')[0]],
-                                  'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0]],
+                                  'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0].lower()],
                                   'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
                                   'copy_files': [copy_file], 'rename_file': [rename_file]
                                   })], ignore_index=True)
@@ -98,7 +99,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     errors.append(f"Количество снимков в столбце {get_column_letter(column + 1)} не указано")
                     color_column[column + 1] = '00FF00'
                 for index, value in enumerate(snapshot_df[column].to_numpy().tolist()[1:]):
-                    index_doc = documents.loc[documents['sn'] == str(value)].index
+                    index_doc = documents.loc[documents['sn'] == str(value).lower()].index
                     if len(index_doc) == 0:
                         index_doc = documents.loc[documents['parent_name'] == value].index
                     documents.loc[index_doc, 'sn_set'] = df.loc[index_for_snapshot[index + 1], 3]

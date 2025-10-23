@@ -49,8 +49,8 @@ def copy_from_manufacture(incoming_data: dict, current_progress: float, now_doc:
             for device, sn in zip(sn_device, sn_list):
                 if window_check.stop_threading:
                     return {'status': 'cancel', 'trace': '', 'text': ''}
-                find_1_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn1'] == sn]
-                find_2_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn2'] == sn]
+                find_1_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn1'].str.contains(sn, case=False)]
+                find_2_sn = incoming_data['all_file'].loc[incoming_data['all_file']['sn2'].str.contains(sn, case=False)]
                 info_index_sn1 = info_df.loc[(info_df['sn1'].str.contains(sn, case=False)) |
                                              (info_df['sn1'].str.contains('00' + sn, case=False))].index.to_list()
                 info_index_sn2 = info_df.loc[(info_df['sn2'].str.contains(sn, case=False)) |
