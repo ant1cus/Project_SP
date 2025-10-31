@@ -41,7 +41,7 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
         columns = []
         for index, column in enumerate(column_list):
             str_list = [str(col) for col in column]
-            if len(set(str_list)) == 1 and index > 3:
+            if len(set(str_list)) == 1 and str_list[0] == 'nan' and index > 3:
                 continue
             string_col = ','.join(str_list)
             if string_col not in columns:
