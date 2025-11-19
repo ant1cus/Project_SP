@@ -28,6 +28,9 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
                 if not Path(parent_path).exists():
                     os.makedirs(parent_path)
                 finish_path = Path(incoming_data['path_finish_folder'], name_finish_folder, str(row.name_set), row.name)
+                if finish_path.exists():
+                    logging.info(f"Файл {finish_path.name} существует, пропускаем")
+                    continue
                 replace = replace_object(finish_path, logging, info_value, event, window_check)
                 if replace:
                     shutil.copy2(row.start_path, finish_path)
@@ -43,6 +46,9 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
                             str(row.name_set), str(int(row.folder_number)))
             os.makedirs(path_dir, exist_ok=True)
             copy_file = Path(path_dir, row.name)
+            if copy_file.exists():
+                logging.info(f"Файл {copy_file.name} существует, пропускаем")
+                continue
             replace = replace_object(copy_file, logging, info_value, event, window_check)
             if replace:
                 shutil.copy2(row.start_path, copy_file)
