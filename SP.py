@@ -69,9 +69,12 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_load_manufacture_file.clicked.connect(
             (lambda: browse(self, self.pushButton_open_load_manufacture_file, self.lineEdit_path_file_manufacture,
                             self.default_path)))
-        self.pushButton_open_path_finish_dir.clicked.connect((lambda: browse(self, self.pushButton_open_path_finish_dir,
-                                                                             self.lineEdit_path_dir_finish,
-                                                                             self.default_path)))
+        self.pushButton_open_path_empty_finish_dir.clicked.connect(
+            (lambda: browse(self, self.pushButton_open_path_empty_finish_dir,
+                            self.lineEdit_path_dir_finish_empty, self.default_path)))
+        self.pushButton_open_path_with_files_finish_dir.clicked.connect(
+            (lambda: browse(self, self.pushButton_open_path_with_files_finish_dir,
+                            self.lineEdit_path_dir_finish_with_files, self.default_path)))
         self.pushButton_open_start_unloading_dir.clicked.connect(
             (lambda: browse(self, self.pushButton_open_start_unloading_dir,
                             self.lineEdit_path_dir_start_unloading_files, self.default_path)))
@@ -95,7 +98,12 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                                             self.radioButton_load_manufacture]],
             'sorting-lineEdit_path_load_asu_file': ['Файл выгрузки «.xlsx»', self.lineEdit_path_load_asu_file],
             'sorting-lineEdit_path_file_manufacture': ['Файл выгрузки «.csv»', self.lineEdit_path_file_manufacture],
-            'sorting-lineEdit_path_dir_finish': ['Путь к конечной папке', self.lineEdit_path_dir_finish],
+            'sorting-radioButton_group2': ['Тип конечной папки', [self.radioButton_empty_finish_dir,
+                                                                  self.radioButton_finish_dir_with_files]],
+            'sorting-lineEdit_path_dir_finish_empty': ['Путь к конечной пустой папке',
+                                                       self.lineEdit_path_dir_finish_empty],
+            'sorting-lineEdit_path_dir_finish_with_files': ['Путь к конечной папке с файлами',
+                                                            self.lineEdit_path_dir_finish_with_files],
             'sorting-checkBox_name_gk': ['Включить ГК', self.checkBox_name_gk],
             'sorting-lineEdit_name_gk': ['Наименование ГК', self.lineEdit_name_gk],
             'sorting-checkBox_name_set': ['Включить комплект', self.checkBox_name_set],
@@ -199,6 +207,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         name_set = self.lineEdit_name_set.text().strip() if self.checkBox_name_set.isChecked() else False
         func = create_sp_sorting_file if self.sender().text() == 'Преобразовать файлы СП' else create_manufacture_asu_file
         asu_man = True if self.radioButton_load_asu.isChecked() else False
+        empty_with_files = True if self.radioButton_empty_finish_dir.isChecked() else False
         start_function = copy_from_asu_file if asu_man else copy_from_manufacture
         data = {**self.default_dict,
                 'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
@@ -209,7 +218,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'path_material_sp': self.lineEdit_path_dir_material_sp.text().strip(),
                 'path_load_asu': self.lineEdit_path_load_asu_file.text().strip(),
                 'path_load_man': self.lineEdit_path_file_manufacture.text().strip(),
-                'path_finish_folder': self.lineEdit_path_dir_finish.text().strip()
+                'empty_with_files': empty_with_files,
+                'lineEdit_path_dir_finish_empty': self.lineEdit_path_dir_finish_empty.text().strip(),
+                'lineEdit_path_dir_finish_with_files': self.lineEdit_path_dir_finish_with_files.text().strip()
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, checked_sorting_file, StartThreading)
 

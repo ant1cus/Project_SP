@@ -52,10 +52,14 @@ def checked_sorting_file(incoming: dict) -> dict:
             return {'error': True, 'data': 'Указанный файл выгрузки «.csv» удалён или переименован'}
         if incoming['path_load_man'].endswith('.csv') is False:
             return {'error': True, 'data': 'Файл выгрузки «.csv» не формата «.csv»'}
+    if incoming['empty_with_files']:
+        incoming['path_finish_folder'] = incoming['lineEdit_path_dir_finish_empty']
+    else:
+        incoming['path_finish_folder'] = incoming['lineEdit_path_dir_finish_with_files']
     if not incoming['path_finish_folder']:
         return {'error': True, 'data': 'Путь к конечной папке пуст'}
     if os.path.isfile(incoming['path_finish_folder']):
-        return {'error': True, 'data': 'Укажите директорию для копирования (указан файл)'}
+        return {'error': True, 'data': 'Укажите для копирования (указан файл)'}
     if not os.path.isdir(incoming['path_finish_folder']):
         return {'error': True, 'data': 'Указанная конечная папка удалена или переименована'}
     for element in denied_symbol:

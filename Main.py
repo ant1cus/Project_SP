@@ -38,70 +38,12 @@ class Button(QtWidgets.QLineEdit):
 				e.accept()
 		else:
 			super(Button, self).dropEvent(e)
-import os
-import os
-
-
-class Button(QtWidgets.QLineEdit):
-
-	def __init__(self, parent):
-		super(Button, self).__init__(parent)
-
-		self.setAcceptDrops(True)
-
-	def dragEnterEvent(self, e):
-
-		if e.mimeData().hasUrls():
-			e.accept()
-		else:
-			super(Button, self).dragEnterEvent(e)
-
-	def dragMoveEvent(self, e):
-
-		super(Button, self).dragMoveEvent(e)
-
-	def dropEvent(self, e):
-
-		if e.mimeData().hasUrls():
-			for url in e.mimeData().urls():
-				self.setText(os.path.normcase(url.toLocalFile()))
-				e.accept()
-		else:
-			super(Button, self).dropEvent(e)
-
-
-class Button(QtWidgets.QLineEdit):
-
-	def __init__(self, parent):
-		super(Button, self).__init__(parent)
-
-		self.setAcceptDrops(True)
-
-	def dragEnterEvent(self, e):
-
-		if e.mimeData().hasUrls():
-			e.accept()
-		else:
-			super(Button, self).dragEnterEvent(e)
-
-	def dragMoveEvent(self, e):
-
-		super(Button, self).dragMoveEvent(e)
-
-	def dropEvent(self, e):
-
-		if e.mimeData().hasUrls():
-			for url in e.mimeData().urls():
-				self.setText(os.path.normcase(url.toLocalFile()))
-				e.accept()
-		else:
-			super(Button, self).dropEvent(e)
 
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
-        mainWindow.resize(695, 313)
+        mainWindow.resize(695, 379)
         font = QtGui.QFont()
         font.setPointSize(10)
         mainWindow.setFont(font)
@@ -143,6 +85,54 @@ class Ui_mainWindow(object):
         self.sorting.setObjectName("sorting")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.sorting)
         self.gridLayout_3.setObjectName("gridLayout_3")
+        self.lineEdit_path_dir_finish_empty = Button(self.sorting)
+        self.lineEdit_path_dir_finish_empty.setEnabled(False)
+        self.lineEdit_path_dir_finish_empty.setObjectName("lineEdit_path_dir_finish_empty")
+        self.gridLayout_3.addWidget(self.lineEdit_path_dir_finish_empty, 3, 1, 1, 1)
+        self.lineEdit_path_file_manufacture = Button(self.sorting)
+        self.lineEdit_path_file_manufacture.setEnabled(False)
+        self.lineEdit_path_file_manufacture.setObjectName("lineEdit_path_file_manufacture")
+        self.gridLayout_3.addWidget(self.lineEdit_path_file_manufacture, 2, 1, 1, 1)
+        self.radioButton_empty_finish_dir = QtWidgets.QRadioButton(self.sorting)
+        self.radioButton_empty_finish_dir.setObjectName("radioButton_empty_finish_dir")
+        self.buttonGroup_2 = QtWidgets.QButtonGroup(mainWindow)
+        self.buttonGroup_2.setObjectName("buttonGroup_2")
+        self.buttonGroup_2.addButton(self.radioButton_empty_finish_dir)
+        self.gridLayout_3.addWidget(self.radioButton_empty_finish_dir, 3, 0, 1, 1)
+        self.lineEdit_name_set = QtWidgets.QLineEdit(self.sorting)
+        self.lineEdit_name_set.setEnabled(False)
+        self.lineEdit_name_set.setObjectName("lineEdit_name_set")
+        self.gridLayout_3.addWidget(self.lineEdit_name_set, 6, 1, 1, 2)
+        self.pushButton_open_path_empty_finish_dir = QtWidgets.QPushButton(self.sorting)
+        self.pushButton_open_path_empty_finish_dir.setEnabled(False)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_open_path_empty_finish_dir.sizePolicy().hasHeightForWidth())
+        self.pushButton_open_path_empty_finish_dir.setSizePolicy(sizePolicy)
+        self.pushButton_open_path_empty_finish_dir.setObjectName("pushButton_open_path_empty_finish_dir")
+        self.gridLayout_3.addWidget(self.pushButton_open_path_empty_finish_dir, 3, 2, 1, 1)
+        self.lineEdit_name_gk = QtWidgets.QLineEdit(self.sorting)
+        self.lineEdit_name_gk.setEnabled(False)
+        self.lineEdit_name_gk.setObjectName("lineEdit_name_gk")
+        self.gridLayout_3.addWidget(self.lineEdit_name_gk, 5, 1, 1, 2)
+        self.label_material_sp = QtWidgets.QLabel(self.sorting)
+        self.label_material_sp.setObjectName("label_material_sp")
+        self.gridLayout_3.addWidget(self.label_material_sp, 0, 0, 1, 1)
+        self.pushButton_open_path_with_files_finish_dir = QtWidgets.QPushButton(self.sorting)
+        self.pushButton_open_path_with_files_finish_dir.setEnabled(False)
+        self.pushButton_open_path_with_files_finish_dir.setObjectName("pushButton_open_path_with_files_finish_dir")
+        self.gridLayout_3.addWidget(self.pushButton_open_path_with_files_finish_dir, 4, 2, 1, 1)
+        self.radioButton_finish_dir_with_files = QtWidgets.QRadioButton(self.sorting)
+        self.radioButton_finish_dir_with_files.setObjectName("radioButton_finish_dir_with_files")
+        self.buttonGroup_2.addButton(self.radioButton_finish_dir_with_files)
+        self.gridLayout_3.addWidget(self.radioButton_finish_dir_with_files, 4, 0, 1, 1)
+        self.radioButton_load_asu = QtWidgets.QRadioButton(self.sorting)
+        self.radioButton_load_asu.setObjectName("radioButton_load_asu")
+        self.buttonGroup = QtWidgets.QButtonGroup(mainWindow)
+        self.buttonGroup.setObjectName("buttonGroup")
+        self.buttonGroup.addButton(self.radioButton_load_asu)
+        self.gridLayout_3.addWidget(self.radioButton_load_asu, 1, 0, 1, 1)
         self.pushButton_open_load_manufacture_file = QtWidgets.QPushButton(self.sorting)
         self.pushButton_open_load_manufacture_file.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -152,27 +142,6 @@ class Ui_mainWindow(object):
         self.pushButton_open_load_manufacture_file.setSizePolicy(sizePolicy)
         self.pushButton_open_load_manufacture_file.setObjectName("pushButton_open_load_manufacture_file")
         self.gridLayout_3.addWidget(self.pushButton_open_load_manufacture_file, 2, 2, 1, 1)
-        self.lineEdit_path_dir_finish = Button(self.sorting)
-        self.lineEdit_path_dir_finish.setObjectName("lineEdit_path_dir_finish")
-        self.gridLayout_3.addWidget(self.lineEdit_path_dir_finish, 3, 1, 1, 1)
-        self.lineEdit_name_gk = QtWidgets.QLineEdit(self.sorting)
-        self.lineEdit_name_gk.setEnabled(False)
-        self.lineEdit_name_gk.setObjectName("lineEdit_name_gk")
-        self.gridLayout_3.addWidget(self.lineEdit_name_gk, 4, 1, 1, 2)
-        self.pushButton_open_material_sp_dir = QtWidgets.QPushButton(self.sorting)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_open_material_sp_dir.sizePolicy().hasHeightForWidth())
-        self.pushButton_open_material_sp_dir.setSizePolicy(sizePolicy)
-        self.pushButton_open_material_sp_dir.setObjectName("pushButton_open_material_sp_dir")
-        self.gridLayout_3.addWidget(self.pushButton_open_material_sp_dir, 0, 2, 1, 1)
-        self.checkBox_name_set = QtWidgets.QCheckBox(self.sorting)
-        self.checkBox_name_set.setObjectName("checkBox_name_set")
-        self.gridLayout_3.addWidget(self.checkBox_name_set, 5, 0, 1, 1)
-        self.radioButton_load_manufacture = QtWidgets.QRadioButton(self.sorting)
-        self.radioButton_load_manufacture.setObjectName("radioButton_load_manufacture")
-        self.gridLayout_3.addWidget(self.radioButton_load_manufacture, 2, 0, 1, 1)
         self.pushButton_open_load_asu_file = QtWidgets.QPushButton(self.sorting)
         self.pushButton_open_load_asu_file.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -182,41 +151,35 @@ class Ui_mainWindow(object):
         self.pushButton_open_load_asu_file.setSizePolicy(sizePolicy)
         self.pushButton_open_load_asu_file.setObjectName("pushButton_open_load_asu_file")
         self.gridLayout_3.addWidget(self.pushButton_open_load_asu_file, 1, 2, 1, 1)
-        self.radioButton_load_asu = QtWidgets.QRadioButton(self.sorting)
-        self.radioButton_load_asu.setObjectName("radioButton_load_asu")
-        self.gridLayout_3.addWidget(self.radioButton_load_asu, 1, 0, 1, 1)
         self.lineEdit_path_load_asu_file = Button(self.sorting)
         self.lineEdit_path_load_asu_file.setEnabled(False)
         self.lineEdit_path_load_asu_file.setObjectName("lineEdit_path_load_asu_file")
         self.gridLayout_3.addWidget(self.lineEdit_path_load_asu_file, 1, 1, 1, 1)
-        self.label_material_sp = QtWidgets.QLabel(self.sorting)
-        self.label_material_sp.setObjectName("label_material_sp")
-        self.gridLayout_3.addWidget(self.label_material_sp, 0, 0, 1, 1)
-        self.lineEdit_name_set = QtWidgets.QLineEdit(self.sorting)
-        self.lineEdit_name_set.setEnabled(False)
-        self.lineEdit_name_set.setObjectName("lineEdit_name_set")
-        self.gridLayout_3.addWidget(self.lineEdit_name_set, 5, 1, 1, 2)
-        self.pushButton_open_path_finish_dir = QtWidgets.QPushButton(self.sorting)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_open_path_finish_dir.sizePolicy().hasHeightForWidth())
-        self.pushButton_open_path_finish_dir.setSizePolicy(sizePolicy)
-        self.pushButton_open_path_finish_dir.setObjectName("pushButton_open_path_finish_dir")
-        self.gridLayout_3.addWidget(self.pushButton_open_path_finish_dir, 3, 2, 1, 1)
-        self.lineEdit_path_file_manufacture = Button(self.sorting)
-        self.lineEdit_path_file_manufacture.setEnabled(False)
-        self.lineEdit_path_file_manufacture.setObjectName("lineEdit_path_file_manufacture")
-        self.gridLayout_3.addWidget(self.lineEdit_path_file_manufacture, 2, 1, 1, 1)
         self.lineEdit_path_dir_material_sp = Button(self.sorting)
         self.lineEdit_path_dir_material_sp.setObjectName("lineEdit_path_dir_material_sp")
         self.gridLayout_3.addWidget(self.lineEdit_path_dir_material_sp, 0, 1, 1, 1)
-        self.label_finish_folder = QtWidgets.QLabel(self.sorting)
-        self.label_finish_folder.setObjectName("label_finish_folder")
-        self.gridLayout_3.addWidget(self.label_finish_folder, 3, 0, 1, 1)
+        self.checkBox_name_set = QtWidgets.QCheckBox(self.sorting)
+        self.checkBox_name_set.setObjectName("checkBox_name_set")
+        self.gridLayout_3.addWidget(self.checkBox_name_set, 6, 0, 1, 1)
+        self.pushButton_open_material_sp_dir = QtWidgets.QPushButton(self.sorting)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_open_material_sp_dir.sizePolicy().hasHeightForWidth())
+        self.pushButton_open_material_sp_dir.setSizePolicy(sizePolicy)
+        self.pushButton_open_material_sp_dir.setObjectName("pushButton_open_material_sp_dir")
+        self.gridLayout_3.addWidget(self.pushButton_open_material_sp_dir, 0, 2, 1, 1)
         self.checkBox_name_gk = QtWidgets.QCheckBox(self.sorting)
         self.checkBox_name_gk.setObjectName("checkBox_name_gk")
-        self.gridLayout_3.addWidget(self.checkBox_name_gk, 4, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.checkBox_name_gk, 5, 0, 1, 1)
+        self.lineEdit_path_dir_finish_with_files = Button(self.sorting)
+        self.lineEdit_path_dir_finish_with_files.setEnabled(False)
+        self.lineEdit_path_dir_finish_with_files.setObjectName("lineEdit_path_dir_finish_with_files")
+        self.gridLayout_3.addWidget(self.lineEdit_path_dir_finish_with_files, 4, 1, 1, 1)
+        self.radioButton_load_manufacture = QtWidgets.QRadioButton(self.sorting)
+        self.radioButton_load_manufacture.setObjectName("radioButton_load_manufacture")
+        self.buttonGroup.addButton(self.radioButton_load_manufacture)
+        self.gridLayout_3.addWidget(self.radioButton_load_manufacture, 2, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.pushButton_sorting_file_SP = QtWidgets.QPushButton(self.sorting)
@@ -225,7 +188,7 @@ class Ui_mainWindow(object):
         self.pushButton_sorting_file_manufacture = QtWidgets.QPushButton(self.sorting)
         self.pushButton_sorting_file_manufacture.setObjectName("pushButton_sorting_file_manufacture")
         self.horizontalLayout.addWidget(self.pushButton_sorting_file_manufacture)
-        self.gridLayout_3.addLayout(self.horizontalLayout, 7, 0, 1, 3)
+        self.gridLayout_3.addLayout(self.horizontalLayout, 8, 0, 1, 3)
         self.tabWidget.addTab(self.sorting, "")
         self.change = QtWidgets.QWidget()
         self.change.setObjectName("change")
@@ -295,6 +258,10 @@ class Ui_mainWindow(object):
         self.radioButton_load_asu.toggled['bool'].connect(self.pushButton_open_load_asu_file.setEnabled) # type: ignore
         self.radioButton_load_manufacture.toggled['bool'].connect(self.lineEdit_path_file_manufacture.setEnabled) # type: ignore
         self.radioButton_load_manufacture.toggled['bool'].connect(self.pushButton_open_load_manufacture_file.setEnabled) # type: ignore
+        self.radioButton_empty_finish_dir.toggled['bool'].connect(self.lineEdit_path_dir_finish_empty.setEnabled) # type: ignore
+        self.radioButton_empty_finish_dir.toggled['bool'].connect(self.pushButton_open_path_empty_finish_dir.setEnabled) # type: ignore
+        self.radioButton_finish_dir_with_files.toggled['bool'].connect(self.lineEdit_path_dir_finish_with_files.setEnabled) # type: ignore
+        self.radioButton_finish_dir_with_files.toggled['bool'].connect(self.pushButton_open_path_with_files_finish_dir.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
 
     def retranslateUi(self, mainWindow):
@@ -306,16 +273,18 @@ class Ui_mainWindow(object):
         self.pushButton_open_unformat_file.setText(_translate("mainWindow", "Открыть"))
         self.label_dir_check_material.setText(_translate("mainWindow", "Папка с материалами"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.form), _translate("mainWindow", "Формирование выгрузки"))
-        self.pushButton_open_load_manufacture_file.setText(_translate("mainWindow", "Открыть"))
-        self.pushButton_open_material_sp_dir.setText(_translate("mainWindow", "Открыть"))
-        self.checkBox_name_set.setText(_translate("mainWindow", "Наименование к-та"))
-        self.radioButton_load_manufacture.setText(_translate("mainWindow", "Файл выгрузки «.csv»"))
-        self.pushButton_open_load_asu_file.setText(_translate("mainWindow", "Открыть"))
-        self.radioButton_load_asu.setText(_translate("mainWindow", "Файл выгрузки «.xlsx»"))
+        self.radioButton_empty_finish_dir.setText(_translate("mainWindow", "Пустая конечная папка"))
+        self.pushButton_open_path_empty_finish_dir.setText(_translate("mainWindow", "Открыть"))
         self.label_material_sp.setText(_translate("mainWindow", "Папка с материалами"))
-        self.pushButton_open_path_finish_dir.setText(_translate("mainWindow", "Открыть"))
-        self.label_finish_folder.setText(_translate("mainWindow", "Конечная папка"))
+        self.pushButton_open_path_with_files_finish_dir.setText(_translate("mainWindow", "Открыть"))
+        self.radioButton_finish_dir_with_files.setText(_translate("mainWindow", "Папка с файлами"))
+        self.radioButton_load_asu.setText(_translate("mainWindow", "Файл выгрузки «.xlsx»"))
+        self.pushButton_open_load_manufacture_file.setText(_translate("mainWindow", "Открыть"))
+        self.pushButton_open_load_asu_file.setText(_translate("mainWindow", "Открыть"))
+        self.checkBox_name_set.setText(_translate("mainWindow", "Наименование к-та"))
+        self.pushButton_open_material_sp_dir.setText(_translate("mainWindow", "Открыть"))
         self.checkBox_name_gk.setText(_translate("mainWindow", "Наименование ГК"))
+        self.radioButton_load_manufacture.setText(_translate("mainWindow", "Файл выгрузки «.csv»"))
         self.pushButton_sorting_file_SP.setText(_translate("mainWindow", "Преобразовать файлы СП"))
         self.pushButton_sorting_file_manufacture.setText(_translate("mainWindow", "Преобразовать файлы с производства"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.sorting), _translate("mainWindow", "Сортировка файлов"))

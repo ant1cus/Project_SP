@@ -67,7 +67,9 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     index_info_file = []
                     for i in range(2, df.shape[1]):
                         exit_ = False
+                        snap_val = df.loc[0, i]
                         df[i] = df[i].str.lower()
+                        df.loc[0, i] = snap_val
                         for j in [sn_info_file, double_zero_sn]:
                             index_info_file = df.loc[df[i] == j.lower()].index.to_list()
                             if len(index_info_file) > 0:
