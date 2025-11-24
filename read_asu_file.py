@@ -42,7 +42,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     folder_number.append(df.iloc[0, index])
                     index_snapshot.append(index)
                     continue
-                if re.findall(r'[A-zА-я]+', str(item)) or math.isnan(item):
+                if re.findall(r'[A-zА-я\s]+', str(item)) or math.isnan(item):
                     df.iloc[0, index] = index_string
                     index_string += 1
             df.sort_values(0, axis=1, inplace=True)
@@ -50,11 +50,16 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
             if incoming_data['name_set']:
                 df.fillna(value={2: incoming_data['name_set']}, inplace=True)
             columns_name = ['name', 'snapshot', 'sn', 'start_path', 'parent_path', 'parent_name', 'sn_set',
-                            'folder_number', 'name_set', 'copy_files', 'rename_file']
+                            'folder_number', 'name_set', 'copy_files', 'rename_file', 'skip']
             documents = pd.DataFrame(columns=columns_name)
             errors = []
             line_doing.emit(f"Считываем снимки")
             rename_col = 3 if incoming_data['executor'] == 'sp' else 2
+            exists_sn = []
+            if incoming_data['empty_with_files'] is False:
+                for folder in os.listdir(Path(incoming_data['path_finish_folder'], name_finish_folder)):
+                    exists_sn = [*exists_sn, *[fold for fold in os.listdir(Path(incoming_data['path_finish_folder'],
+                                                                                name_finish_folder, folder))]]
             for file in Path(incoming_data['path_material_sp']).rglob('*.*'):
                 name_file = file.stem
                 copy_file = True if 'info' in name_file.lower() or 'spk' in name_file.lower() else False
@@ -87,7 +92,8 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                   'snapshot': [name_file.partition('_')[2].partition('_')[0]],
                                   'sn': [name_file.partition('_')[2].partition('_')[2].partition('_')[0].lower()],
                                   'sn_set': [sn_set], 'folder_number': [0], 'name_set': [name_set],
-                                  'copy_files': [copy_file], 'rename_file': [rename_file]
+                                  'copy_files': [copy_file], 'rename_file': [rename_file],
+                                  'skip': [False]
                                   })], ignore_index=True)
             logging.info(f"Проверяем на соответствие количества снимков")
             line_doing.emit("Проверяем на соответствие количества снимков")
@@ -107,6 +113,8 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                     documents.loc[index_doc, 'sn_set'] = df.loc[index_for_snapshot[index + 1], 3]
                     documents.loc[index_doc, 'folder_number'] = snapshot_df.loc[0, column]
                     documents.loc[index_doc, 'name_set'] = df.loc[index_for_snapshot[index + 1], 2]
+                    skip = True if df.loc[index_for_snapshot[index + 1], 3] in exists_sn else False
+                    documents.loc[index_doc, 'skip'] = skip
                     if number_snap == 0:
                         continue
                     if len(index_doc) == 0:
@@ -114,7 +122,7 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                         color_cell[f"{get_column_letter(column + 1)}{index + 3}"] = 'FF0000'
                     elif len(index_doc) > number_snap:
                         errors.append(f"Количество снимков для sn {value} больше указанного")
-                        color_cell[f"{get_column_letter(column + 1)}{index + 3}"] = 'FFFF00'
+                        color_cell[f"{get_column_letter(column + 1)}{index + 3}"] = '5252FF'
                     elif len(index_doc) < number_snap:
                         errors.append(f"Количество снимков для sn {value} меньше указанного")
                         color_cell[f"{get_column_letter(column + 1)}{index + 3}"] = 'FFFF00'
@@ -135,6 +143,18 @@ def copy_from_asu_file(incoming_data: dict, current_progress: float, now_doc: in
                                                                            end_color=color_column[column],
                                                                            fill_type='solid')
                 wb.save(str(Path(incoming_data['path_load_asu'])))
+                if incoming_data['empty_with_files'] is False:
+                    wb_df = pd.read_excel(str(Path(incoming_data['path_load_asu'])))
+                    columns_list = wb_df.columns.to_list()
+                    sn_list = wb_df[columns_list[3]].tolist()
+                    color_index = [sn_list.index(exist) for exist in exists_sn if exist in sn_list]
+                    wb = load_workbook(str(Path(incoming_data['path_load_asu'])))
+                    ws = wb.active
+                    for cell in color_index:
+                        for col in range(1, ws.max_column + 1):
+                            ws.cell(row=cell + 2, column=col).fill = PatternFill(start_color='00FF00',
+                                                                                 end_color='00FF00', fill_type='solid')
+                    wb.save(str(Path(incoming_data['path_load_asu'])))
             if errors:
                 info_value.emit('Вопрос?', '\n'.join(errors), 'Найдены несоответствия, для продолжения нажмите «Да»')
                 event.clear()

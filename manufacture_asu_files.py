@@ -15,8 +15,7 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
         errors = []
         df = documents.loc[documents['sn_set'] != 0]
         all_doc = df.shape[0]
-        # percent = 100/all_doc
-        percent = 1
+        percent = 100/all_doc
         for row in df.itertuples():
             if window_check.stop_threading:
                 return {'status': 'cancel', 'trace': '', 'text': ''}
@@ -24,6 +23,8 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
             current_progress += percent
             line_progress.emit(f'Выполнено {int(current_progress)} %')
             progress_value.emit(int(current_progress))
+            if row.skip:
+                continue
             if row.copy_files:
                 parent_path = Path(incoming_data['path_finish_folder'], name_finish_folder, str(row.name_set))
                 if not Path(parent_path).exists():
@@ -44,7 +45,7 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
                 continue
             line_doing.emit(f'Копируем файл {str(row.name)} ({now_doc} из {all_doc})')
             path_dir = Path(incoming_data['path_finish_folder'], name_finish_folder,
-                            str(row.name_set), str(int(row.folder_number)), 'photo')
+                            str(row.name_set), str(row.sn_set), str(int(row.folder_number)), 'photo')
             os.makedirs(path_dir, exist_ok=True)
             copy_file = Path(path_dir, row.name)
             if copy_file.exists():
