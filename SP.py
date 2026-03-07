@@ -7,13 +7,14 @@ from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QObject
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from small_function import browse, default_settings, default_data, rewrite_settings, start_thread
-from checked import checked_sorting_file, checked_form_file, check_unloading_file
+from checked import checked_sorting_file, checked_form_file, check_unloading_file, check_copy_ood
 from read_asu_file import copy_from_asu_file
 from read_manufacture_file import copy_from_manufacture
 from form_file import form_file
 from change_unloading_file import change_unloading_file
 from sp_asu_files import create_sp_sorting_file
 from manufacture_asu_files import create_manufacture_asu_file
+from copy_ood import copy_files
 from StartThread import StartThreading
 
 
@@ -43,7 +44,14 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                                          ' из-за ошибки',
                                             'success': 'Изменение файла выгрузки в папке «name_dir» успешно завершено',
                                             'error': 'Изменение файла выгрузки в папке «name_dir» завершено с ошибками'
-                                            }
+                                            },
+                                 'copy_ood': {'mode_name': 'copy_ood', 'title': 'Копирование файлов в папке «name_dir»',
+                                              'cancel': 'Копирование файлов в папке «name_dir» отменёно пользователем',
+                                              'exception': 'Копирование файлов в папке «name_dir» не завершёно'
+                                                           ' из-за ошибки',
+                                              'success': 'Копирование файлов в папке «name_dir» успешно завершёно',
+                                              'error': 'Копирование файлов в папке «name_dir» завершёно с ошибками'
+                                              },
                                  }
         self.widget_name = {
             'sorting': {'grid': 'gridLayout_sorting', 'frame': 'groupBox_sorting',
@@ -52,6 +60,8 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                      'action': 'action_form_file', 'tab': 'form'},
             'change': {'grid': 'gridLayout_change', 'frame': 'groupBox_change',
                        'action': 'action_change_unloading', 'tab': 'change'},
+            'copy_ood': {'grid': 'gridLayout_copy_ood', 'frame': 'groupBox_copy_ood',
+                         'action': 'action_copy_ood', 'tab': 'copy_ood'},
                            }
         self.pushButton_open_unformat_file.clicked.connect((lambda: browse(self, self.pushButton_open_unformat_file,
                                                                            self.lineEdit_path_file_unformat_file,
@@ -81,18 +91,39 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_finish_unloading_dir.clicked.connect(
             (lambda: browse(self, self.pushButton_open_finish_unloading_dir,
                             self.lineEdit_path_dir_finish_unloading_files, self.default_path)))
+        self.pushButton_open_copy_ood_start_dir.clicked.connect(
+            lambda: browse(self, self.pushButton_open_copy_ood_start_dir,
+                           self.lineEdit_copy_ood_path_dir_start, self.default_path))
+        self.pushButton_open_copy_ood_upload_file.clicked.connect(
+            lambda: browse(self, self.pushButton_open_copy_ood_upload_file,
+                           self.lineEdit_copy_ood_path_file_upload, self.default_path))
+        self.pushButton_open_copy_ood_finish_dir.clicked.connect(
+            lambda: browse(self, self.pushButton_open_copy_ood_finish_dir,
+                           self.lineEdit_copy_ood_path_dir_finish, self.default_path))
         self.pushButton_sorting_file_SP.clicked.connect(self.sorting_file)
         self.pushButton_sorting_file_manufacture.clicked.connect(self.sorting_file)
         self.pushButton_form_file.clicked.connect(self.form_file)
         self.pushButton_change_unloading_file.clicked.connect(self.change_unloading_file)
+        self.pushButton_copy_ood.clicked.connect(self.copy_ood_files)
         self.action_form_file.triggered.connect(lambda: self.add_tab(self.action_form_file))
         self.action_sorting_file.triggered.connect(lambda: self.add_tab(self.action_sorting_file))
         self.action_change_unloading.triggered.connect(lambda: self.add_tab(self.action_change_unloading))
+        self.action_copy_ood.triggered.connect(lambda: self.add_tab(self.action_copy_ood))
         self.lines = {
             'form-lineEdit_path_file_unformat_file': ['Путь к неподготовленному файлу',
                                                       self.lineEdit_path_file_unformat_file],
             'form-lineEdit_path_dir_check_material': ['Путь к материалам для проверки',
                                                       self.lineEdit_path_dir_check_material],
+            'copy_ood-lineEdit_copy_ood_path_dir_start': ['Путь к папке с файлами',
+                                                          self.lineEdit_copy_ood_path_dir_start],
+            'copy_ood-lineEdit_copy_ood_path_file_upload': ['Путь к файлу выгрузки',
+                                                            self.lineEdit_copy_ood_path_file_upload],
+            'copy_ood-lineEdit_copy_ood_path_dir_finish': ['Путь к конечной папке',
+                                                           self.lineEdit_copy_ood_path_dir_finish],
+            'copy_ood-checkBox_copy_ood_name_gk': ['Включить ГК', self.checkBox_copy_ood_name_gk],
+            'copy_ood-lineEdit_copy_ood_name_gk': ['Наименование ГК', self.lineEdit_copy_ood_name_gk],
+            'copy_ood-checkBox_copy_ood_name_set': ['Включить комплект', self.checkBox_copy_ood_name_set],
+            'copy_ood-lineEdit_copy_ood_name_set': ['Наименование комплекта', self.lineEdit_copy_ood_name_set],
             'sorting-lineEdit_path_dir_material_sp': ['Путь к папке с материалами', self.lineEdit_path_dir_material_sp],
             'sorting-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
                                                             self.radioButton_load_manufacture]],
@@ -185,6 +216,22 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                     if self.tab_visible[tab]:
                         self.tab_visible[tab] = False
                         rewrite_settings(self.default_path, self.tab_visible, 'tab_visible')
+
+    def copy_ood_files(self):
+        queue_copy_ood = queue.Queue(maxsize=1)
+        mode_name = self.mode_description['copy_ood']['mode_name']
+        name_dir = self.lineEdit_copy_ood_path_dir_start.text().strip()
+        start_function = copy_files
+        data = {**self.default_dict,
+                'queue': queue_copy_ood, 'mode_name': mode_name, 'name_dir': name_dir,
+                'start_function': start_function,
+                'start_path': self.lineEdit_copy_ood_path_dir_start.text().strip(),
+                'finish_path': self.lineEdit_copy_ood_path_dir_finish.text().strip(),
+                'upload_file': self.lineEdit_copy_ood_path_file_upload.text().strip(),
+                'name_gk': self.lineEdit_copy_ood_name_gk.text().strip(),
+                'name_set': self.lineEdit_copy_ood_name_set.text().strip()
+                }
+        start_thread(data, self.logging_dict, self.thread_dict, self, check_copy_ood, StartThreading)
 
     def form_file(self):
         queue_sorting_file = queue.Queue(maxsize=1)

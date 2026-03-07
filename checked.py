@@ -106,3 +106,21 @@ def check_unloading_file(incoming: dict) -> dict:
         if file.suffix == '.docx' and '~' not in file.name:
             incoming['all_doc'] += 1
     return {'error': False, 'data': incoming}
+
+
+def check_copy_ood(incoming: dict) -> dict:
+    if not incoming['start_path']:
+        return {'error': True, 'data': 'Путь к исходным фото пуст'}
+    if not os.path.isdir(incoming['start_path']):
+        return {'error': True, 'data': 'Путь к исходным фото удалён или переименован'}
+    if not len(os.listdir(incoming['start_path'])):
+        return {'error': True, 'data': 'В указанном пути к исходным фото нет файлов для копирования'}
+    if not incoming['finish_path']:
+        return {'error': True, 'data': 'Путь к конечной папке пуст'}
+    if not os.path.isdir(incoming['finish_path']):
+        return {'error': True, 'data': 'Путь к конечной папке удалён или переименован'}
+    if not incoming['upload_file']:
+        return {'error': True, 'data': 'Путь к загруженному файлу пуст'}
+    if not os.path.isfile(incoming['upload_file']):
+        return {'error': True, 'data': 'Загруженный файл удалён или переименован'}
+    return {'error': False, 'data': incoming}

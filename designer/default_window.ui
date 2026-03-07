@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>904</width>
-    <height>395</height>
+    <width>1151</width>
+    <height>565</height>
    </rect>
   </property>
   <property name="font">
@@ -36,7 +36,7 @@
       <set>Qt::AlignCenter</set>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QFrame" name="frame_default">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -45,7 +45,7 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QPushButton" name="pushButton_cancel">
            <property name="font">
             <font>
@@ -60,7 +60,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="2" column="1">
           <widget class="QPushButton" name="pushButton_accept">
            <property name="font">
             <font>
@@ -75,76 +75,118 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_form">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>75</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="title">
-            <string>Формирование выгрузки</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_form"/>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_sorting">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>75</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="title">
-            <string>Сортировка файлов</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_sorting"/>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_change">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>75</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="title">
-            <string>Изменение выгрузки</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_7">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_change"/>
-            </item>
-           </layout>
-          </widget>
-         </item>
         </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>1103</width>
+           <height>425</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="groupBox_form">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="title">
+             <string>Формирование выгрузки</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_form"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QGroupBox" name="groupBox_copy_ood">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="title">
+             <string>Копирование ООД</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_copy_ood"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QGroupBox" name="groupBox_sorting">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="title">
+             <string>Сортировка файлов</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_sorting"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox_change">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="title">
+             <string>Изменение выгрузки</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_change"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>

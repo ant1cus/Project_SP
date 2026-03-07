@@ -7,6 +7,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 from DoingWindow import ProcessWindow
 
+
 def set_interval(interval):
     def decorator(function):
         def wrapper(*args, **kwargs):
@@ -54,7 +55,6 @@ class StartThreading(QThread):
         self.event.set()
         self.now_doc = 0
         self.all_doc = incoming_data['all_doc']
-        # self.percent = incoming_data['percent']
         self.current_progress = 0
         self.window_check = ProcessWindow(self.default_path, self.event, incoming_data['move'], incoming_data['title'])
         self.progress_value.connect(self.window_check.progressBar.setValue)
@@ -62,8 +62,6 @@ class StartThreading(QThread):
         self.line_doing.connect(self.window_check.lineEdit_doing.setText)
         self.info_value.connect(self.window_check.info_message)
         self.window_check.show()
-        # self.app_text = ''
-        # self.previous_text = ''
         self.timer_line_progress()
 
     @set_interval(3)

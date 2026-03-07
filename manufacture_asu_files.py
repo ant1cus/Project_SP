@@ -5,6 +5,7 @@ import traceback
 from pathlib import Path
 import pandas as pd
 from small_function import replace_object
+from datetime import datetime
 
 
 def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, documents: pd.DataFrame,
@@ -12,6 +13,8 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
                                 current_progress, percent, logging, event, window_check, line_doing,
                                 line_progress, progress_value, info_value) -> dict:
     try:
+        start_time = datetime.now()
+        logging.info(f"время начала - {start_time}")
         errors = []
         df = documents.loc[documents['sn_set'] != 0]
         all_doc = df.shape[0]
@@ -54,6 +57,7 @@ def create_manufacture_asu_file(incoming_data: dict, name_finish_folder: str, do
             if replace:
                 shutil.copy2(row.start_path, copy_file)
                 logging.info(f"Файл {copy_file} создан")
+        logging.info(f"время выполения - {datetime.now() - start_time}")
         return {'status': 'warning' if errors else 'success', 'text': errors, 'trace': ''}
     except BaseException as ex:
         return {'status': 'error', 'text': ex, 'trace': traceback.format_exc()}
