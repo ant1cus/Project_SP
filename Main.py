@@ -38,6 +38,64 @@ class Button(QtWidgets.QLineEdit):
 				e.accept()
 		else:
 			super(Button, self).dropEvent(e)
+import os
+import os
+
+
+class Button(QtWidgets.QLineEdit):
+
+	def __init__(self, parent):
+		super(Button, self).__init__(parent)
+
+		self.setAcceptDrops(True)
+
+	def dragEnterEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			e.accept()
+		else:
+			super(Button, self).dragEnterEvent(e)
+
+	def dragMoveEvent(self, e):
+
+		super(Button, self).dragMoveEvent(e)
+
+	def dropEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			for url in e.mimeData().urls():
+				self.setText(os.path.normcase(url.toLocalFile()))
+				e.accept()
+		else:
+			super(Button, self).dropEvent(e)
+
+
+class Button(QtWidgets.QLineEdit):
+
+	def __init__(self, parent):
+		super(Button, self).__init__(parent)
+
+		self.setAcceptDrops(True)
+
+	def dragEnterEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			e.accept()
+		else:
+			super(Button, self).dragEnterEvent(e)
+
+	def dragMoveEvent(self, e):
+
+		super(Button, self).dragMoveEvent(e)
+
+	def dropEvent(self, e):
+
+		if e.mimeData().hasUrls():
+			for url in e.mimeData().urls():
+				self.setText(os.path.normcase(url.toLocalFile()))
+				e.accept()
+		else:
+			super(Button, self).dropEvent(e)
 
 
 class Ui_mainWindow(object):
@@ -111,16 +169,16 @@ class Ui_mainWindow(object):
         self.lineEdit_copy_ood_name_set.setEnabled(False)
         self.lineEdit_copy_ood_name_set.setObjectName("lineEdit_copy_ood_name_set")
         self.gridLayout_5.addWidget(self.lineEdit_copy_ood_name_set, 4, 1, 1, 2)
-        self.lineEdit_copy_ood_path_dir_start = QtWidgets.QLineEdit(self.copy_ood)
+        self.lineEdit_copy_ood_path_dir_start = Button(self.copy_ood)
         self.lineEdit_copy_ood_path_dir_start.setObjectName("lineEdit_copy_ood_path_dir_start")
         self.gridLayout_5.addWidget(self.lineEdit_copy_ood_path_dir_start, 0, 1, 1, 1)
         self.pushButton_open_copy_ood_upload_file = QtWidgets.QPushButton(self.copy_ood)
         self.pushButton_open_copy_ood_upload_file.setObjectName("pushButton_open_copy_ood_upload_file")
         self.gridLayout_5.addWidget(self.pushButton_open_copy_ood_upload_file, 1, 2, 1, 1)
-        self.lineEdit_copy_ood_path_file_upload = QtWidgets.QLineEdit(self.copy_ood)
+        self.lineEdit_copy_ood_path_file_upload = Button(self.copy_ood)
         self.lineEdit_copy_ood_path_file_upload.setObjectName("lineEdit_copy_ood_path_file_upload")
         self.gridLayout_5.addWidget(self.lineEdit_copy_ood_path_file_upload, 1, 1, 1, 1)
-        self.lineEdit_copy_ood_path_dir_finish = QtWidgets.QLineEdit(self.copy_ood)
+        self.lineEdit_copy_ood_path_dir_finish = Button(self.copy_ood)
         self.lineEdit_copy_ood_path_dir_finish.setObjectName("lineEdit_copy_ood_path_dir_finish")
         self.gridLayout_5.addWidget(self.lineEdit_copy_ood_path_dir_finish, 2, 1, 1, 1)
         self.label_copy_ood_path_file_upload = QtWidgets.QLabel(self.copy_ood)
