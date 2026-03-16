@@ -4,6 +4,7 @@ import shutil
 import traceback
 from pathlib import Path
 from datetime import datetime
+from speedcopy import copyfile
 
 import pandas as pd
 
@@ -61,7 +62,8 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
 			if not Path(serial_nums[file_sn], 'photo').exists():
 				os.makedirs(Path(serial_nums[file_sn], 'photo'))
 			line_doing.emit(f'Копируем файл {file.name} ({now_doc} из {all_doc})')
-			shutil.copy2(file, Path(serial_nums[file_sn], 'photo', file.name))
+			copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file.name)))
+			# shutil.copy2(file, Path(serial_nums[file_sn], 'photo', file.name))
 			now_doc += 1
 			current_progress += percent
 			line_progress.emit(f'Выполнено {int(current_progress)} %')
