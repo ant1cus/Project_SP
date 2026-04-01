@@ -34,7 +34,7 @@ class StartThreading(QThread):
      об успешном или провальном выполнении программы. Ловим исключения."""
     status_finish = pyqtSignal(str, dict, dict, str, str, str)
     progress_value = pyqtSignal(int)
-    info_value = pyqtSignal(str, str, str or None)
+    info_value = pyqtSignal(str, str, str)
     status = pyqtSignal(str)
     line_progress = pyqtSignal(str)
     line_doing = pyqtSignal(str)
