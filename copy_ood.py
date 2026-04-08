@@ -1,6 +1,5 @@
 import os
 import re
-import shutil
 import traceback
 from pathlib import Path
 from datetime import datetime
@@ -46,7 +45,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
         logging.info(f"загрузка excel - {datetime.now() - start_time}")
         # Для кол-ва копий можно будет потом расскоментировать
         snapshot_files = {}
-        all_poss_files = 0
+        all_poss_files = 1
         for index, item in df.iloc[0].items():
             if re.findall(r'\d+', str(item)):
                 # folder = int(str(item).partition('-')[0]) if re.findall(r'\d+-\d+', str(item)) else int(item)
@@ -69,7 +68,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 # serial_snapshot.update(full_snapshot)
                 snapshot_files.update(full_find)
                 all_poss_files += len(full_path)*int(snapshot)
-        percent = 100 / len(all_poss_files)
+        percent = 100 / all_poss_files
         logging.info(f"считывание excel - {datetime.now() - start_time}")
         for file in Path(incoming_data['start_path']).rglob('*.*'):
             if window_check.stop_threading:
@@ -82,7 +81,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                     os.makedirs(Path(serial_nums[file_sn], 'photo'))
                 if Path(serial_nums[file_sn], 'photo', file.name).exists() is False:
                     line_doing.emit(f'Копируем файл {file.name} ({now_doc} из {all_doc})')
-                    shutil.copy2(file, Path(serial_nums[file_sn], 'photo', file.name))
+                    copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file.name)))
             except BaseException as ex:
                 logging.error(f"Копирование файла {file.name} не завершено из-за ошибки - {ex}")
                 logging.error(traceback.format_exc())
