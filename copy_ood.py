@@ -48,6 +48,8 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
         all_poss_files = 1
         for index, item in df.iloc[0].items():
             if re.findall(r'\d+', str(item)):
+                if index == 'finish_folder':
+                    continue
                 # folder = int(str(item).partition('-')[0]) if re.findall(r'\d+-\d+', str(item)) else int(item)
                 # snapshot = int(str(item).partition('-')[2]) if re.findall(r'\d+-\d+', str(item)) else 0
                 folder = int(str(item).partition('-')[0])
