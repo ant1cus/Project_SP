@@ -64,7 +64,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                         {'snapshot': [False for _ in range(0, snapshot)],
                          'more_snapshot': False,
                          **{'coordinate': [i, index] for i in df.index.to_list()[2:]}}
-                    ] * (df.shape[1] - 2)
+                    ] * (df.shape[0] - 2)
                 ))
                 serial_nums.update(full_path)
                 # serial_snapshot.update(full_snapshot)
