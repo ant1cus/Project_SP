@@ -130,7 +130,7 @@ def check_copy_ood(incoming: dict) -> dict:
         if re.findall(r'\d+', str(item)):
             if not re.findall(r'[\d+]-[\d+]', str(item)):
                 errors.append(f"В столбце {get_column_letter(index + 1)} не указана папка или количество снимков")
-            if int(str(item).partition('-')[2]) == 0:
+            elif int(str(item).partition('-')[2]) == 0:
                 errors.append(f"В столбце {get_column_letter(index + 1)} количество снимков равно нулю")
     if errors:
         return {'error': True, 'data': '\n'.join(errors)}

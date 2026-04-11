@@ -12,8 +12,8 @@ from openpyxl.utils import get_column_letter
 
 
 def write_error(text: str, color: str, err: list, cell, log) -> bool:
-    log.error(text)
-    err.append(text)
+    log.error(re.sub('replace', cell.value, text))
+    err.append(re.sub('replace', cell.value, text))
     cell.fill = PatternFill(start_color=color, end_color=color, fill_type='solid')
     return True
 
@@ -58,13 +58,16 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                     df[index].iloc[2:],
                     [f"{i}\\{folder}" for i in df['finish_folder'].iloc[2:].to_numpy().tolist()]
                 ))
+                print({i: [i, index] for i in df.index.to_list()[2:]})
                 full_find = dict(zip(
                     df[index].iloc[2:],
-                    [
-                        {'snapshot': [False for _ in range(0, snapshot)],
-                         'more_snapshot': False,
-                         **{'coordinate': [i, index] for i in df.index.to_list()[2:]}}
-                    ] * (df.shape[0] - 2)
+                    [{'coordinate': {j: val}, 'more_snapshot': False, 'snapshot': [False for _ in range(0, snapshot)]}
+                     for j, val in {i: [i, index] for i in df.index.to_list()[2:]}.items()]
+                    # [
+                    #     {'snapshot': [False for _ in range(0, snapshot)],
+                    #      'more_snapshot': False,
+                    #      **{'coordinate': [i, index] for i in df.index.to_list()[2:]}}
+                    # ] * (df.shape[0] - 2)
                 ))
                 serial_nums.update(full_path)
                 # serial_snapshot.update(full_snapshot)
@@ -122,6 +125,8 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
             elif not all(snapshot_files[sn]['snapshot']):
                 write_xlsx = write_error(color_cell['less']['text'], color_cell['less']['color'], errors, ws[cell],
                                          logging)
+        ws['A1'].fill = PatternFill(start_color='5252FF', end_color='5252FF', fill_type='solid')
+        ws['A2'].fill = PatternFill(start_color='5252FF', end_color='5252FF', fill_type='solid')
         logging.info(f"пробежались по всем ошибкам - {datetime.now() - start_time}")
         if write_xlsx:
             while True:
