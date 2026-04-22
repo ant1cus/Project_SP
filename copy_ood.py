@@ -43,15 +43,12 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
         df['finish_folder'] = str(Path(incoming_data['finish_path'], name_finish_folder)) + '\\' + df[1] + '\\' + df[3]
         serial_nums = {}
         logging.info(f"загрузка excel - {datetime.now() - start_time}")
-        # Для кол-ва копий можно будет потом расскоментировать
         snapshot_files = {}
         all_poss_files = 1
         for index, item in df.iloc[0].items():
             if re.findall(r'\d+', str(item)):
                 if index == 'finish_folder':
                     continue
-                # folder = int(str(item).partition('-')[0]) if re.findall(r'\d+-\d+', str(item)) else int(item)
-                # snapshot = int(str(item).partition('-')[2]) if re.findall(r'\d+-\d+', str(item)) else 0
                 folder = int(str(item).partition('-')[0])
                 snapshot = int(str(item).partition('-')[2])
                 full_path = dict(zip(
@@ -64,27 +61,34 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                      for val in {i: [index, i] for i in df.index.to_list()[2:]}.values()]
                 ))
                 serial_nums.update(full_path)
-                # serial_snapshot.update(full_snapshot)
                 snapshot_files.update(full_find)
                 all_poss_files += len(full_path)*int(snapshot)
         percent = 100 / all_poss_files
         logging.info(f"считывание excel - {datetime.now() - start_time}")
+        all_doc = all_poss_files
         for file in Path(incoming_data['start_path']).rglob('*.*'):
             if window_check.stop_threading:
                 return {'status': 'cancel', 'trace': '', 'text': ''}
             file_sn = file.stem.partition('_')[2].partition('_')[2].partition('_')[0]
+            copy = False
             try:
                 if file_sn not in serial_nums:
                     continue
+                file_name = file.name
+                if len(file.name.split('_')) >= 4:
+                    file_name = file.name.rpartition('_')[0] + file.suffix
                 if not Path(serial_nums[file_sn], 'photo').exists():
                     os.makedirs(Path(serial_nums[file_sn], 'photo'))
-                if Path(serial_nums[file_sn], 'photo', file.name).exists() is False:
-                    line_doing.emit(f'Копируем файл {file.name} ({now_doc} из {all_doc})')
-                    copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file.name)))
+                if Path(serial_nums[file_sn], 'photo', file_name).exists() is False:
+                    line_doing.emit(f'Копируем файл {file_name} ({now_doc} из {all_doc})')
+                    copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file_name)))
+                    copy = True
             except BaseException as ex:
                 logging.error(f"Копирование файла {file.name} не завершено из-за ошибки - {ex}")
                 logging.error(traceback.format_exc())
                 errors.append(f"Файл {file.name} не скопирован из-за непредвиденной ошибки")
+            if copy is False:
+                continue
             try:
                 snapshot = int(file.stem.partition('_')[2].partition('_')[0])
                 if snapshot <= len(snapshot_files[file_sn]['snapshot']):
@@ -128,7 +132,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 except PermissionError:
                     info_value.emit('Вопрос?',
                                     f"Файл {xlsx_path.name} открыт. Для сохранения ошибок в файл закройте "
-                                    f"его и нажмите «Да». Если нажать «Нет» ошибки не будут посдвечены!",
+                                    f"его и нажмите «Да». Если нажать «Нет» ошибки не будут выделены!",
                                     "")
                     event.clear()
                     event.wait()
