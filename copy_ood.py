@@ -82,6 +82,10 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 if Path(serial_nums[file_sn], 'photo', file_name).exists() is False:
                     line_doing.emit(f'Копируем файл {file_name} ({now_doc} из {all_doc})')
                     copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file_name)))
+                    now_doc += 1
+                    current_progress += percent
+                    line_progress.emit(f'Выполнено {int(current_progress)} %')
+                    progress_value.emit(int(current_progress))
                     # copy = True
             except BaseException as ex:
                 logging.error(f"Копирование файла {file.name} не завершено из-за ошибки - {ex}")
@@ -99,10 +103,6 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
             except ValueError:
                 logging.error(f"Количество снимков в файле {file.name} не конвертируется в целое число")
                 errors.append(f"Количество снимков в файле {file.name} не конвертируется в целое число")
-            now_doc += 1
-            current_progress += percent
-            line_progress.emit(f'Выполнено {int(current_progress)} %')
-            progress_value.emit(int(current_progress))
         # Проверки
         logging.info(f"скопировали все файлы - {datetime.now() - start_time}")
         xlsx_path = Path(incoming_data['upload_file'])
