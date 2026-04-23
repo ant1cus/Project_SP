@@ -70,7 +70,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
             if window_check.stop_threading:
                 return {'status': 'cancel', 'trace': '', 'text': ''}
             file_sn = file.stem.partition('_')[2].partition('_')[2].partition('_')[0]
-            copy = False
+            # copy = False
             try:
                 if file_sn not in serial_nums:
                     continue
@@ -82,13 +82,13 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 if Path(serial_nums[file_sn], 'photo', file_name).exists() is False:
                     line_doing.emit(f'Копируем файл {file_name} ({now_doc} из {all_doc})')
                     copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file_name)))
-                    copy = True
+                    # copy = True
             except BaseException as ex:
                 logging.error(f"Копирование файла {file.name} не завершено из-за ошибки - {ex}")
                 logging.error(traceback.format_exc())
                 errors.append(f"Файл {file.name} не скопирован из-за непредвиденной ошибки")
-            if copy is False:
-                continue
+            # if copy is False:
+            #     continue
             try:
                 snapshot = int(file.stem.partition('_')[2].partition('_')[0])
                 if snapshot <= len(snapshot_files[file_sn]['snapshot']):
