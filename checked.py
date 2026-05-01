@@ -8,8 +8,11 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 
 
+denied_symbol = '/\\:*?<>|'
+
+
 def checked_sorting_file(incoming: dict) -> dict:
-    denied_symbol = '/\\:*?<>|'
+
     if not incoming['path_material_sp']:
         return {'error': True, 'data': 'Путь к материалам СП пуст'}
     if os.path.isfile(incoming['path_material_sp']):
@@ -140,4 +143,9 @@ def check_copy_ood(incoming: dict) -> dict:
     except PermissionError:
         return {'error': True, 'data': f"Файл {Path(incoming['upload_file']).name} открыт."
                                        f" Закройте файл перед запуском и не открывайте его во время работы программы"}
+    if not incoming['name_set']:
+        return {'error': True, 'data': 'Не заполнено наименование комплекта'}
+    for element in denied_symbol:
+        if incoming['name_set'] and element in incoming['name_set']:
+            return {'error': True, 'data': f"Запрещённый символ в наименовании комплекта: «{element}»"}
     return {'error': False, 'data': incoming}

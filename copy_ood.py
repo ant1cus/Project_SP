@@ -28,6 +28,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
     }
     logging = incoming_data['logging']
     errors = []
+    line_progress.emit(f'Прогресс выполнения:')
     try:
         start_time = datetime.now()
         logging.info(f"время начала - {start_time}")
@@ -36,11 +37,12 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
             os.makedirs(Path(incoming_data['finish_path'], name_finish_folder))
         logging.info(f"Считываем файл выгрузки {Path(incoming_data['upload_file']).name}")
         df = pd.read_excel(Path(incoming_data['upload_file']), sheet_name=0, header=None, dtype=str)
-        if incoming_data['name_set']:
-            df.fillna(value={2: incoming_data['name_set']}, inplace=True)
+        # if incoming_data['name_set']:
+        #     df.fillna(value={1: incoming_data['name_set']}, inplace=True)
         df[1] = df[1].astype(str)
         df[3] = df[3].astype(str)
-        df['finish_folder'] = str(Path(incoming_data['finish_path'], name_finish_folder)) + '\\' + df[1] + '\\' + df[3]
+        df['finish_folder'] = str(Path(incoming_data['finish_path'], name_finish_folder)) + '\\' \
+                              + incoming_data['name_set'] + '\\' + df[3]
         serial_nums = {}
         logging.info(f"загрузка excel - {datetime.now() - start_time}")
         snapshot_files = {}
@@ -63,7 +65,7 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 serial_nums.update(full_path)
                 snapshot_files.update(full_find)
                 all_poss_files += len(full_path)*int(snapshot)
-        percent = 100 / all_poss_files
+        percent = 10
         logging.info(f"считывание excel - {datetime.now() - start_time}")
         all_doc = all_poss_files
         for file in Path(incoming_data['start_path']).rglob('*.*'):
@@ -83,8 +85,12 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                     line_doing.emit(f'Копируем файл {file_name} ({now_doc} из {all_doc})')
                     copyfile(str(file), str(Path(serial_nums[file_sn], 'photo', file_name)))
                     now_doc += 1
+                    if current_progress == 100:
+                        current_progress = 0
+                        # line_progress.emit(f'Выполнено {int(current_progress)} %')
+                        progress_value.emit(int(current_progress))
                     current_progress += percent
-                    line_progress.emit(f'Выполнено {int(current_progress)} %')
+                    # line_progress.emit(f'Выполнено {int(current_progress)} %')
                     progress_value.emit(int(current_progress))
                     # copy = True
             except BaseException as ex:

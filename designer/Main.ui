@@ -23,7 +23,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>true</bool>
@@ -85,37 +85,9 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="4" column="0">
-         <widget class="QCheckBox" name="checkBox_copy_ood_name_set">
-          <property name="text">
-           <string>Наименование к-та</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButton_open_copy_ood_start_dir">
-          <property name="text">
-           <string>Открыть</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
          <widget class="QCheckBox" name="checkBox_copy_ood_name_gk">
           <property name="text">
            <string>Наименование ГК</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_copy_ood_path_dir_start">
-          <property name="text">
-           <string>Папка с материалами</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_copy_ood_path_dir_finish">
-          <property name="text">
-           <string>Конечная папка</string>
           </property>
          </widget>
         </item>
@@ -126,15 +98,11 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_name_gk">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_copy_ood_path_dir_finish"/>
         </item>
         <item row="4" column="1" colspan="2">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_name_set">
+         <widget class="QLineEdit" name="lineEdit_copy_ood_name_gk">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -143,6 +111,23 @@
         <item row="0" column="1">
          <widget class="QLineEdit" name="lineEdit_copy_ood_path_dir_start"/>
         </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_copy_ood_path_file_upload"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_copy_ood_path_dir_finish">
+          <property name="text">
+           <string>Конечная папка</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_copy_ood_path_dir_start">
+          <property name="text">
+           <string>Папка с материалами</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="2">
          <widget class="QPushButton" name="pushButton_open_copy_ood_upload_file">
           <property name="text">
@@ -150,11 +135,19 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_path_file_upload"/>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_copy_ood_start_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_path_dir_finish"/>
+        <item row="6" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_copy_ood">
+          <property name="text">
+           <string>Копировать файлы</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_copy_ood_path_file_upload">
@@ -163,10 +156,17 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0" colspan="3">
-         <widget class="QPushButton" name="pushButton_copy_ood">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_copy_ood_name_set">
           <property name="text">
-           <string>Копировать файлы</string>
+           <string>Наименование комплекта</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="2">
+         <widget class="QLineEdit" name="lineEdit_copy_ood_name_set">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -432,7 +432,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>29</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_settings">
@@ -513,22 +513,6 @@
     <hint type="destinationlabel">
      <x>426</x>
      <y>196</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_name_set</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>lineEdit_name_set</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>224</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>426</x>
-     <y>224</y>
     </hint>
    </hints>
   </connection>
@@ -676,25 +660,9 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>checkBox_copy_ood_name_set</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>lineEdit_copy_ood_name_set</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>113</x>
-     <y>294</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>439</x>
-     <y>294</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

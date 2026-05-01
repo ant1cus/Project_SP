@@ -122,7 +122,6 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                                            self.lineEdit_copy_ood_path_dir_finish],
             'copy_ood-checkBox_copy_ood_name_gk': ['Включить ГК', self.checkBox_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_gk': ['Наименование ГК', self.lineEdit_copy_ood_name_gk],
-            'copy_ood-checkBox_copy_ood_name_set': ['Включить комплект', self.checkBox_copy_ood_name_set],
             'copy_ood-lineEdit_copy_ood_name_set': ['Наименование комплекта', self.lineEdit_copy_ood_name_set],
             'sorting-lineEdit_path_dir_material_sp': ['Путь к папке с материалами', self.lineEdit_path_dir_material_sp],
             'sorting-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
@@ -228,6 +227,7 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'start_path': self.lineEdit_copy_ood_path_dir_start.text().strip(),
                 'finish_path': self.lineEdit_copy_ood_path_dir_finish.text().strip(),
                 'upload_file': self.lineEdit_copy_ood_path_file_upload.text().strip(),
+                'check_name_gk': self.checkBox_copy_ood_name_gk.isChecked(),
                 'name_gk': self.lineEdit_copy_ood_name_gk.text().strip(),
                 'name_set': self.lineEdit_copy_ood_name_set.text().strip()
                 }
