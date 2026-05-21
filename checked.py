@@ -149,3 +149,33 @@ def check_copy_ood(incoming: dict) -> dict:
         if incoming['name_set'] and element in incoming['name_set']:
             return {'error': True, 'data': f"Запрещённый символ в наименовании комплекта: «{element}»"}
     return {'error': False, 'data': incoming}
+
+
+def check_check_after(incoming: dict) -> dict:
+    if not incoming['start_path']:
+        return {'error': True, 'data': 'Путь к папке с фото пуст'}
+    if not os.path.isdir(incoming['start_path']):
+        return {'error': True, 'data': 'Путь к папке с фото удалён или переименован'}
+    if not len(os.listdir(incoming['start_path'])):
+        return {'error': True, 'data': 'В указанном пути к фото нет файлов для проверки'}
+    if not incoming['upload_file']:
+        return {'error': True, 'data': 'Путь к файлу выгрузки пуст'}
+    if not os.path.isfile(incoming['upload_file']):
+        return {'error': True, 'data': 'Файл выгрузки удалён или переименован'}
+    df = pd.read_excel(Path(incoming['upload_file']), sheet_name=0, header=None, dtype=str)
+    errors = []
+    for index, item in df.iloc[0].items():
+        if re.findall(r'\d+', str(item)):
+            if not re.findall(r'[\d+]-[\d+]', str(item)):
+                errors.append(f"В столбце {get_column_letter(index + 1)} не указана папка или количество снимков")
+            elif int(str(item).partition('-')[2]) == 0:
+                errors.append(f"В столбце {get_column_letter(index + 1)} количество снимков равно нулю")
+    if errors:
+        return {'error': True, 'data': '\n'.join(errors)}
+    wb = load_workbook(str(Path(incoming['upload_file'])))
+    try:
+        wb.save(str(Path(incoming['upload_file'])))
+    except PermissionError:
+        return {'error': True, 'data': f"Файл {Path(incoming['upload_file']).name} открыт."
+                                       f" Закройте файл перед запуском и не открывайте его во время работы программы"}
+    return {'error': False, 'data': incoming}

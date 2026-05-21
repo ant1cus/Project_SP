@@ -7,7 +7,7 @@ from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QObject
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from small_function import browse, default_settings, default_data, rewrite_settings, start_thread
-from checked import checked_sorting_file, checked_form_file, check_unloading_file, check_copy_ood
+from checked import checked_sorting_file, checked_form_file, check_unloading_file, check_copy_ood, check_check_after
 from read_asu_file import copy_from_asu_file
 from read_manufacture_file import copy_from_manufacture
 from form_file import form_file
@@ -15,6 +15,7 @@ from change_unloading_file import change_unloading_file
 from sp_asu_files import create_sp_sorting_file
 from manufacture_asu_files import create_manufacture_asu_file
 from copy_ood import copy_files
+from check_after_copy import check_after_copy
 from StartThread import StartThreading
 
 
@@ -52,6 +53,14 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                               'success': 'Копирование файлов в папке «name_dir» успешно завершёно',
                                               'error': 'Копирование файлов в папке «name_dir» завершёно с ошибками'
                                               },
+                                 'check_after': {'mode_name': 'check_after',
+                                                 'title': 'Проверка фото в папке «name_dir»',
+                                                 'cancel': 'Проверка фото в папке «name_dir» отменёна пользователем',
+                                                 'exception': 'Проверка фото в папке «name_dir» не завершёна'
+                                                              ' из-за ошибки',
+                                                 'success': 'Проверка фото в папке «name_dir» успешно завершёна',
+                                                 'error': 'Проверка фото в папке «name_dir» завершёна с ошибками'
+                                                 },
                                  }
         self.widget_name = {
             'sorting': {'grid': 'gridLayout_sorting', 'frame': 'groupBox_sorting',
@@ -62,6 +71,8 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                        'action': 'action_change_unloading', 'tab': 'change'},
             'copy_ood': {'grid': 'gridLayout_copy_ood', 'frame': 'groupBox_copy_ood',
                          'action': 'action_copy_ood', 'tab': 'copy_ood'},
+            'check_after': {'grid': 'gridLayout_check_after', 'frame': 'groupBox_check_after',
+                            'action': 'action_check_after', 'tab': 'check_after'},
                            }
         self.pushButton_open_unformat_file.clicked.connect((lambda: browse(self, self.pushButton_open_unformat_file,
                                                                            self.lineEdit_path_file_unformat_file,
@@ -100,15 +111,23 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_copy_ood_finish_dir.clicked.connect(
             lambda: browse(self, self.pushButton_open_copy_ood_finish_dir,
                            self.lineEdit_copy_ood_path_dir_finish, self.default_path))
+        self.pushButton_open_check_after_dir_start.clicked.connect(
+            lambda: browse(self, self.pushButton_open_check_after_dir_start,
+                           self.lineEdit_check_after_path_dir_start, self.default_path))
+        self.pushButton_open_check_after_upload_file.clicked.connect(
+            lambda: browse(self, self.pushButton_open_check_after_upload_file,
+                           self.lineEdit_check_after_path_file_upload, self.default_path))
         self.pushButton_sorting_file_SP.clicked.connect(self.sorting_file)
         self.pushButton_sorting_file_manufacture.clicked.connect(self.sorting_file)
         self.pushButton_form_file.clicked.connect(self.form_file)
         self.pushButton_change_unloading_file.clicked.connect(self.change_unloading_file)
         self.pushButton_copy_ood.clicked.connect(self.copy_ood_files)
+        self.pushButton_check_after.clicked.connect(self.check_after_copy)
         self.action_form_file.triggered.connect(lambda: self.add_tab(self.action_form_file))
         self.action_sorting_file.triggered.connect(lambda: self.add_tab(self.action_sorting_file))
         self.action_change_unloading.triggered.connect(lambda: self.add_tab(self.action_change_unloading))
         self.action_copy_ood.triggered.connect(lambda: self.add_tab(self.action_copy_ood))
+        self.action_check_after.triggered.connect(lambda: self.add_tab(self.action_check_after))
         self.lines = {
             'form-lineEdit_path_file_unformat_file': ['Путь к неподготовленному файлу',
                                                       self.lineEdit_path_file_unformat_file],
@@ -123,6 +142,10 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
             'copy_ood-checkBox_copy_ood_name_gk': ['Включить ГК', self.checkBox_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_gk': ['Наименование ГК', self.lineEdit_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_set': ['Наименование комплекта', self.lineEdit_copy_ood_name_set],
+            'check_after-lineEdit_check_after_path_dir_start': ['Папка с фото',
+                                                                self.lineEdit_check_after_path_dir_start],
+            'check_after-lineEdit_check_after_path_file_upload': ['Файл выгрузки',
+                                                                  self.lineEdit_check_after_path_file_upload],
             'sorting-lineEdit_path_dir_material_sp': ['Путь к папке с материалами', self.lineEdit_path_dir_material_sp],
             'sorting-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
                                                             self.radioButton_load_manufacture]],
@@ -232,6 +255,19 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'name_set': self.lineEdit_copy_ood_name_set.text().strip()
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, check_copy_ood, StartThreading)
+
+    def check_after_copy(self):
+        queue_check_after = queue.Queue(maxsize=1)
+        mode_name = self.mode_description['check_after']['mode_name']
+        name_dir = self.lineEdit_check_after_path_dir_start.text().strip()
+        start_function = check_after_copy
+        data = {**self.default_dict,
+                'queue': queue_check_after, 'mode_name': mode_name, 'name_dir': name_dir,
+                'start_function': start_function,
+                'start_path': self.lineEdit_check_after_path_dir_start.text().strip(),
+                'upload_file': self.lineEdit_check_after_path_file_upload.text().strip(),
+                }
+        start_thread(data, self.logging_dict, self.thread_dict, self, check_check_after, StartThreading)
 
     def form_file(self):
         queue_sorting_file = queue.Queue(maxsize=1)

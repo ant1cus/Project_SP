@@ -31,57 +31,12 @@
       <property name="movable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="form">
-       <attribute name="title">
-        <string>Формирование выгрузки</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0" colspan="3">
-         <widget class="QPushButton" name="pushButton_form_file">
-          <property name="text">
-           <string>Сформировать выгрузку из файла</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="pushButton_open_check_material_dir">
-          <property name="text">
-           <string>Открыть</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_unformat_file">
-          <property name="text">
-           <string>Неподготовленный файл</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_path_file_unformat_file"/>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_path_dir_check_material"/>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButton_open_unformat_file">
-          <property name="text">
-           <string>Открыть</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_dir_check_material">
-          <property name="text">
-           <string>Папка с материалами</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="copy_ood">
        <attribute name="title">
         <string>Копирование ООД</string>
+       </attribute>
+       <attribute name="toolTip">
+        <string>Раскидывает фото согласно файлу excel с проверкой ракурсов</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="4" column="0">
@@ -167,6 +122,105 @@
          <widget class="QLineEdit" name="lineEdit_copy_ood_name_set">
           <property name="enabled">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="check_after">
+       <attribute name="title">
+        <string>Проверка материалов</string>
+       </attribute>
+       <attribute name="toolTip">
+        <string>Проверяет раскиданные фото на соответствие указанному файлу excel</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_open_check_after_upload_file">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_check_after_path_dir_start"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_check_after_path_dir_start">
+          <property name="text">
+           <string>Папка с фото</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_check_after_path_file_upload"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_check_after_dir_start">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_check_after">
+          <property name="text">
+           <string>Проверить</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_check_after_path_file_upload">
+          <property name="text">
+           <string>Файл выгрузки</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="form">
+       <attribute name="title">
+        <string>Формирование выгрузки</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="2" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_form_file">
+          <property name="text">
+           <string>Сформировать выгрузку из файла</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_open_check_material_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_unformat_file">
+          <property name="text">
+           <string>Неподготовленный файл</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_file_unformat_file"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_dir_check_material"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_unformat_file">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_dir_check_material">
+          <property name="text">
+           <string>Папка с материалами</string>
           </property>
          </widget>
         </item>
@@ -432,7 +486,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>23</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_settings">
@@ -447,6 +501,7 @@
     </property>
     <addaction name="action_form_file"/>
     <addaction name="action_copy_ood"/>
+    <addaction name="action_check_after"/>
     <addaction name="action_sorting_file"/>
     <addaction name="action_change_unloading"/>
    </widget>
@@ -495,6 +550,14 @@
   <action name="action_copy_ood">
    <property name="text">
     <string>Копирование ООД</string>
+   </property>
+  </action>
+  <action name="action_check_after">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Проверка после копирования</string>
    </property>
   </action>
  </widget>

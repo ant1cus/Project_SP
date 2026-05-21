@@ -93,29 +93,6 @@
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_form">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <italic>false</italic>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="title">
-             <string>Формирование выгрузки</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_form"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QGroupBox" name="groupBox_copy_ood">
             <property name="font">
@@ -139,7 +116,30 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox_change">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="title">
+             <string>Изменение выгрузки</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_change"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="4" column="0">
            <widget class="QGroupBox" name="groupBox_sorting">
             <property name="font">
              <font>
@@ -162,8 +162,8 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QGroupBox" name="groupBox_change">
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="groupBox_form">
             <property name="font">
              <font>
               <pointsize>12</pointsize>
@@ -173,14 +173,37 @@
              </font>
             </property>
             <property name="title">
-             <string>Изменение выгрузки</string>
+             <string>Формирование выгрузки</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
-            <layout class="QGridLayout" name="gridLayout_7">
+            <layout class="QGridLayout" name="gridLayout_5">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_change"/>
+              <layout class="QGridLayout" name="gridLayout_form"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QGroupBox" name="groupBox_check_after">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="title">
+             <string>Проверка после копирования</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_check_after"/>
              </item>
             </layout>
            </widget>
