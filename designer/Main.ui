@@ -31,6 +31,37 @@
       <property name="movable">
        <bool>true</bool>
       </property>
+      <widget class="QWidget" name="form">
+       <attribute name="title">
+        <string>Формирование выгрузки</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_form_file">
+          <property name="text">
+           <string>Сформировать выгрузку из файла</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_file_unformat_file"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_unformat_file">
+          <property name="text">
+           <string>Неподготовленный файл</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_unformat_file">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="copy_ood">
        <attribute name="title">
         <string>Копирование ООД</string>
@@ -54,7 +85,7 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_path_dir_finish"/>
+         <widget class="QLineEdit" name="lineEdit_path_copy_ood_dir_finish"/>
         </item>
         <item row="4" column="1" colspan="2">
          <widget class="QLineEdit" name="lineEdit_copy_ood_name_gk">
@@ -64,10 +95,10 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_path_dir_start"/>
+         <widget class="QLineEdit" name="lineEdit_path_copy_ood_dir_start"/>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_copy_ood_path_file_upload"/>
+         <widget class="QLineEdit" name="lineEdit_path_copy_ood_file_upload"/>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_copy_ood_path_dir_finish">
@@ -143,7 +174,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_check_after_path_dir_start"/>
+         <widget class="QLineEdit" name="lineEdit_path_check_after_dir_start"/>
         </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_check_after_path_dir_start">
@@ -153,7 +184,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_check_after_path_file_upload"/>
+         <widget class="QLineEdit" name="lineEdit_path_check_after_file_upload"/>
         </item>
         <item row="0" column="2">
          <widget class="QPushButton" name="pushButton_open_check_after_dir_start">
@@ -173,54 +204,6 @@
          <widget class="QLabel" name="label_check_after_path_file_upload">
           <property name="text">
            <string>Файл выгрузки</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="form">
-       <attribute name="title">
-        <string>Формирование выгрузки</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0" colspan="3">
-         <widget class="QPushButton" name="pushButton_form_file">
-          <property name="text">
-           <string>Сформировать выгрузку из файла</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="pushButton_open_check_material_dir">
-          <property name="text">
-           <string>Открыть</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_unformat_file">
-          <property name="text">
-           <string>Неподготовленный файл</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_path_file_unformat_file"/>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_path_dir_check_material"/>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButton_open_unformat_file">
-          <property name="text">
-           <string>Открыть</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_dir_check_material">
-          <property name="text">
-           <string>Папка с материалами</string>
           </property>
          </widget>
         </item>
@@ -725,7 +708,7 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

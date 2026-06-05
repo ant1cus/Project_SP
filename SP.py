@@ -77,10 +77,6 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_unformat_file.clicked.connect((lambda: browse(self, self.pushButton_open_unformat_file,
                                                                            self.lineEdit_path_file_unformat_file,
                                                                            self.default_path)))
-        self.pushButton_open_check_material_dir.clicked.connect((lambda: browse(self,
-                                                                                self.pushButton_open_check_material_dir,
-                                                                                self.lineEdit_path_dir_check_material,
-                                                                                self.default_path)))
         self.pushButton_open_material_sp_dir.clicked.connect((lambda: browse(self, self.pushButton_open_material_sp_dir,
                                                                              self.lineEdit_path_dir_material_sp,
                                                                              self.default_path)))
@@ -104,19 +100,19 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                             self.lineEdit_path_dir_finish_unloading_files, self.default_path)))
         self.pushButton_open_copy_ood_start_dir.clicked.connect(
             lambda: browse(self, self.pushButton_open_copy_ood_start_dir,
-                           self.lineEdit_copy_ood_path_dir_start, self.default_path))
+                           self.lineEdit_path_copy_ood_dir_start, self.default_path))
         self.pushButton_open_copy_ood_upload_file.clicked.connect(
             lambda: browse(self, self.pushButton_open_copy_ood_upload_file,
-                           self.lineEdit_copy_ood_path_file_upload, self.default_path))
+                           self.lineEdit_path_copy_ood_file_upload, self.default_path))
         self.pushButton_open_copy_ood_finish_dir.clicked.connect(
             lambda: browse(self, self.pushButton_open_copy_ood_finish_dir,
-                           self.lineEdit_copy_ood_path_dir_finish, self.default_path))
+                           self.lineEdit_path_copy_ood_dir_finish, self.default_path))
         self.pushButton_open_check_after_dir_start.clicked.connect(
             lambda: browse(self, self.pushButton_open_check_after_dir_start,
-                           self.lineEdit_check_after_path_dir_start, self.default_path))
+                           self.lineEdit_path_check_after_dir_start, self.default_path))
         self.pushButton_open_check_after_upload_file.clicked.connect(
             lambda: browse(self, self.pushButton_open_check_after_upload_file,
-                           self.lineEdit_check_after_path_file_upload, self.default_path))
+                           self.lineEdit_path_check_after_file_upload, self.default_path))
         self.pushButton_sorting_file_SP.clicked.connect(self.sorting_file)
         self.pushButton_sorting_file_manufacture.clicked.connect(self.sorting_file)
         self.pushButton_form_file.clicked.connect(self.form_file)
@@ -131,21 +127,19 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.lines = {
             'form-lineEdit_path_file_unformat_file': ['Путь к неподготовленному файлу',
                                                       self.lineEdit_path_file_unformat_file],
-            'form-lineEdit_path_dir_check_material': ['Путь к материалам для проверки',
-                                                      self.lineEdit_path_dir_check_material],
             'copy_ood-lineEdit_copy_ood_path_dir_start': ['Путь к папке с файлами',
-                                                          self.lineEdit_copy_ood_path_dir_start],
+                                                          self.lineEdit_path_copy_ood_dir_start],
             'copy_ood-lineEdit_copy_ood_path_file_upload': ['Путь к файлу выгрузки',
-                                                            self.lineEdit_copy_ood_path_file_upload],
+                                                            self.lineEdit_path_copy_ood_file_upload],
             'copy_ood-lineEdit_copy_ood_path_dir_finish': ['Путь к конечной папке',
-                                                           self.lineEdit_copy_ood_path_dir_finish],
+                                                           self.lineEdit_path_copy_ood_dir_finish],
             'copy_ood-checkBox_copy_ood_name_gk': ['Включить ГК', self.checkBox_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_gk': ['Наименование ГК', self.lineEdit_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_set': ['Наименование комплекта', self.lineEdit_copy_ood_name_set],
             'check_after-lineEdit_check_after_path_dir_start': ['Папка с фото',
-                                                                self.lineEdit_check_after_path_dir_start],
+                                                                self.lineEdit_path_check_after_dir_start],
             'check_after-lineEdit_check_after_path_file_upload': ['Файл выгрузки',
-                                                                  self.lineEdit_check_after_path_file_upload],
+                                                                  self.lineEdit_path_check_after_file_upload],
             'sorting-lineEdit_path_dir_material_sp': ['Путь к папке с материалами', self.lineEdit_path_dir_material_sp],
             'sorting-radioButton_group1': ['Тип выгрузки', [self.radioButton_load_asu,
                                                             self.radioButton_load_manufacture]],
@@ -242,14 +236,14 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
     def copy_ood_files(self):
         queue_copy_ood = queue.Queue(maxsize=1)
         mode_name = self.mode_description['copy_ood']['mode_name']
-        name_dir = self.lineEdit_copy_ood_path_dir_start.text().strip()
+        name_dir = self.lineEdit_path_copy_ood_dir_start.text().strip()
         start_function = copy_files
         data = {**self.default_dict,
                 'queue': queue_copy_ood, 'mode_name': mode_name, 'name_dir': name_dir,
                 'start_function': start_function,
-                'start_path': self.lineEdit_copy_ood_path_dir_start.text().strip(),
-                'finish_path': self.lineEdit_copy_ood_path_dir_finish.text().strip(),
-                'upload_file': self.lineEdit_copy_ood_path_file_upload.text().strip(),
+                'start_path': self.lineEdit_path_copy_ood_dir_start.text().strip(),
+                'finish_path': self.lineEdit_path_copy_ood_dir_finish.text().strip(),
+                'upload_file': self.lineEdit_path_copy_ood_file_upload.text().strip(),
                 'check_name_gk': self.checkBox_copy_ood_name_gk.isChecked(),
                 'name_gk': self.lineEdit_copy_ood_name_gk.text().strip(),
                 'name_set': self.lineEdit_copy_ood_name_set.text().strip()
@@ -259,13 +253,13 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
     def check_after_copy(self):
         queue_check_after = queue.Queue(maxsize=1)
         mode_name = self.mode_description['check_after']['mode_name']
-        name_dir = self.lineEdit_check_after_path_dir_start.text().strip()
+        name_dir = self.lineEdit_path_check_after_dir_start.text().strip()
         start_function = check_after_copy
         data = {**self.default_dict,
                 'queue': queue_check_after, 'mode_name': mode_name, 'name_dir': name_dir,
                 'start_function': start_function,
-                'start_path': self.lineEdit_check_after_path_dir_start.text().strip(),
-                'upload_file': self.lineEdit_check_after_path_file_upload.text().strip(),
+                'start_path': self.lineEdit_path_check_after_dir_start.text().strip(),
+                'upload_file': self.lineEdit_path_check_after_file_upload.text().strip(),
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, check_check_after, StartThreading)
 
@@ -278,7 +272,6 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
                 'start_function': start_function,
                 'unformat_file': self.lineEdit_path_file_unformat_file.text().strip(),
-                'path_check_material': self.lineEdit_path_dir_check_material.text().strip(),
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, checked_form_file, StartThreading)
 

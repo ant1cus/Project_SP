@@ -82,10 +82,6 @@ def checked_form_file(incoming: dict) -> dict:
             return {'error': True, 'data': 'Файл с неподготовленной выгрузкой не формата ".xlsx"'}
     else:
         return {'error': True, 'data': 'Указанный файл с неподготовленной выгрузкой удалён или переименован'}
-    if not incoming['path_check_material']:
-        return {'error': True, 'data': 'Путь к проверяемым материалам пуст'}
-    if not os.path.isdir(incoming['path_check_material']):
-        return {'error': True, 'data': 'Указанный путь к проверяемым материалам удалён или переименован'}
     incoming['name_dir'] = Path(incoming['name_dir']).parent
     return {'error': False, 'data': incoming}
 
