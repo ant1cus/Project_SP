@@ -502,7 +502,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Формирование выгрузки</string>
@@ -531,6 +531,9 @@
    </property>
   </action>
   <action name="action_copy_ood">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Копирование ООД</string>
    </property>
