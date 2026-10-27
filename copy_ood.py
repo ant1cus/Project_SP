@@ -2,7 +2,6 @@ import os
 import re
 import traceback
 from pathlib import Path
-from datetime import datetime
 from speedcopy import copyfile
 
 import pandas as pd
@@ -30,8 +29,6 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
     errors = []
     line_progress.emit(f'Прогресс выполнения:')
     try:
-        start_time = datetime.now()
-        logging.info(f"время начала - {start_time}")
         name_finish_folder = incoming_data['name_gk'] if incoming_data['name_gk'] else 'Номер ГК'
         if Path(incoming_data['finish_path'], name_finish_folder).exists() is False:
             os.makedirs(Path(incoming_data['finish_path'], name_finish_folder))
@@ -44,7 +41,6 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
         df['finish_folder'] = str(Path(incoming_data['finish_path'], name_finish_folder)) + '\\' \
                               + incoming_data['name_set'] + '\\' + df[3]
         serial_nums = {}
-        logging.info(f"загрузка excel - {datetime.now() - start_time}")
         snapshot_files = {}
         all_poss_files = 1
         for index, item in df.iloc[0].items():
@@ -54,11 +50,11 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 folder = int(str(item).partition('-')[0])
                 snapshot = int(str(item).partition('-')[2])
                 full_path = dict(zip(
-                    df[index].iloc[2:],
+                    [i.lower().strip() for i in df[index].iloc[2:]],
                     [f"{i}\\{folder}" for i in df['finish_folder'].iloc[2:].to_numpy().tolist()]
                 ))
                 full_find = dict(zip(
-                    df[index].iloc[2:],
+                    [i.lower().strip() for i in df[index].iloc[2:]],
                     [{'coordinate': val, 'more_snapshot': False, 'snapshot': [False for _ in range(0, snapshot)]}
                      for val in {i: [index, i] for i in df.index.to_list()[2:]}.values()]
                 ))
@@ -66,12 +62,11 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 snapshot_files.update(full_find)
                 all_poss_files += len(full_path)*int(snapshot)
         percent = 10
-        logging.info(f"считывание excel - {datetime.now() - start_time}")
         all_doc = all_poss_files
         for file in Path(incoming_data['start_path']).rglob('*.*'):
             if window_check.stop_threading:
                 return {'status': 'cancel', 'trace': '', 'text': ''}
-            file_sn = file.stem.partition('_')[2].partition('_')[2].partition('_')[0]
+            file_sn = file.stem.partition('_')[2].partition('_')[2].partition('_')[0].lower().strip()
             # copy = False
             try:
                 if file_sn not in serial_nums:
@@ -110,7 +105,6 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                 logging.error(f"Количество снимков в файле {file.name} не конвертируется в целое число")
                 errors.append(f"Количество снимков в файле {file.name} не конвертируется в целое число")
         # Проверки
-        logging.info(f"скопировали все файлы - {datetime.now() - start_time}")
         xlsx_path = Path(incoming_data['upload_file'])
         wb = load_workbook(str(xlsx_path))
         ws = wb.active
@@ -129,7 +123,6 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
             elif not all(snapshot_files[sn]['snapshot']):
                 write_xlsx = write_error(color_cell['less']['text'], color_cell['less']['color'], errors, ws[cell],
                                          logging)
-        logging.info(f"пробежались по всем ошибкам - {datetime.now() - start_time}")
         if write_xlsx:
             while True:
                 try:
@@ -144,7 +137,6 @@ def copy_files(incoming_data: dict, current_progress, now_doc, all_doc, line_doi
                     event.wait()
                 if window_check.answer is False:
                     break
-        logging.info(f"конец программы - {datetime.now() - start_time}")
         return {'status': 'success', 'text': '', 'trace': ''}
     except BaseException as ex:
         return {'status': 'error', 'text': ex, 'trace': traceback.format_exc()}

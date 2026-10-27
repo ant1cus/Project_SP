@@ -147,6 +147,34 @@ def check_copy_ood(incoming: dict) -> dict:
     return {'error': False, 'data': incoming}
 
 
+def check_copy_spk(incoming: dict) -> dict:
+    if not incoming['excel_file']:
+        return {'error': True, 'data': 'Не выбран файл excel'}
+    if not os.path.isfile(incoming['excel_file']):
+        return {'error': True, 'data': 'Файл excel удалён или переименован'}
+    # if not len(os.listdir(incoming['start_path'])):
+    #     return {'error': True, 'data': 'В указанном пути к исходным фото нет файлов для копирования'}
+    if not incoming['spk_folder']:
+        return {'error': True, 'data': 'Не указан путь к файлам СПК'}
+    if not os.path.isdir(incoming['spk_folder']):
+        return {'error': True, 'data': 'Путь к файлам СПК удалён или переименован'}
+    if not len(os.listdir(incoming['spk_folder'])):
+        return {'error': True, 'data': 'В указанном пути к файлам СПК нет файлов для копирования'}
+    if not incoming['set_folder']:
+        return {'error': True, 'data': 'Не указан путь к папке с комплектами'}
+    if not os.path.isdir(incoming['set_folder']):
+        return {'error': True, 'data': 'Указанный путь к папке с комплектами удалён или переименован'}
+    if not len(os.listdir(incoming['set_folder'])):
+        return {'error': True, 'data': 'Указаный путь к папке с комплектами пуст'}
+    wb = load_workbook(str(Path(incoming['excel_file'])))
+    try:
+        wb.save(str(Path(incoming['excel_file'])))
+    except PermissionError:
+        return {'error': True, 'data': f"Файл {Path(incoming['excel_file']).name} открыт."
+                                       f" Закройте файл перед запуском и не открывайте его во время работы программы"}
+    return {'error': False, 'data': incoming}
+
+
 def check_check_after(incoming: dict) -> dict:
     if not incoming['start_path']:
         return {'error': True, 'data': 'Путь к папке с фото пуст'}

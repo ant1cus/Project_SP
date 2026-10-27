@@ -7,7 +7,8 @@ from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo, QObject
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from small_function import browse, default_settings, default_data, rewrite_settings, start_thread
-from checked import checked_sorting_file, checked_form_file, check_unloading_file, check_copy_ood, check_check_after
+from checked import checked_sorting_file, checked_form_file, check_unloading_file, check_copy_ood, check_check_after,\
+    check_copy_spk
 from read_asu_file import copy_from_asu_file
 from read_manufacture_file import copy_from_manufacture
 from form_file import form_file
@@ -15,6 +16,7 @@ from change_unloading_file import change_unloading_file
 from sp_asu_files import create_sp_sorting_file
 from manufacture_asu_files import create_manufacture_asu_file
 from copy_ood import copy_files
+from copy_spk import copy_spk_files
 from check_after_copy import check_after_copy
 from StartThread import StartThreading
 
@@ -53,6 +55,13 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                                               'success': 'Копирование файлов в папке «name_dir» успешно завершёно',
                                               'error': 'Копирование файлов в папке «name_dir» завершёно с ошибками'
                                               },
+                                 'copy_spk': {'mode_name': 'copy_spk', 'title': 'Копирование СПК в папке «name_dir»',
+                                              'cancel': 'Копирование СПК в папке «name_dir» отменёно пользователем',
+                                              'exception': 'Копирование СПК в папке «name_dir» не завершёно'
+                                                           ' из-за ошибки',
+                                              'success': 'Копирование СПК в папке «name_dir» успешно завершёно',
+                                              'error': 'Копирование СПК в папке «name_dir» завершёно с ошибками'
+                                              },
                                  'check_after': {'mode_name': 'check_after',
                                                  'title': 'Проверка фото в папке «name_dir»',
                                                  'cancel': 'Проверка фото в папке «name_dir» отменёна пользователем',
@@ -71,6 +80,8 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                        'action': 'action_change_unloading', 'tab': 'change'},
             'copy_ood': {'grid': 'gridLayout_copy_ood', 'frame': 'groupBox_copy_ood',
                          'action': 'action_copy_ood', 'tab': 'copy_ood'},
+            'copy_spk': {'grid': 'gridLayout_copy_spk', 'frame': 'groupBox_copy_spk',
+                         'action': 'action_copy_spk', 'tab': 'copy_spk'},
             'check_after': {'grid': 'gridLayout_check_after', 'frame': 'groupBox_check_after',
                             'action': 'action_check_after', 'tab': 'check_after'},
                            }
@@ -107,6 +118,15 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_open_copy_ood_finish_dir.clicked.connect(
             lambda: browse(self, self.pushButton_open_copy_ood_finish_dir,
                            self.lineEdit_path_copy_ood_dir_finish, self.default_path))
+        self.pushButton_open_copy_spk_excel_file.clicked.connect(
+            lambda: browse(self, self.pushButton_open_copy_spk_excel_file,
+                           self.lineEdit_path_copy_spk_excel_file, self.default_path))
+        self.pushButton_open_copy_spk_spk_dir.clicked.connect(
+            lambda: browse(self, self.pushButton_open_copy_spk_spk_dir,
+                           self.lineEdit_path_copy_spk_spk_dir, self.default_path))
+        self.pushButton_open_copy_spk_set_dir.clicked.connect(
+            lambda: browse(self, self.pushButton_open_copy_spk_set_dir,
+                           self.lineEdit_path_copy_spk_set_dir, self.default_path))
         self.pushButton_open_check_after_dir_start.clicked.connect(
             lambda: browse(self, self.pushButton_open_check_after_dir_start,
                            self.lineEdit_path_check_after_dir_start, self.default_path))
@@ -118,11 +138,13 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         self.pushButton_form_file.clicked.connect(self.form_file)
         self.pushButton_change_unloading_file.clicked.connect(self.change_unloading_file)
         self.pushButton_copy_ood.clicked.connect(self.copy_ood_files)
+        self.pushButton_copy_spk_start.clicked.connect(self.copy_spk_files)
         self.pushButton_check_after.clicked.connect(self.check_after_copy)
         self.action_form_file.triggered.connect(lambda: self.add_tab(self.action_form_file))
         self.action_sorting_file.triggered.connect(lambda: self.add_tab(self.action_sorting_file))
         self.action_change_unloading.triggered.connect(lambda: self.add_tab(self.action_change_unloading))
         self.action_copy_ood.triggered.connect(lambda: self.add_tab(self.action_copy_ood))
+        self.action_copy_spk.triggered.connect(lambda: self.add_tab(self.action_copy_spk))
         self.action_check_after.triggered.connect(lambda: self.add_tab(self.action_check_after))
         self.lines = {
             'form-lineEdit_path_file_unformat_file': ['Путь к неподготовленному файлу',
@@ -136,6 +158,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
             'copy_ood-checkBox_copy_ood_name_gk': ['Включить ГК', self.checkBox_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_gk': ['Наименование ГК', self.lineEdit_copy_ood_name_gk],
             'copy_ood-lineEdit_copy_ood_name_set': ['Наименование комплекта', self.lineEdit_copy_ood_name_set],
+            'copy_spk-lineEdit_copy_spk_excel_file': ['Путь к файлу excel', self.lineEdit_path_copy_spk_excel_file],
+            'copy_spk-lineEdit_copy_spk_spk_dir': ['Путь к папке с СПК', self.lineEdit_path_copy_spk_spk_dir],
+            'copy_spk-lineEdit_copy_spk_set_dir': ['Путь к папке с комплектами', self.lineEdit_path_copy_spk_set_dir],
             'check_after-lineEdit_check_after_path_dir_start': ['Папка с фото',
                                                                 self.lineEdit_path_check_after_dir_start],
             'check_after-lineEdit_check_after_path_file_upload': ['Файл выгрузки',
@@ -237,10 +262,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         queue_copy_ood = queue.Queue(maxsize=1)
         mode_name = self.mode_description['copy_ood']['mode_name']
         name_dir = self.lineEdit_path_copy_ood_dir_start.text().strip()
-        start_function = copy_files
         data = {**self.default_dict,
                 'queue': queue_copy_ood, 'mode_name': mode_name, 'name_dir': name_dir,
-                'start_function': start_function,
+                'start_function': copy_files,
                 'start_path': self.lineEdit_path_copy_ood_dir_start.text().strip(),
                 'finish_path': self.lineEdit_path_copy_ood_dir_finish.text().strip(),
                 'upload_file': self.lineEdit_path_copy_ood_file_upload.text().strip(),
@@ -250,14 +274,26 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, check_copy_ood, StartThreading)
 
+    def copy_spk_files(self):
+        queue_copy_spk = queue.Queue(maxsize=1)
+        mode_name = self.mode_description['copy_spk']['mode_name']
+        name_dir = self.lineEdit_path_copy_spk_set_dir.text().strip()
+        data = {**self.default_dict,
+                'queue': queue_copy_spk, 'mode_name': mode_name, 'name_dir': name_dir,
+                'start_function': copy_spk_files,
+                'excel_file': self.lineEdit_path_copy_spk_excel_file.text().strip(),
+                'spk_folder': self.lineEdit_path_copy_spk_spk_dir.text().strip(),
+                'set_folder': self.lineEdit_path_copy_spk_set_dir.text().strip(),
+                }
+        start_thread(data, self.logging_dict, self.thread_dict, self, check_copy_spk, StartThreading)
+
     def check_after_copy(self):
         queue_check_after = queue.Queue(maxsize=1)
         mode_name = self.mode_description['check_after']['mode_name']
         name_dir = self.lineEdit_path_check_after_dir_start.text().strip()
-        start_function = check_after_copy
         data = {**self.default_dict,
                 'queue': queue_check_after, 'mode_name': mode_name, 'name_dir': name_dir,
-                'start_function': start_function,
+                'start_function': check_after_copy,
                 'start_path': self.lineEdit_path_check_after_dir_start.text().strip(),
                 'upload_file': self.lineEdit_path_check_after_file_upload.text().strip(),
                 }
@@ -267,10 +303,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         queue_sorting_file = queue.Queue(maxsize=1)
         mode_name = self.mode_description['form']['mode_name']
         name_dir = self.lineEdit_path_file_unformat_file.text().strip()
-        start_function = form_file
         data = {**self.default_dict,
                 'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
-                'start_function': start_function,
+                'start_function': form_file,
                 'unformat_file': self.lineEdit_path_file_unformat_file.text().strip(),
                 }
         start_thread(data, self.logging_dict, self.thread_dict, self, checked_form_file, StartThreading)
@@ -284,10 +319,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         func = create_sp_sorting_file if self.sender().text() == 'Преобразовать файлы СП' else create_manufacture_asu_file
         asu_man = True if self.radioButton_load_asu.isChecked() else False
         empty_with_files = True if self.radioButton_empty_finish_dir.isChecked() else False
-        start_function = copy_from_asu_file if asu_man else copy_from_manufacture
         data = {**self.default_dict,
                 'queue': queue_sorting_file, 'mode_name': mode_name, 'name_dir': name_dir,
-                'start_function': start_function,
+                'start_function': copy_from_asu_file if asu_man else copy_from_manufacture,
                 'name_gk': name_gk, 'name_set': name_set, 'asu_man': asu_man,
                 'function': func,
                 'executor': 'sp' if self.sender().text() == 'Преобразовать файлы СП' else 'ood',
@@ -304,10 +338,9 @@ class MainWindow(QMainWindow, Main.Ui_mainWindow):  # Главное окно
         queue_unloading_file = queue.Queue(maxsize=1)
         mode_name = self.mode_description['change']['mode_name']
         name_dir = self.lineEdit_path_dir_start_unloading_files.text().strip()
-        start_function = change_unloading_file
         data = {**self.default_dict,
                 'queue': queue_unloading_file, 'mode_name': mode_name, 'name_dir': name_dir,
-                'start_function': start_function,
+                'start_function': change_unloading_file,
                 'start_path': self.lineEdit_path_dir_start_unloading_files.text().strip(),
                 'finish_path': self.lineEdit_path_dir_finish_unloading_files.text().strip(),
                 }

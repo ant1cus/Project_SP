@@ -209,6 +209,71 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="copy_spk">
+       <attribute name="title">
+        <string>Копирование СПК</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_copy_spk_excel_file">
+          <property name="text">
+           <string>Файл xlsx</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_copy_spk_excel_file"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_open_copy_spk_excel_file">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_copy_spk_spk_folder">
+          <property name="text">
+           <string>Папка с файлами СПК</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_copy_spk_spk_dir"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_open_copy_spk_spk_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_copy_spk_set_folder">
+          <property name="text">
+           <string>Папка с комплектами</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_path_copy_spk_set_dir"/>
+        </item>
+        <item row="2" column="2">
+         <widget class="QPushButton" name="pushButton_open_copy_spk_set_dir">
+          <property name="text">
+           <string>Открыть</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_copy_spk_start">
+          <property name="text">
+           <string>Сортировка</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="sorting">
        <attribute name="title">
         <string>Сортировка файлов</string>
@@ -484,6 +549,7 @@
     </property>
     <addaction name="action_form_file"/>
     <addaction name="action_copy_ood"/>
+    <addaction name="action_copy_spk"/>
     <addaction name="action_check_after"/>
     <addaction name="action_sorting_file"/>
     <addaction name="action_change_unloading"/>
@@ -513,7 +579,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Сортировка файлов</string>
@@ -524,7 +590,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Изменение выгрузки</string>
@@ -532,6 +598,9 @@
   </action>
   <action name="action_copy_ood">
    <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="text">
@@ -542,8 +611,22 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Проверка после копирования</string>
+   </property>
+  </action>
+  <action name="action_copy_spk">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Копирование СПК</string>
    </property>
   </action>
  </widget>
@@ -711,7 +794,7 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
