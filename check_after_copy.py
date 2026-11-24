@@ -41,11 +41,11 @@ def check_after_copy(incoming_data: dict, current_progress, now_doc, all_doc, li
 				folder = int(str(item).partition('-')[0])
 				snapshot = int(str(item).partition('-')[2])
 				full_path = dict(zip(
-					df[index].iloc[2:],
+					[i.lower().strip() for i in df[index].iloc[2:]],
 					[f"{i}\\{folder}" for i in df['finish_folder'].iloc[2:].to_numpy().tolist()]
 				))
 				full_find = dict(zip(
-					df[index].iloc[2:],
+					[i.lower().strip() for i in df[index].iloc[2:]],
 					[{'coordinate': val, 'more_snapshot': False, 'snapshot': [False for _ in range(0, snapshot)]}
 					 for val in {i: [index, i] for i in df.index.to_list()[2:]}.values()]
 				))
@@ -57,7 +57,7 @@ def check_after_copy(incoming_data: dict, current_progress, now_doc, all_doc, li
 		for file in Path(incoming_data['start_path']).rglob('*.*'):
 			if window_check.stop_threading:
 				return {'status': 'cancel', 'trace': '', 'text': ''}
-			file_sn = file.stem.partition('_')[2].partition('_')[2].partition('_')[0]
+			file_sn = file.stem.partition('_')[2].partition('_')[2].partition('_')[0].lower().strip()
 			try:
 				if file_sn not in serial_nums:
 					continue
