@@ -12,6 +12,7 @@ from openpyxl.utils import get_column_letter
 def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_doc: int, line_doing, line_progress,
               progress_value, event, window_check, info_value) -> dict:
     logging = incoming_data['logging']
+    error_print = ''
     try:
         save_file_name = f"{Path(incoming_data['unformat_file']).stem}" \
                          f"_sort{Path(incoming_data['unformat_file']).suffix}"
@@ -25,7 +26,7 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
         df = pd.read_excel(incoming_data['unformat_file'], header=None)
         nan_col = df.columns[df.isna().all()].tolist()
         rows, cols = np.where(df.isna())
-        errors = [f"Пропущено значение в ячейке {row + 1}{get_column_letter(col + 1)}"
+        errors = [f"Пропущено значение в ячейке {get_column_letter(col + 1)}{row + 1}"
                   for row, col in zip(rows, cols) if col not in nan_col]
         col_for_copy = [col for col in cols if col not in nan_col]
         for index, column in enumerate(col_for_copy):
@@ -71,7 +72,7 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
         progress_value.emit(int(current_progress))
         line_doing.emit(f"Заполняем новый файл {save_file_name}")
         save_file = Path(Path(incoming_data['unformat_file']).parent, save_file_name)
-        df.dropna(axis=1, inplace=True)
+        df.dropna(axis=1, inplace=True, how='all')
         column_width = max([column_sheet[index] for index in list(uniq_column.keys())])
         writer = pd.ExcelWriter(save_file)
         df.to_excel(writer, sheet_name='sort', index=False, header=False, na_rep='NaN')
@@ -90,6 +91,7 @@ def form_file(incoming_data: dict, current_progress: float, now_doc: int, all_do
         yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
         orange_fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type='solid')
         for similar in similar_pairs:
+            error_print = similar
             write_xlsx = True
             col1 = col2 = 0
             for col in range(1, ws.max_column + 1):
